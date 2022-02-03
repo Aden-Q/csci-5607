@@ -49,7 +49,7 @@ int main(int argc, char **argv)
         }
     }
 
-    output_image("raytracer.ppm", checkerboard, scene);
+    output_image(filename + "_raytracer.ppm", checkerboard, scene);
 
     return 0;
 }
