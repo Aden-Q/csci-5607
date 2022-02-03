@@ -6,6 +6,3 @@
 #include <iostream>
 #include "types.h"
 
-void ReadInput(int argc, char **argv) {
-    return;
-}

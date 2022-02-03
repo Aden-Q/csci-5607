@@ -1,14 +1,14 @@
 CXX=clang++
 CXXFLAGS=-g -std=c++11 -Wall
 
-all: ray_casting
+all: raytracer
 clean:
 	rm -f *.o *.h.gch ray_casting
-test: ray_casting
+test: raytracer
 	./ray_casting
 .PHONY: all clean test
 
-ray_casting: ray_casting.o
+raytracer: raytracer.o
 	$(CXX) $(LDFLAGS) -o $(@) $(^)
 
 %.o: %.cpp

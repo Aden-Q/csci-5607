@@ -8,8 +8,5 @@
 
 #include <iostream>
 
-void ReadInput(int argc, char **argv);
-
-
 
 #endif // SRC_UTILS_H_
