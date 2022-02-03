@@ -37,4 +37,11 @@ typedef struct
     // placebolder for cylinder
 } Scene;
 
+typedef struct Image
+{
+    uint16_t r = 0;
+    uint16_t g = 0;
+    uint16_t b = 0;
+} Image;
+
 #endif // SRC_TYPES_H_

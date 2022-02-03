@@ -8,7 +8,7 @@ test: raytracer
 	./ray_casting
 .PHONY: all clean test
 
-raytracer: raytracer.o
+raytracer: raytracer.o utils.o
 	$(CXX) $(LDFLAGS) -o $(@) $(^)
 
 %.o: %.cpp

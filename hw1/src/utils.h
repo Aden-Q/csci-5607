@@ -7,6 +7,8 @@
 #define SRC_UTILS_H_
 
 #include <iostream>
+#include "types.h"
 
+void parse_scene(std::string filename, Scene &scene);
 
 #endif // SRC_UTILS_H_
