@@ -3,9 +3,9 @@ CXXFLAGS=-g -std=c++11 -Wall
 
 all: raytracer
 clean:
-	rm -f *.o *.h.gch ray_casting
+	rm -f *.o *.h.gch raytracer
 test: raytracer
-	./ray_casting
+	./raytracer
 .PHONY: all clean test
 
 raytracer: raytracer.o utils.o

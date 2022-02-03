@@ -8,40 +8,95 @@
 
 #include <vector>
 
-typedef struct
+typedef struct ColorType
+{
+    float r, g, b;
+} Color;
+
+typedef struct RayType
 {
     float x, y, z;
     float dx, dy, dz;
-} RayType;
+} Ray;
 
-typedef struct Sphere_Struct
+typedef struct SphereType
 {
-    // material color of the sphere
-    float r, g, b;
+    // material index
+    int m_idx;
     // location and radius of the sphere
     float c_x, c_y, c_z, radius;
 } Sphere;
 
 // placeholder for cylinder
 
-typedef struct
+struct FloatVec3
 {
-    float eye_x, eye_y, eye_z;
-    float vdir_x, vdir_y, vdir_z;
-    int up_x, up_y, up_z;
-    int vfov;
-    int width, height;
-    int bkg_r, bkg_g, bkg_b;
+    float first;
+    float second;
+    float third;
+
+    // default constructor
+    FloatVec3 (float first_ = 0, float second_ = 0, float third_ = 0)
+        : first(first_), second(second_), third(third_)
+    {
+    }
+
+    // overload + operator
+    FloatVec3 operator+(const FloatVec3 &v) const
+    {
+        return FloatVec3(this->first + v.first, this->second + v.second, this->third + v.third);
+    }
+
+    // overload - operator
+    FloatVec3 operator-(const FloatVec3 &v) const
+    {
+        return FloatVec3(this->first - v.first, this->second - v.second, this->third - v.third);
+    }
+
+    // overload * operator, const multiple
+    FloatVec3 operator*(float c) const
+    {
+        return FloatVec3(this->first * c, this->second * c, this->third * c);
+    }
+
+    // overload / operator, const multiple
+    FloatVec3 operator/(float c) const
+    {
+        return FloatVec3(this->first / c, this->second / c, this->third / c);
+    }
+};
+
+typedef struct SceneType
+{
+    FloatVec3 eye;
+    FloatVec3 viewdir;
+    FloatVec3 updir;
+    FloatVec3 bkgcolor;
+    float vfov = 90;
+    uint16_t width = 512, height = 512;
+    // A list of materials
+    std::vector<Color> material_list;
     // A list of sphere objects
     std::vector<Sphere> sphere_list;
     // placebolder for cylinder
 } Scene;
 
-typedef struct Image
+typedef struct ImageType
 {
-    uint16_t r = 0;
-    uint16_t g = 0;
-    uint16_t b = 0;
+    unsigned char r;
+    unsigned char g;
+    unsigned char b;
 } Image;
+
+typedef struct ViewWindowType
+{
+    float viewdist; // view distance
+    FloatVec3 u, v;
+    float height, width; // size of the viewing window
+    // four corner points
+    FloatVec3 ul, ur, ll, lr;
+    // offset vector
+    FloatVec3 dh, dv;
+} ViewWindow;
 
 #endif // SRC_TYPES_H_
