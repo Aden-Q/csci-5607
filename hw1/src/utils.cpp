@@ -10,7 +10,7 @@
 #include "types.h"
 #include "utils.h"
 
-void parse_scene(std::string filename, Scene &scene)
+int parse_scene(std::string filename, Scene &scene)
 {
     std::ifstream inputstream(filename, std::ios::in | std::ios::binary);
 
@@ -22,12 +22,14 @@ void parse_scene(std::string filename, Scene &scene)
     std::string keyword;
     std::string a, b, c, d;
     int m_idx = -1;
+    int num_keywords = 0;
 
     while (inputstream >> keyword)
     {
         // check keywords
         if (keyword == "eye")
         {
+            num_keywords++;
             // read the world coordinate of the eye
             inputstream >> a >> b >> c;
             FloatVec3 eye(std::stof(a), std::stof(b), std::stof(c));
@@ -35,6 +37,7 @@ void parse_scene(std::string filename, Scene &scene)
         }
         else if (keyword == "viewdir")
         {
+            num_keywords++;
             // read the world coordinate of the view direction
             inputstream >> a >> b >> c;
             FloatVec3 viewdir(std::stof(a), std::stof(b), std::stof(c));
@@ -42,6 +45,7 @@ void parse_scene(std::string filename, Scene &scene)
         }
         else if (keyword == "updir")
         {
+            num_keywords++;
             // read the world coordinate of the up direction
             inputstream >> a >> b >> c;
             FloatVec3 updir(std::stof(a), std::stof(b), std::stof(c));
@@ -49,12 +53,14 @@ void parse_scene(std::string filename, Scene &scene)
         }
         else if (keyword == "vfov")
         {
+            num_keywords++;
             // read the vertical field of view (in degree)
             inputstream >> a;
             scene.vfov = std::stof(a);
         }
         else if (keyword == "imsize")
         {
+            num_keywords++;
             // read width and height of the image
             inputstream >> a >> b;
             scene.width = std::stoi(a);
@@ -62,6 +68,7 @@ void parse_scene(std::string filename, Scene &scene)
         }
         else if (keyword == "bkgcolor")
         {
+            num_keywords++;
             // read the background color
             inputstream >> a >> b >> c;
             FloatVec3 bkgcolor(std::stof(a), std::stof(b), std::stof(c));
@@ -95,7 +102,7 @@ void parse_scene(std::string filename, Scene &scene)
     }
 
     inputstream.close();
-    return;
+    return num_keywords;
 }
 
 void output_image(std::string filename, Image **checkerboard, const Scene &scene)
@@ -115,7 +122,7 @@ void output_image(std::string filename, Image **checkerboard, const Scene &scene
         << scene.height << std::endl
         << 255 << std::endl;
     // fill in color for each pixel
-    for (uint32_t y = 0; y < scene.width; y++)
+    for (uint32_t y = 0; y < scene.height; y++)
     {
         for (uint32_t x = 0; x < scene.width; x++)
         {
@@ -156,7 +163,7 @@ void view_window_init(const Scene &scene, ViewWindow &viewwindow, float viewdist
     // size of the view window
     viewwindow.height = 2 * viewwindow.viewdist * tan(scene.vfov / 2 * PI / 180.0);
     // use aspect ratio match to determine width
-    viewwindow.width = viewwindow.height * scene.width / scene.height;
+    viewwindow.width = viewwindow.height * scene.width * 1.0 / scene.height;
     // calculate four corner points
     FloatVec3 n = vector_normalize(scene.viewdir);
     viewwindow.ul = scene.eye + n * viewwindow.viewdist - viewwindow.u * (viewwindow.width / 2) + viewwindow.v * (viewwindow.height / 2);

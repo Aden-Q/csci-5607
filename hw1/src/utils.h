@@ -12,8 +12,8 @@
 #include <iostream>
 #include "types.h"
 
-// parse the scene parameters
-void parse_scene(std::string filename, Scene &scene);
+// parse the scene parameters, return how many keywords are catched
+int parse_scene(std::string filename, Scene &scene);
 
 // write to the outputfile in PPM format
 void output_image(std::string filename, Image **checkerboard, const Scene &scene);
