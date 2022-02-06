@@ -13,7 +13,8 @@
 
 int main(int argc, char **argv)
 {
-    if (argc != 2) {
+    if (argc != 2) 
+    {
         fprintf(stderr, "Incorrect number of arguments! Usage: ./raytracer filename\n");
         exit(-1);
     }
@@ -26,7 +27,8 @@ int main(int argc, char **argv)
     // get the filename from command line args and parse the file
     std::string filename = argv[1];
     num_keywords = parse_scene(filename, scene);
-    if (num_keywords < 6) {
+    if (num_keywords < 6) 
+    {
         fprintf(stderr, "Missing some keywords! Pleaze recheck your input file!\n");
         exit(-1);
     }
@@ -36,12 +38,15 @@ int main(int argc, char **argv)
 
     // dynamically allocate a 2d array to store pixels in the image
     Image **checkerboard = new Image*[scene.width];
-    for (int i = 0; i < scene.width; i++) {
+    for (int i = 0; i < scene.width; i++) 
+    {
         checkerboard[i] = new Image[scene.height];
     }
     // run ray tracing and assign a color for each pixel
-    for (int i = 0; i < scene.width; i++) {
-        for (int j = 0; j < scene.height; j++) {
+    for (int i = 0; i < scene.width; i++) 
+    {
+        for (int j = 0; j < scene.height; j++) 
+        {
             Color res_color = trace_ray(scene, viewwindow, i, j);
             checkerboard[i][j].r = res_color.r * 255;
             checkerboard[i][j].g = res_color.g * 255;
