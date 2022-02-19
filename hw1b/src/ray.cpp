@@ -12,22 +12,59 @@
 #include "types.h"
 #include "utils.h"
 
-Color shade_ray(const Scene &scene, std::string obj_type, int obj_idx, float ray_t)
+Color shade_ray(const Scene &scene, std::string obj_type, int obj_idx, Ray &ray, float ray_t)
 {
+    // use The Phong Illumination Model to determine the color of the intersecting point
     // return the corresponding color for that object
-    Color res = {
-        .r = 1,
-        .g = 1,
-        .b = 1};
-    // return scene.material_list[m_idx];
-    return res;
+    // the surface normal should be consider differently for sphere and cylinder
+    const Sphere &sphere = scene.sphere_list[obj_idx]; 
+    // compute the intersection point
+    FloatVec3 p(ray.x + ray_t * ray.dx, ray.y + ray_t * ray.dy, ray.z + ray_t * ray.dz);
+    // compute the surface normal N and normalize it
+    FloatVec3 N((p.first - sphere.cx) / sphere.radius,
+                (p.second - sphere.cy) / sphere.radius,
+                (p.third - sphere.cz) / sphere.radius);
+    // compute the vector L, consider differently according to the type of light source
+    std::vector<FloatVec3> L_list;
+    for (auto light:scene.light_list)
+    {
+        if (abs(light.w - 1) < 1e-6)  // point light source
+        {
+            FloatVec3 temp_L(light.x - p.first, light.y - p.second, light.z - p.third);
+            L_list.push_back(vector_normalize(temp_L));
+        }
+        else if (abs(light.w - 0) < 1e-6)  // directional light source
+        {
+            FloatVec3 temp_L(-light.x, -light.y, -light.z);
+            L_list.push_back(vector_normalize(temp_L));
+        }
+    }
+    // compute vector H, for each L
+    std::vector<FloatVec3> H_list;
+    // get the vector v
+    FloatVec3 temp_V(-ray.dx, -ray.dy, -ray.dz);
+    FloatVec3 V = vector_normalize(temp_V);
+    for (auto L:L_list)
+    {
+        H_list.push_back(vector_normalize(V + L));
+    }
+
+
+
+    float r, g, b = 0.0;
+
+    Color res_color = {
+            .r = r,
+            .g = g,
+            .b = b};
+    return res_color;
 }
 
 std::tuple<std::string, int, int> intersect_check(const Scene &scene, Ray &ray)
 {
     float min_t = 100000;
     float temp_t, temp_x, temp_y, temp_z;
-    int res_idx = -1;  // the index of the intersected object into the list of objects
+    int obj_idx = -1;  // the ID (index) of the intersected object
     std::string obj_type = "None";  // the type of the intersected object with the ray
     float A;
     float B;
@@ -46,7 +83,7 @@ std::tuple<std::string, int, int> intersect_check(const Scene &scene, Ray &ray)
             if (temp_t > 0 && temp_t < min_t) 
             {
                 min_t = temp_t;
-                res_idx = s.m_idx;
+                obj_idx = s.obj_idx;
                 obj_type = "Sphere";
             }
             // check for another possible solution
@@ -54,7 +91,7 @@ std::tuple<std::string, int, int> intersect_check(const Scene &scene, Ray &ray)
             if (temp_t > 0 && temp_t < min_t)
             {
                 min_t = temp_t;
-                res_idx = s.m_idx;
+                obj_idx = s.obj_idx;
                 obj_type = "Sphere";
             }
         }
@@ -79,7 +116,7 @@ std::tuple<std::string, int, int> intersect_check(const Scene &scene, Ray &ray)
                 if (temp_t > 0 && temp_t < min_t && lie_within(ray.x + temp_t * ray.dx, c.cx - c.length / 2, c.cx + c.length / 2))
                 {
                     min_t = temp_t;
-                    res_idx = c.m_idx;
+                    obj_idx = c.obj_idx;
                     obj_type = "Cylinder";
                 }
                 // check for another possible solution
@@ -88,7 +125,7 @@ std::tuple<std::string, int, int> intersect_check(const Scene &scene, Ray &ray)
                 if (temp_t > 0 && temp_t < min_t && lie_within(ray.x + temp_t * ray.dx, c.cx - c.length / 2, c.cx + c.length / 2))
                 {
                     min_t = temp_t;
-                    res_idx = c.m_idx;
+                    obj_idx = c.obj_idx;
                     obj_type = "Cylinder";
                 }
             }
@@ -103,7 +140,7 @@ std::tuple<std::string, int, int> intersect_check(const Scene &scene, Ray &ray)
                 if (temp_t < min_t && distance_between_2D_points(p1, p2) < c.radius)
                 {
                     min_t = temp_t;
-                    res_idx = c.m_idx;
+                    obj_idx = c.obj_idx;
                     obj_type = "Cylinder";
                 }
             }
@@ -118,7 +155,7 @@ std::tuple<std::string, int, int> intersect_check(const Scene &scene, Ray &ray)
                 if (temp_t < min_t && distance_between_2D_points(p1, p2) < c.radius)
                 {
                     min_t = temp_t;
-                    res_idx = c.m_idx;
+                    obj_idx = c.obj_idx;
                     obj_type = "Cylinder";
                 }
             }
@@ -136,7 +173,7 @@ std::tuple<std::string, int, int> intersect_check(const Scene &scene, Ray &ray)
                 if (temp_t > 0 && temp_t < min_t && lie_within(ray.y + temp_t * ray.dy, c.cy - c.length / 2, c.cy + c.length / 2))
                 {
                     min_t = temp_t;
-                    res_idx = c.m_idx;
+                    obj_idx = c.obj_idx;
                     obj_type = "Cylinder";
                 }
                 // check for another possible solution
@@ -145,7 +182,7 @@ std::tuple<std::string, int, int> intersect_check(const Scene &scene, Ray &ray)
                 if (temp_t > 0 && temp_t < min_t && lie_within(ray.y + temp_t * ray.dy, c.cy - c.length / 2, c.cy + c.length / 2))
                 {
                     min_t = temp_t;
-                    res_idx = c.m_idx;
+                    obj_idx = c.obj_idx;
                     obj_type = "Cylinder";
                 }
             }
@@ -160,7 +197,7 @@ std::tuple<std::string, int, int> intersect_check(const Scene &scene, Ray &ray)
                 if (temp_t < min_t && distance_between_2D_points(p1, p2) < c.radius)
                 {
                     min_t = temp_t;
-                    res_idx = c.m_idx;
+                    obj_idx = c.obj_idx;
                     obj_type = "Cylinder";
                 }
             }
@@ -175,7 +212,7 @@ std::tuple<std::string, int, int> intersect_check(const Scene &scene, Ray &ray)
                 if (temp_t < min_t && distance_between_2D_points(p1, p2) < c.radius)
                 {
                     min_t = temp_t;
-                    res_idx = c.m_idx;
+                    obj_idx = c.obj_idx;
                     obj_type = "Cylinder";
                 }
             }
@@ -193,7 +230,7 @@ std::tuple<std::string, int, int> intersect_check(const Scene &scene, Ray &ray)
                 if (temp_t > 0 && temp_t < min_t && lie_within(ray.z + temp_t * ray.dz, c.cz - c.length / 2, c.cz + c.length / 2))
                 {
                     min_t = temp_t;
-                    res_idx = c.m_idx;
+                    obj_idx = c.obj_idx;
                     obj_type = "Cylinder";
                 }
                 // check for another possible solution
@@ -202,7 +239,7 @@ std::tuple<std::string, int, int> intersect_check(const Scene &scene, Ray &ray)
                 if (temp_t > 0 && temp_t < min_t && lie_within(ray.z + temp_t * ray.dz, c.cz - c.length / 2, c.cz + c.length / 2))
                 {
                     min_t = temp_t;
-                    res_idx = c.m_idx;
+                    obj_idx = c.obj_idx;
                     obj_type = "Cylinder";
                 }
             }
@@ -217,7 +254,7 @@ std::tuple<std::string, int, int> intersect_check(const Scene &scene, Ray &ray)
                 if (temp_t < min_t && distance_between_2D_points(p1, p2) < c.radius)
                 {
                     min_t = temp_t;
-                    res_idx = c.m_idx;
+                    obj_idx = c.obj_idx;
                     obj_type = "Cylinder";
                 }
             }
@@ -232,7 +269,7 @@ std::tuple<std::string, int, int> intersect_check(const Scene &scene, Ray &ray)
                 if (temp_t < min_t && distance_between_2D_points(p1, p2) < c.radius)
                 {
                     min_t = temp_t;
-                    res_idx = c.m_idx;
+                    obj_idx = c.obj_idx;
                     obj_type = "Cylinder";
                 }
             }
@@ -247,7 +284,7 @@ std::tuple<std::string, int, int> intersect_check(const Scene &scene, Ray &ray)
     // now that we get both min_t (parameter for the ray) and res_idx (index for the material color)
     // we can apply the Blinn-Phong illumination model
 
-    return std::make_tuple(obj_type, res_idx, min_t);
+    return std::make_tuple(obj_type, obj_idx, min_t);
 }
 
 Color trace_ray(const Scene &scene, const ViewWindow &viewwindow, int w, int h) 
@@ -281,7 +318,7 @@ Color trace_ray(const Scene &scene, const ViewWindow &viewwindow, int w, int h)
     std::tie(obj_type, obj_idx, ray_t) = intersect_check(scene, ray);
     if (obj_type != "None")
     {
-        res_color = shade_ray(scene, obj_type, obj_idx, ray_t);
+        res_color = shade_ray(scene, obj_type, obj_idx, ray, ray_t);
     }
 
     return res_color;

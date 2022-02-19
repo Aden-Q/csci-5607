@@ -34,6 +34,8 @@ typedef struct RayType
 
 typedef struct SphereType
 {
+    // object id (index into the list)
+    int obj_idx;
     // material color index
     int m_idx;
     // location and radius of the sphere
@@ -42,6 +44,8 @@ typedef struct SphereType
 
 typedef struct CylinderType
 {
+    // object id (index into the list)
+    int obj_idx;
     // material color index
     int m_idx;
     // center location of the cylinder

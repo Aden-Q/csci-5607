@@ -17,6 +17,8 @@ int parse_scene(std::string filename, Scene &scene)
     std::string keyword;
     std::string str_param[10];
     int m_idx = -1;
+    int obj_sphere_idx = 0;
+    int obj_cylinder_idx = 0;
     int num_keywords = 0;
 
     while (inputstream >> keyword)
@@ -95,6 +97,7 @@ int parse_scene(std::string filename, Scene &scene)
             // store parameters for the sphere
             inputstream >> str_param[0] >> str_param[1] >> str_param[2] >> str_param[3];
             Sphere sphere = {
+                .obj_idx = obj_sphere_idx++,
                 .m_idx = m_idx,
                 .cx = std::stof(str_param[0]),
                 .cy = std::stof(str_param[1]),
@@ -109,6 +112,7 @@ int parse_scene(std::string filename, Scene &scene)
                         >> str_param[3] >> str_param[4] >> str_param[5]
                         >> str_param[6] >> str_param[7];
             Cylinder cylinder = {
+                .obj_idx = obj_cylinder_idx++,
                 .m_idx = m_idx,
                 .cx = std::stof(str_param[0]),
                 .cy = std::stof(str_param[1]),

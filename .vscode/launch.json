@@ -10,7 +10,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/${fileBasenameNoExtension}",
-            "args": ["hw1a_sample1.txt"],
+            "args": ["ray_input1b.txt"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
