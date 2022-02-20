@@ -1,14 +1,10 @@
-# CSCI 5607 Assignment 1a
-
-## Usage
-
-+ Enter the `src` foler
-+ `make`
-+ `./raytracer path_to_`
+# CSCI 5607 Assignment 1b
 
 ## Description
 
-The program reads scene description from a file (as a command line argument). Then it runs a ray tracing algorithm and create an image in ppm format.
+The program reads scene description from a file (as a command line argument). It runs a ray tracing algorithm to determine the intersection point between the ray and objects in the scene. Then it use the Blinn-Phong illumination model to define the color for that point. The program also implements shadows using backward ray tracing.
+
+It generates an illuminated image in `ppm` format.
 
 ## File Organization
 
@@ -21,50 +17,83 @@ The program reads scene description from a file (as a command line argument). Th
 1. Construct the scene using `parse_scene`.
 2. Construct a viewing window using `view_window_init`.
 3. For each pixel in the image, run a ray tracing algorithm using `trace_ray`.
-4. For each ray, checking whether it intersects with any object in the scene, using `intersect_check`. When intersecting, get the corresponding color of that object and render the pixel.
-5. Once all pixels in the image are rendered, produce an output image in `PPM` format.
+4. For each ray, checking whether it intersects with any object in the scene, using `intersect_check`.
+5. When intersecting, use the Blinn-Phong illumination model and shadowing effects to determine the color for that point.
+6. Once all pixels in the image are rendered, generate an output image in `ppm` format.
 
-## Questions to Answer
+## Blinn-Phong illumination
 
-### How does the apparent rotation of the scene with respect to the viewpoint change with changes in the direction of the ‘up’ vector?
+The Phong illumination model is an empirical model that trys to emulate the appearance of common materials under simple lighting conditions. It does not emulate the physical effects.
 
-First we get an image with $up = <0,1,0>$ where the up vector points upwards, with the provided sample input 1:
+$$
+I_\lambda = k_aO_{d\lambda} + S \cdot IL_{\lambda}[k_dO_{d\lambda} (\vec{N} \cdot \vec{L}) + k_sO_{s\lambda} (\vec{N} \cdot \vec{H})^n]
 
-![](https://tva1.sinaimg.cn/large/008i3skNgy1gz0ub1r3f6j30e80e8jrd.jpg)
 
-When I change the view direction from $<0,1,0>$ to $<1,0,0>$: rotate 90 degrees about the viewing direction, the image also rotates by 90 degrees, as shown below:
 
-![](https://tva1.sinaimg.cn/large/008i3skNgy1gz0uhki0y4j30e80e8jrd.jpg)
 
-When I change the view direction to be $up = <0,1,1>$, which means now the up direction is more aligned with the viewing direction. I get an image:
+$$
 
-![](https://tva1.sinaimg.cn/large/008i3skNgy1gz0ulewy6qj30e80e8jrd.jpg)
+Components:
 
-We can see this image is same as the original one because the $u$ and $v$ vector does not change in the viewing window in this case.
++ $k_aO_{d\lambda}$: ambient term which approximates the reflection of light that arrives indirectly
++ $k_dO_{d\lambda}(\vec{N} \cdot \vec{L})$: diffuse term which represents the uniform reflection of light from a light source
++ $k_sO_{s\lambda}(\vec{N} \cdot \vec{H})^n$: specular term which represents the mirror-like reflection of incoming light
 
-### How do changes in the field of view settings affect the appearance of the scene in your rendered image?
+Parameter specification:
 
-When I change the vertical field of view from 60 degrees to 30 degrees (the view is narrowed down both vertically and horizontally because the aspect ratio must match), I get an image as following:
++ $I_\lambda$ : color intensity
++ $O_{d\lambda}$: intrinsic color of the object
++ $O_{s\lambda}$: specular color of the object, usually the background color
++ $k_a$, $k_d$, $k_s$: weights that control the relative effects of surface's ambient, diffuse, and specular
++ $\vec{N}$: surface normal
++ $\vec{L}$: vector point from the intersecting point towards the light source
++ $\vec{H}$: a derived vector, using the formula $\vec{H} = \frac{\vec{L}+\vec{V}}{||\vec{L}+\vec{V}||}$ , in which $\vec{V}$ is the vector pointing from the intersecting point towards the eye
 
-![](https://tva1.sinaimg.cn/large/008i3skNgy1gz0uplqw2pj30e80e8746.jpg)
+## Usage
 
-When I set the vertical field of view to be 180 degrees (in the case we have a larger viewing window if the viewing distance ramains the same):
++ Enter the `src` foler.
++ Type `clear && make clean && make && ./raytracer ../input/hw1b/ray_input1b.txt`. The last command argument is the path to the scene description file.
++ It will generate a `ppm` file in the same folder as the input file if the input file format is correct.
 
-![](https://tva1.sinaimg.cn/large/008i3skNgy1gz0ur1n6r3j30e80e8glg.jpg)
+## Effects of illumination model Parameters
 
-### How can the viewing parameters (e.g. the camera location, field of view settings, …) be adjusted to achieve a less exaggerated vs more exaggerated amount of apparent perspective distortion in your image?
+### Effects of $O_{dl}$
 
-When I set the view direction to point to the center of the first sphere (set $vdir = <3,3,10>$) and leave other settings as default, I get this image (less distortion):
 
-![](https://tva1.sinaimg.cn/large/008i3skNgy1gz0uwhxo2tj30e80e8mx2.jpg)
 
-When I move my eye toward the spheres, tilde up my view direction a little and make the field of view larger, I get a more distorted image:
+### Effects of $O_{sl}$
 
-![](https://tva1.sinaimg.cn/large/008i3skNgy1gz0vdmt762j30e80e8gli.jpg)
 
-Similarly, I can also distorted the other sphere:
 
-![](https://tva1.sinaimg.cn/large/008i3skNgy1gz0veb9u95j30e80e8q2u.jpg)
+### Effects of $k_a$
+
+
+
+### Effects of $k_d$
+
+
+
+### Effects of $k_s$
+
+
+
+### Effects of $n$
+
+
+
+
+
+
+## Extra Credit
+
+
+
+
+## Known Issues
+
+When I am implementing the program, I find that there might be some issue when there is some object in scene which is right in front of the viewer with a distance almost equal to 0. This basically means that the viewer cannot see anything in the scene because its eye is obstructed by the object in front of him/her. Although this is not realistic, it is an edge case that worth considering.
+
+Besides, I found that the generated image is not very smooth. This might be due to the resolution and size of the final image. Usually our program generates small size images. But this non-smooth effect can be optimized using some strategies.
 
 ## Credits
 
