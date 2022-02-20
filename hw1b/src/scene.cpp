@@ -71,6 +71,23 @@ int parse_scene(std::string filename, Scene &scene)
             FloatVec3 bkgcolor(std::stof(str_param[0]), std::stof(str_param[1]), std::stof(str_param[2]));
             scene.bkgcolor = bkgcolor;
         }
+        else if (keyword == "light")
+        {
+            num_keywords++;
+            // read in the light source
+            inputstream >> str_param[0] >> str_param[1] >> str_param[2]
+                        >> str_param[3] >> str_param[4] >> str_param[5]
+                        >> str_param[6];
+            Light light = {
+                .x = std::stof(str_param[0]),
+                .y = std::stof(str_param[1]),
+                .z = std::stof(str_param[2]),
+                .w = std::stof(str_param[3]),
+                .r = std::stof(str_param[4]),
+                .g = std::stof(str_param[5]),
+                .b = std::stof(str_param[6])};
+            scene.light_list.push_back(light);
+        }
         else if (keyword == "mtlcolor")
         {
             // update the current material color
@@ -79,7 +96,7 @@ int parse_scene(std::string filename, Scene &scene)
                         >> str_param[3] >> str_param[4] >> str_param[5]
                         >> str_param[6] >> str_param[7] >> str_param[8]
                         >> str_param[9];
-            MtlColorType material = {
+            MtlColor material = {
                 .Od_r = std::stof(str_param[0]),
                 .Od_g = std::stof(str_param[1]),
                 .Od_b = std::stof(str_param[2]),

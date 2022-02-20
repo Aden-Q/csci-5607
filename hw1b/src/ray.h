@@ -22,6 +22,6 @@ Color shade_ray(const Scene &scene, std::string obj_type, int obj_idx, Ray &ray,
 Color trace_ray(const Scene &scene, const ViewWindow &viewwindow, int w, int h);
 
 // check ray intersection with objects in the scene and return the minimal t which leads to an intersection
-std::tuple<std::string, int, int> intersect_check(const Scene &scene, Ray &ray);
+std::tuple<std::string, int, float> intersect_check(const Scene &scene, Ray &ray);
 
 #endif // SRC_RAY_H_

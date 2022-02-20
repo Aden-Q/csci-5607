@@ -49,18 +49,33 @@ Color shade_ray(const Scene &scene, std::string obj_type, int obj_idx, Ray &ray,
         H_list.push_back(vector_normalize(V + L));
     }
 
+    float sum_r = 0.0;
+    float sum_g = 0.0;
+    float sum_b = 0.0;
+    float Ir, Ig, Ib;
+    const MtlColorType &cur_material = scene.material_list[scene.sphere_list[obj_idx].m_idx];
 
+    // for each light, calculate the culmulated color components
+    for (int i = 0; i < scene.light_list.size(); i++)
+    {
+        Ir = cur_material.ka * cur_material.Od_r + cur_material.kd * cur_material.Od_r * std::max(float(0), dot_product(N, L_list[i])) + cur_material.ks * cur_material.Os_r * pow(std::max(float(0), dot_product(N, H_list[i])), cur_material.n);
+        Ig = cur_material.ka * cur_material.Od_g + cur_material.kd * cur_material.Od_g * std::max(float(0), dot_product(N, L_list[i])) + cur_material.ks * cur_material.Os_g * pow(std::max(float(0), dot_product(N, H_list[i])), cur_material.n);
+        Ib = cur_material.ka * cur_material.Od_b + cur_material.kd * cur_material.Od_b * std::max(float(0), dot_product(N, L_list[i])) + cur_material.ks * cur_material.Os_b * pow(std::max(float(0), dot_product(N, H_list[i])), cur_material.n);
+        sum_r += Ir;
+        sum_g += Ig;
+        sum_b += Ib;
+    }
 
-    float r, g, b = 0.0;
+    std::cout << ray_t << std::endl;
 
     Color res_color = {
-            .r = r,
-            .g = g,
-            .b = b};
+        .r = sum_r,
+        .g = sum_g,
+        .b = sum_b};
     return res_color;
 }
 
-std::tuple<std::string, int, int> intersect_check(const Scene &scene, Ray &ray)
+std::tuple<std::string, int, float> intersect_check(const Scene &scene, Ray &ray)
 {
     float min_t = 100000;
     float temp_t, temp_x, temp_y, temp_z;
@@ -281,9 +296,6 @@ std::tuple<std::string, int, int> intersect_check(const Scene &scene, Ray &ray)
         }
     }
 
-    // now that we get both min_t (parameter for the ray) and res_idx (index for the material color)
-    // we can apply the Blinn-Phong illumination model
-
     return std::make_tuple(obj_type, obj_idx, min_t);
 }
 
@@ -312,7 +324,7 @@ Color trace_ray(const Scene &scene, const ViewWindow &viewwindow, int w, int h)
 
     std::string obj_type;
     int obj_idx;
-    int ray_t; // material index
+    float ray_t; // material index
     // loop for all objects
     // check whether there is an intersection
     std::tie(obj_type, obj_idx, ray_t) = intersect_check(scene, ray);

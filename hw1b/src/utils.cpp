@@ -43,6 +43,11 @@ void output_image(std::string filename, Image **checkerboard, const Scene &scene
     return;
 }
 
+float dot_product(const FloatVec3 &a, const FloatVec3 &b)
+{
+    return a.first * b.first + a.second * b.second + a.third * b.third;
+}
+
 FloatVec3 cross_product(const FloatVec3 &a, const FloatVec3 &b) 
 {
     return FloatVec3(a.second * b.third - a.third * b.second,

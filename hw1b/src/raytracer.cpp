@@ -29,7 +29,7 @@ int main(int argc, char **argv)
     // get the filename from command line args and parse the file
     std::string filename = argv[1];
     num_keywords = parse_scene(filename, scene);
-    if (num_keywords < 6) 
+    if (num_keywords < 7) 
     {
         fprintf(stderr, "Missing some keywords! Pleaze recheck your input file!\n");
         exit(-1);

@@ -22,7 +22,7 @@ typedef struct MtlColorType
     float Os_r, Os_g, Os_b;
     float ka, kd, ks;
     float n;
-} MtlColorType;
+} MtlColor;
 
 typedef struct RayType
 {
