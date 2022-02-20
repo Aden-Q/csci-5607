@@ -9,11 +9,7 @@
 // constant
 #define PI 3.14159265
 
-#include <iostream>
-#include <fstream>
 #include <string>
-#include <cmath>
-#include <algorithm>
 #include "types.h"
 
 // write to the outputfile in PPM format

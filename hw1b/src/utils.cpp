@@ -3,6 +3,11 @@
  *
  * @copyright 2022 Zecheng Qian, All rights reserved.
  */
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <cmath>
+#include <algorithm>
 #include "utils.h"
 
 void output_image(std::string filename, Image **checkerboard, const Scene &scene)
