@@ -12,7 +12,6 @@ It generates an illuminated image in `ppm` format.
 + `input`: scene description input file for testing
 + `image`: images used in the README, comparing different parameter settings
 + `test_case`: several cases to test the correctness and performance of the program, each folder contains a result image along with the corresponding input file
-+ `showcase`: the folder contains a showcase image along with the corresponding scene description input file
 
 ## Implementation Details
 
@@ -56,8 +55,6 @@ Parameter specification:
 + It will generate a `ppm` file in the same folder as the input file if the input file format is correct.
 
 ## Showcase Image
-
-![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202202202251909.jpg)
 
 ## Effects of illumination model Parameters
 
@@ -115,12 +112,6 @@ We use the same settings. The only difference is that: the left image is produce
 
 ![img](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202202201707023.jpg)
 
-### Use of Multiple Light Source
-
-The image below shows the effects of using multiple light sources, including two point light sources and one directional light source. We can obviously see the effects of reflection on objects surface corresponding to different light sources.
-
-![img](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202202202256927.jpg)
-
 ### Conclusion
 
 In conclusion, we can see that the illumination model does not always work well. In some settings such as very small $n$, very large $k_s$, very small $k_d$, very large $k_a$, the resulting images are more likely distorted.
@@ -129,12 +120,15 @@ In conclusion, we can see that the illumination model does not always work well.
 
 ### Soft Shadows
 
+
+
 ### Light Source Attenuation
 
 In real cases, the energy of a light will attenuate when the light's travel distance increases. As a result of which the intensity of the illumination (from a point light source) will also fall off with distance. We use the following formula to emulate the effect of light source attenuation:
 
-
 ### Depth Cueing
+
+
 
 ## Known Issues
 
