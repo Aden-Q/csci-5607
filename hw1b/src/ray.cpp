@@ -53,8 +53,7 @@ Color shade_ray(const Scene &scene, std::string obj_type, int obj_idx, Ray &ray,
         Ib = res_color.b;
         if ((attlight.w - 1) < 1e-6)
         {
-            // f_att = light_attenuation(p, attlight);
-            f_att = 1;
+            f_att = light_attenuation(p, attlight);
         }
 
         sum_r += f_att * IL * Ir;
