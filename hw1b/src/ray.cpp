@@ -18,97 +18,48 @@ Color shade_ray(const Scene &scene, std::string obj_type, int obj_idx, Ray &ray,
     // use The Phong Illumination Model to determine the color of the intersecting point
     // return the corresponding color for that object
     // the surface normal should be consider differently for sphere and cylinder
-    const Sphere &sphere = scene.sphere_list[obj_idx]; 
     // compute the intersection point
     FloatVec3 p(ray.x + ray_t * ray.dx, ray.y + ray_t * ray.dy, ray.z + ray_t * ray.dz);
-    // compute the surface normal N and normalize it
-    FloatVec3 N((p.first - sphere.cx) / sphere.radius,
-                (p.second - sphere.cy) / sphere.radius,
-                (p.third - sphere.cz) / sphere.radius);
-    // compute the vector L, consider differently according to the type of light source
-    std::vector<FloatVec3> L_list;
-    for (auto light:scene.light_list)
-    {
-        if (abs(light.w - 1) < 1e-6)  // point light source
-        {
-            FloatVec3 temp_L(light.x - p.first, light.y - p.second, light.z - p.third);
-            L_list.push_back(vector_normalize(temp_L));
-        }
-        else if (abs(light.w - 0) < 1e-6)  // directional light source
-        {
-            FloatVec3 temp_L(-light.x, -light.y, -light.z);
-            L_list.push_back(vector_normalize(temp_L));
-        }
-    }
-    // compute vector H, for each L
-    std::vector<FloatVec3> H_list;
-    // get the vector v
-    FloatVec3 temp_V(-ray.dx, -ray.dy, -ray.dz);
-    FloatVec3 V = vector_normalize(temp_V);
-    for (auto L:L_list)
-    {
-        H_list.push_back(vector_normalize(V + L));
-    }
-
-    float Ir, Ig, Ib;  // illumination components for R, G and B
     const MtlColorType &cur_material = scene.material_list[scene.sphere_list[obj_idx].m_idx];
+    float Ir, Ig, Ib;
     float sum_r = cur_material.ka * cur_material.Od_r;
     float sum_g = cur_material.ka * cur_material.Od_g;
     float sum_b = cur_material.ka * cur_material.Od_b;
-    int shadow_flag = 1; // shadowing effect flag, 1 when not in shadow, 0 when in shadow
-
+    Color res_color;
+    float f_att = 1;  // light source attenuation factor
+    float depth_cue;  // depth cueing factor
     // light intensity for each component, just take the average for simplicity
-    std::vector<float> IL_list(scene.light_list.size(), 2.0 / scene.light_list.size());
-    float IL;
-    // light source attentuation parameters
-    float att_c1 = 0.0025;
-    float att_c2 = 0.0025;
-    float att_c3 = 0.005;
-    float f_att = 1; // attenuation factor
-    float dist;  // distance
-    // for each light, calculate the aculmulated color components
+    float IL = 2.0 / (scene.light_list.size() + scene.attlight_list.size());
+    // illumination for normal light
     for (int i = 0; i < scene.light_list.size(); i++)
     {
-        shadow_flag = 1;
-        f_att = 1;
         Light light = scene.light_list[i];
-        // check for shadowing effect
-        // cast a second ray forwarding from the intersection point
-        // to the point light source,
-        // and check for intersection with objects in the scene
-        Ray ray_second =
-            {
-                .x = p.first,
-                .y = p.second,
-                .z = p.third,
-                .dx = L_list[i].first,
-                .dy = L_list[i].second,
-                .dz = L_list[i].third,
-            };
-        // check intersection, if intersected, set the flag to be 0
-        if (shadow_check(scene, ray_second, light, obj_idx))
+        res_color = light_shade(scene, ray, ray_t, light, obj_idx);
+        Ir = res_color.r;
+        Ig = res_color.g;
+        Ib = res_color.b;
+
+        sum_r += IL * Ir;
+        sum_g += IL * Ig;
+        sum_b += IL * Ib;
+    }
+    // illumination for attenuated light
+    for (int i = 0; i < scene.attlight_list.size(); i++)
+    {
+        AttLight attlight = scene.attlight_list[i];
+        res_color = light_shade(scene, ray, ray_t, attlight, obj_idx);
+        Ir = res_color.r;
+        Ig = res_color.g;
+        Ib = res_color.b;
+        if ((attlight.w - 1) < 1e-6)
         {
-            shadow_flag = 0;
+            // f_att = light_attenuation(p, attlight);
+            f_att = 1;
         }
 
-        // implement light source attenuation if it is a point light source
-        if (abs(light.w - 1.0) < 1e-6)
-        {
-            dist = distance_between_3D_points(p, FloatVec3(light.x, light.y, light.z));
-            f_att = 1.0 / (att_c1 + att_c2 * dist + att_c3 * dist * dist);
-            // clamping
-            f_att = std::min(float(1.0), f_att);
-        }
-
-        IL = IL_list[i];
-        float term1 = std::max(float(0), dot_product(N, L_list[i]));
-        float term2 = pow(std::max(float(0), dot_product(N, H_list[i])), cur_material.n);
-        Ir = cur_material.kd * cur_material.Od_r * term1 + cur_material.ks * cur_material.Os_r * term2;
-        Ig = cur_material.kd * cur_material.Od_g * term1 + cur_material.ks * cur_material.Os_g * term2;
-        Ib = cur_material.kd * cur_material.Od_b * term1 + cur_material.ks * cur_material.Os_b * term2;
-        sum_r += (f_att * shadow_flag * IL * Ir);
-        sum_g += (f_att * shadow_flag * IL * Ig);
-        sum_b += (f_att * shadow_flag * IL * Ib);
+        sum_r += f_att * IL * Ir;
+        sum_g += f_att * IL * Ig;
+        sum_b += f_att * IL * Ib;
     }
 
     // clamping
@@ -116,11 +67,128 @@ Color shade_ray(const Scene &scene, std::string obj_type, int obj_idx, Ray &ray,
     sum_g = std::min(float(1.0), sum_g);
     sum_b = std::min(float(1.0), sum_b);
 
-    Color res_color = {
-        .r = sum_r,
-        .g = sum_g,
-        .b = sum_b};
-    return res_color;
+    // apply depth cueing if enabled
+    if (scene.depth_cue_enable)
+    {
+        depth_cue = depth_cueing(p, scene.eye, scene.depth_cue);
+        sum_r = depth_cue * sum_r + (1 - depth_cue) * scene.depth_cue.dc_r;
+        sum_g = depth_cue * sum_g + (1 - depth_cue) * scene.depth_cue.dc_g;
+        sum_b = depth_cue * sum_b + (1 - depth_cue) * scene.depth_cue.dc_b;
+    }
+
+    return Color(sum_r, sum_g, sum_b);
+}
+
+Color light_shade(const Scene &scene, const Ray &ray, float ray_t, const Light &light, int obj_idx)
+{
+    const Sphere &sphere = scene.sphere_list[obj_idx];
+    // compute the intersection point
+    FloatVec3 p(ray.x + ray_t * ray.dx, ray.y + ray_t * ray.dy, ray.z + ray_t * ray.dz);
+    // compute the surface normal N and normalize it
+    FloatVec3 N((p.first - sphere.cx) / sphere.radius,
+                (p.second - sphere.cy) / sphere.radius,
+                (p.third - sphere.cz) / sphere.radius);
+
+    // calculate vector L
+    FloatVec3 temp, L;
+    if (std::abs(light.w - 1) < 1e-6) // point light source
+    {
+        FloatVec3 temp(light.x - p.first, light.y - p.second, light.z - p.third);
+        L = vector_normalize(temp);
+    }
+    else if (std::abs(light.w - 0) < 1e-6) // directional light source
+    {
+        FloatVec3 temp(-light.x, -light.y, -light.z);
+        L = vector_normalize(temp);
+    }
+    // calculate vector H
+    // get the vector v
+    FloatVec3 temp_V(-ray.dx, -ray.dy, -ray.dz);
+    FloatVec3 V = vector_normalize(temp_V);
+    FloatVec3 H;
+    H = vector_normalize(V + L);
+
+    // apply the phong illumination model
+    float Ir, Ig, Ib; // illumination components for R, G and B
+    const MtlColorType &cur_material = scene.material_list[scene.sphere_list[obj_idx].m_idx];
+    int shadow_flag = 1; // shadowing effect flag, 1 when not in shadow, 0 when in shadow
+
+    // check for shadowing effect
+    // cast a second ray forwarding from the intersection point
+    // to the point light source,
+    // and check for intersection with objects in the scene
+    Ray ray_second =
+        {
+            .x = p.first,
+            .y = p.second,
+            .z = p.third,
+            .dx = L.first,
+            .dy = L.second,
+            .dz = L.third,
+        };
+    // check intersection, if intersected, set the flag to be 0
+    if (shadow_check(scene, ray_second, light, obj_idx))
+    {
+        shadow_flag = 0;
+    }
+
+    float term1 = std::max(float(0), dot_product(N, L));
+    float term2 = pow(std::max(float(0), dot_product(N, H)), cur_material.n);
+    Ir = (cur_material.kd * cur_material.Od_r * term1 + cur_material.ks * cur_material.Os_r * term2);
+    Ig = (cur_material.kd * cur_material.Od_g * term1 + cur_material.ks * cur_material.Os_g * term2);
+    Ib = (cur_material.kd * cur_material.Od_b * term1 + cur_material.ks * cur_material.Os_b * term2);
+
+    return Color(Ir, Ig, Ib);
+}
+
+float light_attenuation(const FloatVec3 &point, const AttLight &light)
+{
+    // light source attentuation parameters
+    float c1 = light.c1;
+    float c2 = light.c2;
+    float c3 = light.c3;
+    float f_att = 1; // attenuation factor
+    float dist;      // distance
+
+    if (std::abs(light.w - 1.0) < 1e-6)
+    {
+        dist = distance_between_3D_points(point, FloatVec3(light.x, light.y, light.z));
+        f_att = 1.0 / (c1 + c2 * dist + c3 * dist * dist);
+        // clamping
+        f_att = std::min(float(1.0), f_att);
+    }
+    else
+    {
+        f_att = 1;
+    }
+
+    return f_att;
+}
+
+float depth_cueing(const FloatVec3 &point, const FloatVec3 &viewer, const DepthCueing &depth_cue)
+{
+    float alpha_max = depth_cue.alpha_max;
+    float alpha_min = depth_cue.alpha_min;
+    float d_near = depth_cue.dist_min;
+    float d_far = depth_cue.dist_max;
+    float alpha = 1.0;
+    float d_obj = distance_between_3D_points(point, viewer);
+    // consider three difference cases: whether the object is near, far from the viewer
+    // apply different formula according to the distance between the two
+    if (d_obj < d_near)
+    {
+        alpha = alpha_max;
+    }
+    else if (d_obj < d_far)
+    {
+        alpha = alpha_min + (alpha_max - alpha_min) * (d_far - d_obj) / (d_far - d_near);
+    }
+    else
+    {
+        alpha = alpha_min;
+    }
+
+    return alpha;
 }
 
 std::tuple<std::string, int, float> intersect_check(const Scene &scene, const Ray &ray, const int exclude_id)
@@ -203,12 +271,7 @@ Color trace_ray(const Scene &scene, const ViewWindow &viewwindow, int w, int h)
     FloatVec3 point_in_view(viewwindow.ul + viewwindow.dh * w + viewwindow.dv * h);
     FloatVec3 raydir = vector_normalize(point_in_view - scene.eye);
     // initialize the response color to be the background color
-    Color res_color = 
-    {
-        .r = scene.bkgcolor.first,
-        .g = scene.bkgcolor.second,
-        .b = scene.bkgcolor.third,
-    };
+    Color res_color(scene.bkgcolor);
 
     Ray ray = 
     {

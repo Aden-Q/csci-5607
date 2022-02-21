@@ -68,7 +68,7 @@ int parse_scene(std::string filename, Scene &scene)
             num_keywords++;
             // read the background color
             inputstream >> str_param[0] >> str_param[1] >> str_param[2];
-            FloatVec3 bkgcolor(std::stof(str_param[0]), std::stof(str_param[1]), std::stof(str_param[2]));
+            Color bkgcolor(std::stof(str_param[0]), std::stof(str_param[1]), std::stof(str_param[2]));
             scene.bkgcolor = bkgcolor;
         }
         else if (keyword == "light")
@@ -78,15 +78,42 @@ int parse_scene(std::string filename, Scene &scene)
             inputstream >> str_param[0] >> str_param[1] >> str_param[2]
                         >> str_param[3] >> str_param[4] >> str_param[5]
                         >> str_param[6];
-            Light light = {
-                .x = std::stof(str_param[0]),
-                .y = std::stof(str_param[1]),
-                .z = std::stof(str_param[2]),
-                .w = std::stof(str_param[3]),
-                .r = std::stof(str_param[4]),
-                .g = std::stof(str_param[5]),
-                .b = std::stof(str_param[6])};
+            Light light(std::stof(str_param[0]), std::stof(str_param[1]), std::stof(str_param[2]),
+                        std::stof(str_param[3]), std::stof(str_param[4]), std::stof(str_param[5]),
+                        std::stof(str_param[6]));
             scene.light_list.push_back(light);
+        }
+        else if (keyword == "attlight")
+        {
+            num_keywords++;
+            // read in the light source
+            inputstream >> str_param[0] >> str_param[1] >> str_param[2] 
+                        >> str_param[3] >> str_param[4] >> str_param[5] 
+                        >> str_param[6] >> str_param[7] >> str_param[8]
+                        >> str_param[9];
+            AttLight attlight(std::stof(str_param[0]), std::stof(str_param[1]), std::stof(str_param[2]),
+                              std::stof(str_param[3]), std::stof(str_param[4]), std::stof(str_param[5]),
+                              std::stof(str_param[6]), std::stof(str_param[7]), std::stof(str_param[8]),
+                              std::stof(str_param[9]));
+            scene.attlight_list.push_back(attlight);
+        }
+        else if (keyword == "depthcueing")
+        {
+            num_keywords++;
+            // read in the light source
+            inputstream >> str_param[0] >> str_param[1] >> str_param[2] 
+                        >> str_param[3] >> str_param[4] >> str_param[5] 
+                        >> str_param[6];
+            DepthCueing depth_cue = {
+                .dc_r = std::stof(str_param[0]),
+                .dc_g = std::stof(str_param[1]),
+                .dc_b = std::stof(str_param[2]),
+                .alpha_max = std::stof(str_param[3]),
+                .alpha_min = std::stof(str_param[4]),
+                .dist_max = std::stof(str_param[5]),
+                .dist_min = std::stof(str_param[6])};
+            scene.depth_cue = depth_cue;
+            scene.depth_cue_enable = true;
         }
         else if (keyword == "mtlcolor")
         {

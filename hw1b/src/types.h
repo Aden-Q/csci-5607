@@ -13,6 +13,11 @@ typedef struct ColorType
 {
     // r, g, b components of a color
     float r, g, b;
+    // default constructor
+    ColorType(float r_ = 0, float g_ = 0, float b_ = 0)
+        : r(r_), g(g_), b(b_)
+    {
+    }
 } Color;
 
 // material color type
@@ -64,7 +69,39 @@ typedef struct LightType
     float w;
     // r, g, b components of the light
     float r, g, b;
+    // default constructor
+    LightType(float x_ = 0, float y_ = 0, float z_ = 0,
+              float w_ = 0, float r_ = 0, float g_ = 0,
+              float b_ = 0)
+        : x(x_), y(y_), z(z_), w(w_), r(r_), g(g_), b(b_)
+    {
+    }
 } Light;
+
+// inherite from the light class 
+typedef struct AttLightType : Light
+{
+    // attenuation parameters
+    float c1, c2, c3;
+    // default constructor
+    AttLightType(float x_ = 0, float y_ = 0, float z_ = 0,
+                 float w_ = 0, float r_ = 0, float g_ = 0,
+                 float b_ = 0, float c1_ = 0, float c2_ = 0,
+                 float c3_ = 0)
+        : Light(x_, y_, z_, w_, r_, g_, b_), c1(c1_), c2(c2_), c3(c3_)
+    {
+    }
+} AttLight;
+
+typedef struct DepthCueingType
+{
+    // depth cue color
+    float dc_r, dc_g, dc_b;
+    // upper and lower bound of the depth cue parameter
+    float alpha_max, alpha_min;
+    // upper and lower bound if distance
+    float dist_max, dist_min;
+} DepthCueing;
 
 // 2d vector
 struct FloatVec2
@@ -145,7 +182,7 @@ typedef struct SceneType
     FloatVec3 eye;
     FloatVec3 viewdir;
     FloatVec3 updir;
-    FloatVec3 bkgcolor;
+    Color bkgcolor;
     float vfov = 90;
     uint16_t width = 512, height = 512;
     // a list of materials
@@ -154,8 +191,13 @@ typedef struct SceneType
     std::vector<Sphere> sphere_list;
     // a list of cylinders
     std::vector<Cylinder> cylinder_list;
-    // a list of lights
+    // a list of normal lights
     std::vector<Light> light_list;
+    // a list of attenuated lights
+    std::vector<AttLight> attlight_list;
+    // depth cueing
+    DepthCueing depth_cue;
+    bool depth_cue_enable = false;
 } Scene;
 
 typedef struct ImageType
