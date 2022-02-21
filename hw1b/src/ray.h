@@ -18,12 +18,13 @@
 Color shade_ray(const Scene &scene, std::string obj_type, int obj_idx, Ray &ray, float ray_t);
 
 // check whether the ray intersects with any objects in the scene
-bool shadow_check(const Scene &scene, const Ray &ray, const Light &light);
+bool shadow_check(const Scene &scene, const Ray &ray, const Light &light, const int exclude_id);
 
 // trace the ray from view origin to pixel on the image and return color info
 Color trace_ray(const Scene &scene, const ViewWindow &viewwindow, int w, int h);
 
 // check ray intersection with objects in the scene and return the minimal t which leads to an intersection
-std::tuple<std::string, int, float> intersect_check(const Scene &scene, const Ray &ray);
+// the last parameter is used to avoid self-intersection (specify a excluding object that don't need to check)
+std::tuple<std::string, int, float> intersect_check(const Scene &scene, const Ray &ray, const int exclude_id);
 
 #endif // SRC_RAY_H_

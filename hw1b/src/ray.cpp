@@ -60,31 +60,44 @@ Color shade_ray(const Scene &scene, std::string obj_type, int obj_idx, Ray &ray,
     // light intensity for each component, just take the average for simplicity
     std::vector<float> IL_list(scene.light_list.size(), 2.0 / scene.light_list.size());
     float IL;
+    // light source attentuation parameters
+    float att_c1 = 0.0025;
+    float att_c2 = 0.0025;
+    float att_c3 = 0.005;
+    float f_att = 1; // attenuation factor
+    float dist;  // distance
     // for each light, calculate the aculmulated color components
     for (int i = 0; i < scene.light_list.size(); i++)
     {
         shadow_flag = 1;
+        f_att = 1;
         Light light = scene.light_list[i];
-        // check for shadowing effect when it is a point light source
-        if (abs(light.w - 1) < 1e-6)
-        {   
-            // cast a second ray forwarding from the intersection point
-            // to the point light source,
-            // and check for intersection with objects in the scene
-            Ray ray_second =
-                {
-                    .x = p.first,
-                    .y = p.second,
-                    .z = p.third,
-                    .dx = L_list[i].first,
-                    .dy = L_list[i].second,
-                    .dz = L_list[i].third,
-                };
-            // check intersection, if intersected, set the flag to be 0
-            if (shadow_check(scene, ray_second, light))
+        // check for shadowing effect
+        // cast a second ray forwarding from the intersection point
+        // to the point light source,
+        // and check for intersection with objects in the scene
+        Ray ray_second =
             {
-                shadow_flag = 0;
-            }
+                .x = p.first,
+                .y = p.second,
+                .z = p.third,
+                .dx = L_list[i].first,
+                .dy = L_list[i].second,
+                .dz = L_list[i].third,
+            };
+        // check intersection, if intersected, set the flag to be 0
+        if (shadow_check(scene, ray_second, light, obj_idx))
+        {
+            shadow_flag = 0;
+        }
+
+        // implement light source attenuation if it is a point light source
+        if (abs(light.w - 1.0) < 1e-6)
+        {
+            dist = distance_between_3D_points(p, FloatVec3(light.x, light.y, light.z));
+            f_att = 1.0 / (att_c1 + att_c2 * dist + att_c3 * dist * dist);
+            // clamping
+            f_att = std::min(float(1.0), f_att);
         }
 
         IL = IL_list[i];
@@ -93,9 +106,9 @@ Color shade_ray(const Scene &scene, std::string obj_type, int obj_idx, Ray &ray,
         Ir = cur_material.kd * cur_material.Od_r * term1 + cur_material.ks * cur_material.Os_r * term2;
         Ig = cur_material.kd * cur_material.Od_g * term1 + cur_material.ks * cur_material.Os_g * term2;
         Ib = cur_material.kd * cur_material.Od_b * term1 + cur_material.ks * cur_material.Os_b * term2;
-        sum_r += (shadow_flag * IL * Ir);
-        sum_g += (shadow_flag * IL * Ig);
-        sum_b += (shadow_flag * IL * Ib);
+        sum_r += (f_att * shadow_flag * IL * Ir);
+        sum_g += (f_att * shadow_flag * IL * Ig);
+        sum_b += (f_att * shadow_flag * IL * Ib);
     }
 
     // clamping
@@ -110,13 +123,12 @@ Color shade_ray(const Scene &scene, std::string obj_type, int obj_idx, Ray &ray,
     return res_color;
 }
 
-std::tuple<std::string, int, float> intersect_check(const Scene &scene, const Ray &ray)
+std::tuple<std::string, int, float> intersect_check(const Scene &scene, const Ray &ray, const int exclude_id)
 {
     float min_t = 100000;
-    float temp_t, temp_x, temp_y, temp_z;
+    float temp_t;
     int obj_idx = -1;  // the ID (index) of the intersected object
     std::string obj_type = "None";  // the type of the intersected object with the ray
-    float A;
     float B;
     float C;
     float determinant;
@@ -130,7 +142,7 @@ std::tuple<std::string, int, float> intersect_check(const Scene &scene, const Ra
         if (determinant > -1e-6)  // greater than or equal to 0
         {   // need further check
             temp_t = (-B - sqrt(determinant)) / 2;
-            if (temp_t > 1e-2 && temp_t < min_t) 
+            if (temp_t > 1e-6 && temp_t < min_t && s.obj_idx != exclude_id)
             {
                 min_t = temp_t;
                 obj_idx = s.obj_idx;
@@ -138,7 +150,7 @@ std::tuple<std::string, int, float> intersect_check(const Scene &scene, const Ra
             }
             // check for another possible solution
             temp_t = (-B + sqrt(determinant)) / 2;
-            if (temp_t > 1e-2 && temp_t < min_t)
+            if (temp_t > 1e-6 && temp_t < min_t && s.obj_idx != exclude_id)
             {
                 min_t = temp_t;
                 obj_idx = s.obj_idx;
@@ -147,209 +159,38 @@ std::tuple<std::string, int, float> intersect_check(const Scene &scene, const Ra
         }
     }
 
-    // check intersects for cylinders
-    for (auto c:scene.cylinder_list) 
-    {
-        // std::cout << ray.x << " " << ray.y << std::endl;
-        // consider three cases: three possible directions for the cylinder
-        if (c.dx > 1e-6) // the cylinder heads towards positive x axis
-        {
-            // check for side surface
-            A = 1 - pow(ray.dx, 2);  // A is not equal to 0 in this case
-            B = 2 * (ray.dy * (ray.y - c.cy) + ray.dz * (ray.z - c.cz));
-            C = pow(ray.y - c.cy, 2) + pow(ray.z - c.cz, 2) - pow(c.radius, 2);
-            determinant = pow(B, 2) - 4 * A * C;
-            if (determinant > 0) // greater than or equal to 0
-            {                        // need further check
-                temp_t = (-B - sqrt(determinant)) / (2 * A);
-                // check whether the solution point lies on the cylinder
-                if (temp_t > 1e-2 && temp_t < min_t && lie_within(ray.x + temp_t * ray.dx, c.cx - c.length / 2, c.cx + c.length / 2))
-                {
-                    min_t = temp_t;
-                    obj_idx = c.obj_idx;
-                    obj_type = "Cylinder";
-                }
-                // check for another possible solution
-                temp_t = (-B + sqrt(determinant)) / (2 * A);
-                // check whether the solution point lies on the cylinder
-                if (temp_t > 1e-2 && temp_t < min_t && lie_within(ray.x + temp_t * ray.dx, c.cx - c.length / 2, c.cx + c.length / 2))
-                {
-                    min_t = temp_t;
-                    obj_idx = c.obj_idx;
-                    obj_type = "Cylinder";
-                }
-            }
-            // check for two base surfaces
-            temp_t = (c.cx - c.length / 2 - ray.x) / ray.dx;
-            if (temp_t > 1e-2)
-            {
-                temp_y = ray.y + temp_t * ray.dy;
-                temp_z = ray.z + temp_t * ray.dz;
-                FloatVec2 p1(temp_y, temp_z);
-                FloatVec2 p2(c.cy, c.cz);
-                if (temp_t < min_t && distance_between_2D_points(p1, p2) < c.radius)
-                {
-                    min_t = temp_t;
-                    obj_idx = c.obj_idx;
-                    obj_type = "Cylinder";
-                }
-            }
-            // check for another surface
-            temp_t = (c.cx + c.length / 2 - ray.x) / ray.dx;
-            if (temp_t > 1e-2)
-            {
-                temp_y = ray.y + temp_t * ray.dy;
-                temp_z = ray.z + temp_t * ray.dz;
-                FloatVec2 p1(temp_y, temp_z);
-                FloatVec2 p2(c.cy, c.cz);
-                if (temp_t < min_t && distance_between_2D_points(p1, p2) < c.radius)
-                {
-                    min_t = temp_t;
-                    obj_idx = c.obj_idx;
-                    obj_type = "Cylinder";
-                }
-            }
-        }
-        else if (c.dy > 1e-6) // the cylinder heads towards positive y axis
-        {
-            A = 1 - pow(ray.dy, 2); // A is not equal to 0 in this case
-            B = 2 * (ray.dx * (ray.x - c.cx) + ray.dz * (ray.z - c.cz));
-            C = pow(ray.x - c.cx, 2) + pow(ray.z - c.cz, 2) - pow(c.radius, 2);
-            determinant = pow(B, 2) - 4 * A * C;
-            if (determinant > 0) // greater than or equal to 0
-            {   // need further check
-                temp_t = (-B - sqrt(determinant)) / (2 * A);
-                // check whether the solution point lies on the cylinder
-                if (temp_t > 1e-2 && temp_t < min_t && lie_within(ray.y + temp_t * ray.dy, c.cy - c.length / 2, c.cy + c.length / 2))
-                {
-                    min_t = temp_t;
-                    obj_idx = c.obj_idx;
-                    obj_type = "Cylinder";
-                }
-                // check for another possible solution
-                temp_t = (-B + sqrt(determinant)) / (2 * A);
-                // check whether the solution point lies on the cylinder
-                if (temp_t > 1e-2 && temp_t < min_t && lie_within(ray.y + temp_t * ray.dy, c.cy - c.length / 2, c.cy + c.length / 2))
-                {
-                    min_t = temp_t;
-                    obj_idx = c.obj_idx;
-                    obj_type = "Cylinder";
-                }
-            }
-            // check for two base surfaces
-            temp_t = (c.cy - c.length / 2 - ray.y) / ray.dy;
-            if (temp_t > 1e-2)
-            {
-                temp_x = ray.x + temp_t * ray.dx;
-                temp_z = ray.z + temp_t * ray.dz;
-                FloatVec2 p1(temp_x, temp_z);
-                FloatVec2 p2(c.cx, c.cz);
-                if (temp_t < min_t && distance_between_2D_points(p1, p2) < c.radius)
-                {
-                    min_t = temp_t;
-                    obj_idx = c.obj_idx;
-                    obj_type = "Cylinder";
-                }
-            }
-            // check for another surface
-            temp_t = (c.cy + c.length / 2 - ray.y) / ray.dy;
-            if (temp_t > 1e-2)
-            {
-                temp_x = ray.x + temp_t * ray.dx;
-                temp_z = ray.z + temp_t * ray.dz;
-                FloatVec2 p1(temp_x, temp_z);
-                FloatVec2 p2(c.cx, c.cz);
-                if (temp_t < min_t && distance_between_2D_points(p1, p2) < c.radius)
-                {
-                    min_t = temp_t;
-                    obj_idx = c.obj_idx;
-                    obj_type = "Cylinder";
-                }
-            }
-        }
-        else if (c.dz > 1e-6) // the cylinder heads towards positive z axis
-        {
-            A = 1 - pow(ray.dz, 2); // A is not equal to 0 in this case
-            B = 2 * (ray.dx * (ray.x - c.cx) + ray.dy * (ray.y - c.cy));
-            C = pow(ray.x - c.cx, 2) + pow(ray.y - c.cy, 2) - pow(c.radius, 2);
-            determinant = pow(B, 2) - 4 * A * C;
-            if (determinant > 0) // greater than or equal to 0
-            {                    // need further check
-                temp_t = (-B - sqrt(determinant)) / (2 * A);
-                // check whether the solution point lies on the cylinder
-                if (temp_t > 1e-2 && temp_t < min_t && lie_within(ray.z + temp_t * ray.dz, c.cz - c.length / 2, c.cz + c.length / 2))
-                {
-                    min_t = temp_t;
-                    obj_idx = c.obj_idx;
-                    obj_type = "Cylinder";
-                }
-                // check for another possible solution
-                temp_t = (-B + sqrt(determinant)) / (2 * A);
-                // check whether the solution point lies on the cylinder
-                if (temp_t > 1e-2 && temp_t < min_t && lie_within(ray.z + temp_t * ray.dz, c.cz - c.length / 2, c.cz + c.length / 2))
-                {
-                    min_t = temp_t;
-                    obj_idx = c.obj_idx;
-                    obj_type = "Cylinder";
-                }
-            }
-            // check for two base surfaces
-            temp_t = (c.cz - c.length / 2 - ray.z) / ray.dz;
-            if (temp_t > 1e-2)
-            {
-                temp_x = ray.x + temp_t * ray.dx;
-                temp_y = ray.y + temp_t * ray.dy;
-                FloatVec2 p1(temp_x, temp_y);
-                FloatVec2 p2(c.cx, c.cy);
-                if (temp_t < min_t && distance_between_2D_points(p1, p2) < c.radius)
-                {
-                    min_t = temp_t;
-                    obj_idx = c.obj_idx;
-                    obj_type = "Cylinder";
-                }
-            }
-            // check for another surface
-            temp_t = (c.cz + c.length / 2 - ray.z) / ray.dz;
-            if (temp_t > 1e-2)
-            {
-                temp_x = ray.x + temp_t * ray.dx;
-                temp_y = ray.y + temp_t * ray.dy;
-                FloatVec2 p1(temp_x, temp_y);
-                FloatVec2 p2(c.cx, c.cy);
-                if (temp_t < min_t && distance_between_2D_points(p1, p2) < c.radius)
-                {
-                    min_t = temp_t;
-                    obj_idx = c.obj_idx;
-                    obj_type = "Cylinder";
-                }
-            }
-        }
-        else
-        {
-            // placeholder here
-            // don't need to consider other possible directions for assignment 1a
-        }
-    }
-
     return std::make_tuple(obj_type, obj_idx, min_t);
 }
 
-bool shadow_check(const Scene &scene, const Ray &ray, const Light &light)
+bool shadow_check(const Scene &scene, const Ray &ray, const Light &light, const int exclude_id)
 {
     std::string obj_type;
     int obj_idx;
     float ray_t; // material index
     // loop for all objects
     // check whether there is an intersection
-    std::tie(obj_type, obj_idx, ray_t) = intersect_check(scene, ray);
+    std::tie(obj_type, obj_idx, ray_t) = intersect_check(scene, ray, exclude_id);
     if (obj_type != "None")
     {
+        // if it is a point light source
         // need further check whether the object is within the range between
         // the starting point of the ray and the point light source
-        float max_t = (light.x - ray.x) / ray.dx;
-        if (ray_t > 1e-6 && ray_t < max_t)
+        if ((light.w - 1) < 1e-6)
         {
-            return true;
+            float max_t = (light.x - ray.x) / ray.dx;
+            if (ray_t > 1e-6 && ray_t < max_t)
+            {
+                return true;
+            }
+        }
+        else
+        {
+            // in the case of directional light source,
+            // as long as the returned t is positive, there is shadow
+            if (ray_t > 1e-6)
+            {
+                return true;
+            }
         }
     }
 
@@ -384,7 +225,7 @@ Color trace_ray(const Scene &scene, const ViewWindow &viewwindow, int w, int h)
     float ray_t; // material index
     // loop for all objects
     // check whether there is an intersection
-    std::tie(obj_type, obj_idx, ray_t) = intersect_check(scene, ray);
+    std::tie(obj_type, obj_idx, ray_t) = intersect_check(scene, ray, -1);
     if (obj_type != "None")
     {
         res_color = shade_ray(scene, obj_type, obj_idx, ray, ray_t);
