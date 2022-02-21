@@ -113,6 +113,12 @@ We use the same settings. The only difference is that: the left image is produce
 
 ![img](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202202201707023.jpg)
 
+### Use of Multiple Light Source
+
+The image below shows the effects of using multiple light sources, including two point light sources and one directional light source. We can obviously see the effects of reflection on objects surface corresponding to different light source.
+
+![img](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202202202256927.jpg)
+
 ### Conclusion
 
 In conclusion, we can see that the illumination model does not always work well. In some settings such as very small $n$, very large $k_s$, very small $k_d$, very large $k_a$, the resulting images are more likely distorted.
