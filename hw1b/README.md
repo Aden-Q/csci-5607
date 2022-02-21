@@ -12,6 +12,7 @@ It generates an illuminated image in `ppm` format.
 + `input`: scene description input file for testing
 + `image`: images used in the README, comparing different parameter settings
 + `test_case`: several cases to test the correctness and performance of the program, each folder contains a result image along with the corresponding input file
++ `showcase`: the folder contains a showcase image along with the corresponding scene description input file
 
 ## Implementation Details
 
@@ -120,15 +121,11 @@ In conclusion, we can see that the illumination model does not always work well.
 
 ### Soft Shadows
 
-
-
 ### Light Source Attenuation
 
 In real cases, the energy of a light will attenuate when the light's travel distance increases. As a result of which the intensity of the illumination (from a point light source) will also fall off with distance. We use the following formula to emulate the effect of light source attenuation:
 
 ### Depth Cueing
-
-
 
 ## Known Issues
 
