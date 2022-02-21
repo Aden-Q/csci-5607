@@ -133,8 +133,38 @@ In conclusion, we can see that the illumination model does not always work well.
 
 In real cases, the energy of a light will attenuate when the light's travel distance increases. As a result of which the intensity of the illumination (from a point light source) will also fall off with distance. We use the following formula to emulate the effect of light source attenuation:
 
+$$
+I_\lambda = k_aO_{d\lambda} + \sum_{i}^{nlights}f_{att_i} \cdot S_i \cdot IL_{i\lambda}[k_dO_{d\lambda} (\vec{N} \cdot \vec{L}) + k_sO_{s\lambda} (\vec{N} \cdot \vec{H})^n] \\
+f_{att_i} = \frac{1}{c_1+c_2d + c_3d^2}
+$$
+
+The following image shows the effects of light source attenuation, as we can see, when the object gets farther and farther from the light source, it becomes darker and darker. From left to right: without attenuation, with attenuation and become more and more distant from the light source
+
+![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202202201821850.jpg)
+
+The following image shows the effects of light source attenuation for multiple objects insides a same scene:
+
+![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202202201829548.jpg)
+
 
 ### Depth Cueing
+
+Depth cueing can be applied to a scene to simulatethe effects of atmospheric attenuation. When depth cueing is enabled, the illumination color of a surface point is blended with a user specified depth cue color. We use the following formula to apply depth cueing:
+
+$$
+I_\lambda' = (\alpha_{dc})I_{\lambda} + (1-\alpha_{dc})I_{dc\lambda}
+$$
+
+And we use the following formula to calculate $\alpha_{dc}$:
+
+![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202202201939519.png)
+
+The following images shows the effect of depth cueing, from left to right: depth cue with differnet colors, we use the background color as the depth cue color:
+
+![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202202202311834.jpg)
+
+![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202202202313994.jpg)
+
 
 ## Known Issues
 
