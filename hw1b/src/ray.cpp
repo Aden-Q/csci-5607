@@ -133,9 +133,9 @@ Color light_shade(const Scene &scene, const Ray &ray, float ray_t, const Light &
 
     float term1 = std::max(float(0), dot_product(N, L));
     float term2 = pow(std::max(float(0), dot_product(N, H)), cur_material.n);
-    Ir = (cur_material.kd * cur_material.Od_r * term1 + cur_material.ks * cur_material.Os_r * term2);
-    Ig = (cur_material.kd * cur_material.Od_g * term1 + cur_material.ks * cur_material.Os_g * term2);
-    Ib = (cur_material.kd * cur_material.Od_b * term1 + cur_material.ks * cur_material.Os_b * term2);
+    Ir = shadow_flag * (cur_material.kd * cur_material.Od_r * term1 + cur_material.ks * cur_material.Os_r * term2);
+    Ig = shadow_flag * (cur_material.kd * cur_material.Od_g * term1 + cur_material.ks * cur_material.Os_g * term2);
+    Ib = shadow_flag * (cur_material.kd * cur_material.Od_b * term1 + cur_material.ks * cur_material.Os_b * term2);
 
     return Color(Ir, Ig, Ib);
 }
