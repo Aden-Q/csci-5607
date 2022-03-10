@@ -14,7 +14,7 @@
 #include <string>
 #include "types.h"
 
-// parse the scene parameters, return how many keywords are catched
+// parse the scene parameters from the input file, return the number of keywords catched
 int parse_scene(std::string filename, Scene &scene);
 
 #endif // SRC_SCENE_H_
