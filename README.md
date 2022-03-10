@@ -6,10 +6,10 @@ Course materials including lecture slides, homeworks.
 
 ## Contents
 
-+ `hw0`
-+ `hw1a`
-+ `hw1b`
-
++ `hw0`:
++ `hw1a`:
++ `hw1b`:
++ `hw1c`:
 
 ## Credits
 
