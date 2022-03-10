@@ -2,3 +2,7 @@
 ./hw0/src/*.o
 ./hw1a/src/*.o
 ./hw1b/src/*.o
+./hw0/.DS_Store
+./hw1a/DS_Store
+./hw1b/DS_Store
+./hw1c_DS_Store
