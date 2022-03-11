@@ -7,7 +7,115 @@
 #define SRC_TYPES_H_
 
 #include <vector>
+#include <cmath>
 
+// 2d vector
+struct FloatVec2
+{
+    float first;
+    float second;
+
+    // default constructor
+    FloatVec2(float first_ = 0, float second_ = 0)
+        : first(first_), second(second_)
+    {
+    }
+
+    // normalization
+    FloatVec2 normal() const
+    {
+        float norm = sqrt(this->first * this->first + this->second * this->second);
+        return FloatVec2(this->first / norm, this->second / norm);
+    }
+
+    // dot product
+    float dot(const FloatVec2 &v) const
+    {
+        return (this->first * v.first + this->second * v.second);
+    }
+
+    // overload + operator
+    FloatVec2 operator+(const FloatVec2 &v) const
+    {
+        return FloatVec2(this->first + v.first, this->second + v.second);
+    }
+
+    // overload - operator
+    FloatVec2 operator-(const FloatVec2 &v) const
+    {
+        return FloatVec2(this->first - v.first, this->second - v.second);
+    }
+
+    // overload * operator, const multiple
+    FloatVec2 operator*(float c) const
+    {
+        return FloatVec2(this->first * c, this->second * c);
+    }
+
+    // overload / operator, const multiple
+    FloatVec2 operator/(float c) const
+    {
+        return FloatVec2(this->first / c, this->second / c);
+    }
+};
+
+struct FloatVec3
+{
+    float first;
+    float second;
+    float third;
+
+    // default constructor
+    FloatVec3(float first_ = 0, float second_ = 0, float third_ = 0)
+        : first(first_), second(second_), third(third_)
+    {
+    }
+
+    // // normalization
+    // FloatVec3 normal() const
+    // {
+    //     float norm = sqrt(this->first * this->first + this->second * this->second + this->third * this->third);
+    //     return FloatVec3(this->first / norm, this->second / norm, this->third / norm);
+    // }
+
+    // // cross product
+    // FloatVec3 cross(const FloatVec3 &v) const
+    // {
+    //     return FloatVec3(this->second * v.third - this->third * v.second,
+    //                      this->third * v.first - this->first * v.third,
+    //                      this->first * v.second - this->second * v.first);
+    // }
+
+    // dot product
+    float dot(const FloatVec3 &v) const
+    {
+        return (this->first * v.first + this->second * v.second + this->third * v.third);
+    }
+
+    // overload + operator
+    FloatVec3 operator+(const FloatVec3 &v) const
+    {
+        return FloatVec3(this->first + v.first, this->second + v.second, this->third + v.third);
+    }
+
+    // overload - operator
+    FloatVec3 operator-(const FloatVec3 &v) const
+    {
+        return FloatVec3(this->first - v.first, this->second - v.second, this->third - v.third);
+    }
+
+    // overload * operator, const multiple
+    FloatVec3 operator*(float c) const
+    {
+        return FloatVec3(this->first * c, this->second * c, this->third * c);
+    }
+
+    // overload / operator, const multiple
+    FloatVec3 operator/(float c) const
+    {
+        return FloatVec3(this->first / c, this->second / c, this->third / c);
+    }
+};
 
 // color type
 typedef struct ColorType
@@ -32,10 +140,18 @@ typedef struct MtlColorType
 
 typedef struct RayType
 {
-    // 3d start location of the ray
-    float x, y, z;
+    // 3d origin of the ray
+    FloatVec3 center;
     // direction of the ray
-    float dx, dy, dz;
+    FloatVec3 dir;
+
+    // extend the ray and get a point
+    FloatVec3 extend(float t) const
+    {
+        return FloatVec3(this->center.first + t * this->dir.first, 
+                         this->center.second + t * this->dir.second, 
+                         this->center.third + t * this->dir.third);
+    }
 } Ray;
 
 typedef struct SphereType
@@ -45,7 +161,8 @@ typedef struct SphereType
     // material color index
     int m_idx;
     // location and radius of the sphere
-    float cx, cy, cz, radius;
+    FloatVec3 center;
+    float radius;
 } Sphere;
 
 typedef struct CylinderType
@@ -55,9 +172,9 @@ typedef struct CylinderType
     // material color index
     int m_idx;
     // center location of the cylinder
-    float cx, cy, cz;
+    FloatVec3 center;
     // direction of the cylinder
-    float dx, dy, dz;
+    FloatVec3 dir;
     // radius and length
     float radius, length;
 } Cylinder;
@@ -66,8 +183,10 @@ typedef struct VertexType
 {
     // object id (index into the list)
     int obj_idx;
-    // 3D location of the vertex
-    float x, y, z;
+    // material color index
+    int m_idx;
+    // position of the vertex
+    FloatVec3 p;
 } Vertex;
 
 typedef struct TriangleType
@@ -80,7 +199,7 @@ typedef struct TriangleType
 
 typedef struct LightType
 {
-    // location of the light
+    // 3d origin of the light
     float x, y, z;
     // type of the light, 0 for point light source, 1 for directional light source
     float w;
@@ -119,80 +238,6 @@ typedef struct DepthCueingType
     // upper and lower bound if distance
     float dist_max, dist_min;
 } DepthCueing;
-
-// 2d vector
-struct FloatVec2
-{
-    float first;
-    float second;
-
-    // default constructor
-    FloatVec2(float first_ = 0, float second_ = 0)
-        : first(first_), second(second_)
-    {
-    }
-
-    // overload + operator
-    FloatVec2 operator+(const FloatVec2 &v) const
-    {
-        return FloatVec2(this->first + v.first, this->second + v.second);
-    }
-
-    // overload - operator
-    FloatVec2 operator-(const FloatVec2 &v) const
-    {
-        return FloatVec2(this->first - v.first, this->second - v.second);
-    }
-
-    // overload * operator, const multiple
-    FloatVec2 operator*(float c) const
-    {
-        return FloatVec2(this->first * c, this->second * c);
-    }
-
-    // overload / operator, const multiple
-    FloatVec2 operator/(float c) const
-    {
-        return FloatVec2(this->first / c, this->second / c);
-    }
-};
-
-struct FloatVec3
-{
-    float first;
-    float second;
-    float third;
-
-    // default constructor
-    FloatVec3 (float first_ = 0, float second_ = 0, float third_ = 0)
-        : first(first_), second(second_), third(third_)
-    {
-    }
-
-    // overload + operator
-    FloatVec3 operator+(const FloatVec3 &v) const
-    {
-        return FloatVec3(this->first + v.first, this->second + v.second, this->third + v.third);
-    }
-
-    // overload - operator
-    FloatVec3 operator-(const FloatVec3 &v) const
-    {
-        return FloatVec3(this->first - v.first, this->second - v.second, this->third - v.third);
-    }
-
-    // overload * operator, const multiple
-    FloatVec3 operator*(float c) const
-    {
-        return FloatVec3(this->first * c, this->second * c, this->third * c);
-    }
-
-    // overload / operator, const multiple
-    FloatVec3 operator/(float c) const
-    {
-        return FloatVec3(this->first / c, this->second / c, this->third / c);
-    }
-};
 
 typedef struct SceneType
 {

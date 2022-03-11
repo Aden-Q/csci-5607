@@ -12,6 +12,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sstream>
 #include "types.h"
 
 // parse the scene parameters from the input file, return the number of keywords catched

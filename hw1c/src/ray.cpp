@@ -19,7 +19,7 @@ Color shade_ray(const Scene &scene, std::string obj_type, int obj_idx, Ray &ray,
     // return the corresponding color for that object
     // the surface normal should be consider differently for sphere and cylinder
     // compute the intersection point
-    FloatVec3 p(ray.x + ray_t * ray.dx, ray.y + ray_t * ray.dy, ray.z + ray_t * ray.dz);
+    FloatVec3 p = ray.extend(ray_t);
     const MtlColorType &cur_material = scene.material_list[scene.sphere_list[obj_idx].m_idx];
     float Ir, Ig, Ib;
     float sum_r = cur_material.ka * cur_material.Od_r;
@@ -43,6 +43,7 @@ Color shade_ray(const Scene &scene, std::string obj_type, int obj_idx, Ray &ray,
         sum_g += IL * Ig;
         sum_b += IL * Ib;
     }
+    
     // illumination for attenuated light
     for (int i = 0; i < scene.attlight_list.size(); i++)
     {
@@ -82,28 +83,25 @@ Color light_shade(const Scene &scene, const Ray &ray, float ray_t, const Light &
 {
     const Sphere &sphere = scene.sphere_list[obj_idx];
     // compute the intersection point
-    FloatVec3 p(ray.x + ray_t * ray.dx, ray.y + ray_t * ray.dy, ray.z + ray_t * ray.dz);
+    FloatVec3 p = ray.extend(ray_t);
     // compute the surface normal N and normalize it
-    FloatVec3 N((p.first - sphere.cx) / sphere.radius,
-                (p.second - sphere.cy) / sphere.radius,
-                (p.third - sphere.cz) / sphere.radius);
+    FloatVec3 N((p.first - sphere.center.first) / sphere.radius,
+                (p.second - sphere.center.second) / sphere.radius,
+                (p.third - sphere.center.third) / sphere.radius);
 
     // calculate vector L
-    FloatVec3 temp, L;
+    FloatVec3 L;
     if (std::abs(light.w - 1) < 1e-6) // point light source
     {
-        FloatVec3 temp(light.x - p.first, light.y - p.second, light.z - p.third);
-        L = vector_normalize(temp);
+        L = vector_normalize(FloatVec3(light.x - p.first, light.y - p.second, light.z - p.third));
     }
     else if (std::abs(light.w - 0) < 1e-6) // directional light source
     {
-        FloatVec3 temp(-light.x, -light.y, -light.z);
-        L = vector_normalize(temp);
+        L = vector_normalize(FloatVec3(-light.x, -light.y, -light.z));
     }
     // calculate vector H
     // get the vector v
-    FloatVec3 temp_V(-ray.dx, -ray.dy, -ray.dz);
-    FloatVec3 V = vector_normalize(temp_V);
+    FloatVec3 V = vector_normalize(FloatVec3(-ray.dir.first, -ray.dir.second, -ray.dir.third));
     FloatVec3 H;
     H = vector_normalize(V + L);
 
@@ -117,22 +115,18 @@ Color light_shade(const Scene &scene, const Ray &ray, float ray_t, const Light &
     // to the point light source,
     // and check for intersection with objects in the scene
     Ray ray_second =
-        {
-            .x = p.first,
-            .y = p.second,
-            .z = p.third,
-            .dx = L.first,
-            .dy = L.second,
-            .dz = L.third,
-        };
+    {
+        .center = FloatVec3(p),
+        .dir = FloatVec3(L)
+    };
     // check intersection, if intersected, set the flag to be 0
     if (shadow_check(scene, ray_second, light, obj_idx))
     {
         shadow_flag = 0;
     }
 
-    float term1 = std::max(float(0), dot_product(N, L));
-    float term2 = pow(std::max(float(0), dot_product(N, H)), cur_material.n);
+    float term1 = std::max(float(0), N.dot(L));
+    float term2 = pow(std::max(float(0), N.dot(H)), cur_material.n);
     Ir = shadow_flag * (cur_material.kd * cur_material.Od_r * term1 + cur_material.ks * cur_material.Os_r * term2);
     Ig = shadow_flag * (cur_material.kd * cur_material.Od_g * term1 + cur_material.ks * cur_material.Os_g * term2);
     Ib = shadow_flag * (cur_material.kd * cur_material.Od_b * term1 + cur_material.ks * cur_material.Os_b * term2);
@@ -200,11 +194,17 @@ std::tuple<std::string, int, float> intersect_check(const Scene &scene, const Ra
     float C;
     float determinant;
 
-    // check intersects for spheres
+    // check intersection for spheres
     for (auto s:scene.sphere_list) 
     {
-        B = 2 * (ray.dx * (ray.x - s.cx) + ray.dy * (ray.y - s.cy) + ray.dz * (ray.z - s.cz));
-        C = pow(ray.x - s.cx, 2) + pow(ray.y - s.cy, 2) + pow(ray.z - s.cz, 2) - pow(s.radius, 2);
+        B = 2 * (ray.dir.first * (ray.center.first - s.center.first) + 
+                 ray.dir.second * (ray.center.second - s.center.second) + 
+                 ray.dir.third * (ray.center.third - s.center.third));
+        // std::cout << scene.sphere_list.size() << std::endl;
+        C = pow(ray.center.first - s.center.first, 2) + 
+            pow(ray.center.second - s.center.second, 2) + 
+            pow(ray.center.third - s.center.third, 2) - 
+            pow(s.radius, 2);
         determinant = pow(B, 2) - 4 * C;
         if (determinant > -1e-6)  // greater than or equal to 0
         {   // need further check
@@ -226,6 +226,20 @@ std::tuple<std::string, int, float> intersect_check(const Scene &scene, const Ra
         }
     }
 
+    // check intersection for triangles
+    for (auto t:scene.triangle_list)
+    {
+        // parameters for the plane equation Ax + By + Cz + D = 0
+        // float A, B, C, D;
+        Vertex v0 = scene.vertex_list[t.first - 1];
+        Vertex v1 = scene.vertex_list[t.second - 1];
+        Vertex v2 = scene.vertex_list[t.third - 1];
+        FloatVec3 e1 = vector_normalize(v1.p - v0.p);
+        FloatVec3 e2 = vector_normalize(v2.p - v0.p);
+        // FloatVec3 n = e1.cross(e2).normal();
+        // std::cout << n.first << " " << n.second << " " << n.third << std::endl;
+    }
+
     return std::make_tuple(obj_type, obj_idx, min_t);
 }
 
@@ -237,6 +251,7 @@ bool shadow_check(const Scene &scene, const Ray &ray, const Light &light, const 
     // loop for all objects
     // check whether there is an intersection
     std::tie(obj_type, obj_idx, ray_t) = intersect_check(scene, ray, exclude_id);
+
     if (obj_type != "None")
     {
         // if it is a point light source
@@ -244,7 +259,7 @@ bool shadow_check(const Scene &scene, const Ray &ray, const Light &light, const 
         // the starting point of the ray and the point light source
         if ((light.w - 1) < 1e-6)
         {
-            float max_t = (light.x - ray.x) / ray.dx;
+            float max_t = (light.x - ray.center.first) / ray.dir.first;
             if (ray_t > 1e-6 && ray_t < max_t)
             {
                 return true;
@@ -274,12 +289,8 @@ Color trace_ray(const Scene &scene, const ViewWindow &viewwindow, int w, int h)
 
     Ray ray = 
     {
-        .x = scene.eye.first,
-        .y = scene.eye.second,
-        .z = scene.eye.third,
-        .dx = raydir.first,
-        .dy = raydir.second,
-        .dz = raydir.third,
+        .center = FloatVec3(scene.eye),
+        .dir = FloatVec3(raydir)
     };
 
     std::string obj_type;
@@ -291,6 +302,7 @@ Color trace_ray(const Scene &scene, const ViewWindow &viewwindow, int w, int h)
     if (obj_type != "None")
     {
         res_color = shade_ray(scene, obj_type, obj_idx, ray, ray_t);
+        // std::cout << res_color.r << " " << res_color.g << " " << res_color.b << std::endl;
     }
 
     return res_color;

@@ -204,6 +204,7 @@ std::tuple<std::string, int, float> intersect_check(const Scene &scene, const Ra
     for (auto s:scene.sphere_list) 
     {
         B = 2 * (ray.dx * (ray.x - s.cx) + ray.dy * (ray.y - s.cy) + ray.dz * (ray.z - s.cz));
+        // std::cout << scene.sphere_list.size() << std::endl;
         C = pow(ray.x - s.cx, 2) + pow(ray.y - s.cy, 2) + pow(ray.z - s.cz, 2) - pow(s.radius, 2);
         determinant = pow(B, 2) - 4 * C;
         if (determinant > -1e-6)  // greater than or equal to 0
@@ -237,6 +238,7 @@ bool shadow_check(const Scene &scene, const Ray &ray, const Light &light, const 
     // loop for all objects
     // check whether there is an intersection
     std::tie(obj_type, obj_idx, ray_t) = intersect_check(scene, ray, exclude_id);
+
     if (obj_type != "None")
     {
         // if it is a point light source
@@ -291,6 +293,7 @@ Color trace_ray(const Scene &scene, const ViewWindow &viewwindow, int w, int h)
     if (obj_type != "None")
     {
         res_color = shade_ray(scene, obj_type, obj_idx, ray, ray_t);
+        // std::cout << res_color.r << " " << res_color.g << " " << res_color.b << std::endl;
     }
 
     return res_color;

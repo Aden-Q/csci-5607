@@ -7,15 +7,9 @@ bkgcolor 0 0 0
 
 light 2 3 3 1.0 1.0 0.0 0.0
 
-texture world.ppm
-
 v -1 -1 5
 v  1 -1 5
 v  1  1 5
 
-vt 0 1
-vt 1 0
-vt 1 1
-
 mtlcolor 0 1 0 1 1 1 0.2 0.6 0.0 20
-f 1/1 2/2 3/3  #back
+f 1 2 3  #back
