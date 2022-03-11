@@ -30,7 +30,7 @@ float depth_cueing(const FloatVec3 &point, const FloatVec3 &viewer, const DepthC
 Color trace_ray(const Scene &scene, const ViewWindow &viewwindow, int w, int h);
 
 // illuminate the point using the Phong Illumination Model without attenuation or depth cueing
-Color light_shade(const Scene &scene, const Ray &ray, float ray_t, const Light &light, int obj_idx);
+Color light_shade(const Scene &scene, const Ray &ray, float ray_t, const Light &light, std::string obj_type, int obj_idx);
 
 // check ray intersection with objects in the scene and return the minimal t which leads to an intersection
 // the last parameter is used to avoid self-intersection (specify a excluding object that don't need to check)

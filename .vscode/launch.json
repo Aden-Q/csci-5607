@@ -10,7 +10,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/${fileBasenameNoExtension}",
-            "args": ["ray_input1b.txt"],
+            "args": ["single_triangle_flag.txt"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

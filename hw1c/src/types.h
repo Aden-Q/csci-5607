@@ -163,6 +163,14 @@ typedef struct SphereType
     // location and radius of the sphere
     FloatVec3 center;
     float radius;
+
+    // get the unit length surface normal at a given point
+    FloatVec3 normal(const FloatVec3 &p) const
+    {
+        return FloatVec3((p.first - this->center.first) / this->radius, 
+                          (p.second - this->center.second) / this->radius, 
+                          (p.third - this->center.third) / this->radius);
+    }
 } Sphere;
 
 typedef struct CylinderType
@@ -183,18 +191,82 @@ typedef struct VertexType
 {
     // object id (index into the list)
     int obj_idx;
-    // material color index
-    int m_idx;
     // position of the vertex
     FloatVec3 p;
 } Vertex;
+
+// for smooth shading
+typedef struct VertexNormalType
+{
+    // object id (index into the list)
+    int obj_idx;
+    // unit normal vector
+    FloatVec3 n;
+} VertexNormal;
 
 typedef struct TriangleType
 {
     // object id (index into the list)
     int obj_idx;
+    // material color index
+    int m_idx;
     // indices of three vertex defining the triangle
-    int first, second, third;
+    const Vertex &v0, &v1, &v2;
+    // smooth shading flag, not applied by default
+    bool smooth_shade;
+    // are indices into the array of normal directions
+    int vn0_idx, vn1_idx, vn2_idx;
+    // texture mapping flag, not applied by default
+    bool texture_map;
+
+    // get the unit length surface normal at a given point
+    FloatVec3 normal(const std::vector<VertexNormal> &vertex_normal_list, const FloatVec3 &p) const
+    {
+        if (!smooth_shade)
+        {
+            // if smooth shading not enabled, return plane normal
+            FloatVec3 e1 = v1.p - v0.p;
+            FloatVec3 e2 = v2.p - v0.p;
+            return e1.cross(e2).normal();
+        }
+        else
+        {
+            // if smooth shading enabled, return a weighted sum of 
+            // vertex normals
+            FloatVec3 bayrcentric_coordinates = this->barycentric(p);
+            float alpha = bayrcentric_coordinates.first;
+            float beta = bayrcentric_coordinates.second;
+            float gamma = bayrcentric_coordinates.third;
+            FloatVec3 vn0 = vertex_normal_list[this->vn0_idx - 1].n;
+            FloatVec3 vn1 = vertex_normal_list[this->vn1_idx - 1].n;
+            FloatVec3 vn2 = vertex_normal_list[this->vn2_idx - 1].n;
+            return vn0 * alpha + vn1 * beta + vn2 * gamma;
+        }
+    }
+
+    // get the barycentric coordiante of a point on the plane of the triangle
+    // need to ensure that the point is on the plane
+    FloatVec3 barycentric(const FloatVec3 &p) const
+    {
+        FloatVec3 p0 = this->v0.p;
+        FloatVec3 p1 = this->v1.p;
+        FloatVec3 p2 = this->v2.p;
+        FloatVec3 e1 = p1 - p0;
+        FloatVec3 e2 = p2 - p0;
+        FloatVec3 ep = p - p0;
+        float d11 = e1.dot(e1);
+        float d12 = e1.dot(e2);
+        float d22 = e2.dot(e2);
+        float dp1 = ep.dot(e1);
+        float dp2 = ep.dot(e2);
+        float D = d11 * d22 - d12 * d12;
+        float D_beta = d22 * dp1 - d12 * dp2;
+        float D_gamma = d11 * dp2 - d12 * dp1;
+        float beta = D_beta / D;
+        float gamma = D_gamma / D;
+        float alpha = 1 - beta - gamma;
+        return FloatVec3(alpha, beta, gamma);
+    }
 } Triangle;
 
 typedef struct LightType
@@ -253,8 +325,10 @@ typedef struct SceneType
     std::vector<Sphere> sphere_list;
     // a list of cylinders
     std::vector<Cylinder> cylinder_list;
-    // a list of vertexes, with a header
+    // a list of vertexes
     std::vector<Vertex> vertex_list;
+    // a list of vertex normals
+    std::vector<VertexNormal> vertex_normal_list;
     // a list of triangles
     std::vector<Triangle> triangle_list;
     // a list of normal lights

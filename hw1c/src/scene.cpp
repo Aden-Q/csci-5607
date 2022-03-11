@@ -18,12 +18,11 @@ int parse_scene(std::string filename, Scene &scene)
     std::string line;
     int int_var[10];
     float float_var[10];
-    char char_var[10];
-    std::string line_buffer;
     int m_idx = -1;
     int obj_sphere_idx = 0;
     int obj_cylinder_idx = 0;
     int obj_vertex_idx = 1;  // only vertex index starts from 1
+    int obj_vertex_normal_idx = 1;  // only vertex index starts from 1
     int obj_triangle_idx = 0;
     int num_keywords = 0;
 
@@ -180,20 +179,68 @@ int parse_scene(std::string filename, Scene &scene)
             iss >> float_var[0] >> float_var[1] >> float_var[2];
             Vertex vertex = {
                 .obj_idx = obj_vertex_idx++,
-                .m_idx = m_idx,
                 .p = FloatVec3(float_var[0], float_var[1], float_var[2])};
             scene.vertex_list.push_back(vertex);
         }
         else if (keyword == "f")
         {
-            // store parameters for the triangle
-            iss >> int_var[0] >> int_var[1] >> int_var[2];
-            Triangle triangle = {
-                .obj_idx = obj_triangle_idx++,
-                .first = int_var[0],
-                .second = int_var[1],
-                .third = int_var[2]};
-            scene.triangle_list.push_back(triangle);
+            // check the input format specified by the user
+            // whether it uses smooth shading, whether it uses texture mapping
+            if (sscanf(line.c_str(), "f %d %d %d", int_var, int_var + 1, int_var + 2) == 3)
+            {
+                // simple flat shading, use the format v
+                // store parameters for the triangle
+                Triangle triangle = {
+                    .obj_idx = obj_triangle_idx++,
+                    .m_idx = m_idx,
+                    .v0 = scene.vertex_list[int_var[0] - 1],
+                    .v1 = scene.vertex_list[int_var[1] - 1],
+                    .v2 = scene.vertex_list[int_var[2] - 1],
+                    .smooth_shade = false,
+                    .texture_map = false};
+                scene.triangle_list.push_back(triangle);
+            }
+            else if (sscanf(line.c_str(), "f %d//%d %d//%d %d//%d", 
+                            int_var, int_var + 1, int_var + 2,
+                            int_var + 3, int_var + 4, int_var + 5) == 6)
+            {
+                // smooth shading, use the format v//vn
+                // store parameters for the triangle
+                Triangle triangle = {
+                    .obj_idx = obj_triangle_idx++,
+                    .m_idx = m_idx,
+                    .v0 = scene.vertex_list[int_var[0] - 1],
+                    .v1 = scene.vertex_list[int_var[1] - 1],
+                    .v2 = scene.vertex_list[int_var[2] - 1],
+                    .smooth_shade = true,
+                    .vn0_idx = int_var[3],
+                    .vn1_idx = int_var[4],
+                    .vn2_idx = int_var[5],
+                    .texture_map = false};
+                scene.triangle_list.push_back(triangle);
+            }
+            else if (sscanf(line.c_str(), "f %d/%d %d/%d %d/%d", 
+                            int_var, int_var + 1, int_var + 2,
+                            int_var + 3, int_var + 4, int_var + 5) == 6)
+            {
+                // texture mapping, use the format v/t
+            }
+            else if (sscanf(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d", 
+                            int_var, int_var + 1, int_var + 2,
+                            int_var + 3, int_var + 4, int_var + 5,
+                            int_var + 6, int_var + 7, int_var + 8) == 9)
+            {
+                // smooth shading, and texture mapping, use the format v/vt/vn
+            }
+        }
+        else if (keyword == "vn")
+        {
+            // store parameters for the vertex normal
+            iss >> float_var[0] >> float_var[1] >> float_var[2];
+            VertexNormal vertex_normal = {
+                .obj_idx = obj_vertex_normal_idx++,
+                .n = FloatVec3(float_var[0], float_var[1], float_var[2]).normal()};
+            scene.vertex_normal_list.push_back(vertex_normal);
         }
     }
 

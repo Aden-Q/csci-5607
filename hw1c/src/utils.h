@@ -27,4 +27,10 @@ bool lie_within(float p, float e1, float e2);
 // initialize a viewing window
 void view_window_init(const Scene &scene, ViewWindow &viewwindow, float viewdist);
 
+// get the material for illumination
+const MtlColorType &get_material(const Scene &scene, std::string obj_type, int obj_idx);
+
+// get the unit normal vector at some point
+FloatVec3 get_normal(const Scene &scene, std::string obj_type, int obj_idx, FloatVec3 &p);
+
 #endif // SRC_UTILS_H_

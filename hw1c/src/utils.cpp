@@ -101,3 +101,35 @@ void view_window_init(const Scene &scene, ViewWindow &viewwindow, float viewdist
     viewwindow.dh = (viewwindow.ur - viewwindow.ul) / (scene.width - 1);
     viewwindow.dv = (viewwindow.ll - viewwindow.ul) / (scene.height - 1);   
 }
+
+const MtlColorType &get_material(const Scene &scene, std::string obj_type, int obj_idx)
+{
+    if (obj_type == "Sphere")
+    {
+        return scene.material_list[scene.sphere_list[obj_idx].m_idx];
+    }
+    else if (obj_type == "Triangle")
+    {
+        return scene.material_list[scene.triangle_list[obj_idx].m_idx];
+    }
+    else
+    {
+        return scene.material_list[scene.triangle_list[obj_idx].m_idx];
+    }
+}
+
+FloatVec3 get_normal(const Scene &scene, std::string obj_type, int obj_idx, FloatVec3 &p)
+{
+    if (obj_type == "Sphere")
+    {
+        return scene.sphere_list[obj_idx].normal(p);
+    }
+    else if (obj_type == "Triangle")
+    {
+        return scene.triangle_list[obj_idx].normal(scene.vertex_normal_list ,p);
+    }
+    else
+    {
+        return scene.triangle_list[obj_idx].normal(scene.vertex_normal_list, p);
+    }
+}
