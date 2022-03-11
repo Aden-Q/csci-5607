@@ -93,17 +93,17 @@ Color light_shade(const Scene &scene, const Ray &ray, float ray_t, const Light &
     FloatVec3 L;
     if (std::abs(light.w - 1) < 1e-6) // point light source
     {
-        L = vector_normalize(FloatVec3(light.x - p.first, light.y - p.second, light.z - p.third));
+        L = FloatVec3(light.x - p.first, light.y - p.second, light.z - p.third).normal();
     }
     else if (std::abs(light.w - 0) < 1e-6) // directional light source
     {
-        L = vector_normalize(FloatVec3(-light.x, -light.y, -light.z));
+        L = FloatVec3(-light.x, -light.y, -light.z).normal();
     }
     // calculate vector H
     // get the vector v
-    FloatVec3 V = vector_normalize(FloatVec3(-ray.dir.first, -ray.dir.second, -ray.dir.third));
+    FloatVec3 V = FloatVec3(-ray.dir.first, -ray.dir.second, -ray.dir.third).normal();
     FloatVec3 H;
-    H = vector_normalize(V + L);
+    H = (V + L).normal();
 
     // apply the phong illumination model
     float Ir, Ig, Ib; // illumination components for R, G and B
@@ -200,7 +200,6 @@ std::tuple<std::string, int, float> intersect_check(const Scene &scene, const Ra
         B = 2 * (ray.dir.first * (ray.center.first - s.center.first) + 
                  ray.dir.second * (ray.center.second - s.center.second) + 
                  ray.dir.third * (ray.center.third - s.center.third));
-        // std::cout << scene.sphere_list.size() << std::endl;
         C = pow(ray.center.first - s.center.first, 2) + 
             pow(ray.center.second - s.center.second, 2) + 
             pow(ray.center.third - s.center.third, 2) - 
@@ -230,14 +229,13 @@ std::tuple<std::string, int, float> intersect_check(const Scene &scene, const Ra
     for (auto t:scene.triangle_list)
     {
         // parameters for the plane equation Ax + By + Cz + D = 0
-        // float A, B, C, D;
+        float A, B, C, D;
         Vertex v0 = scene.vertex_list[t.first - 1];
         Vertex v1 = scene.vertex_list[t.second - 1];
         Vertex v2 = scene.vertex_list[t.third - 1];
-        FloatVec3 e1 = vector_normalize(v1.p - v0.p);
-        FloatVec3 e2 = vector_normalize(v2.p - v0.p);
-        // FloatVec3 n = e1.cross(e2).normal();
-        // std::cout << n.first << " " << n.second << " " << n.third << std::endl;
+        FloatVec3 e1 = (v1.p - v0.p).normal();
+        FloatVec3 e2 = (v2.p - v0.p).normal();
+        FloatVec3 n = e1.cross(e2).normal();
     }
 
     return std::make_tuple(obj_type, obj_idx, min_t);
@@ -283,7 +281,7 @@ Color trace_ray(const Scene &scene, const ViewWindow &viewwindow, int w, int h)
 {
     // get a ray representation
     FloatVec3 point_in_view(viewwindow.ul + viewwindow.dh * w + viewwindow.dv * h);
-    FloatVec3 raydir = vector_normalize(point_in_view - scene.eye);
+    FloatVec3 raydir = (point_in_view - scene.eye).normal();
     // initialize the response color to be the background color
     Color res_color(scene.bkgcolor);
 

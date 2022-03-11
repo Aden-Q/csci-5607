@@ -30,6 +30,8 @@ int parse_scene(std::string filename, Scene &scene)
     // read and process line by line
     while (std::getline(inputstream, line))
     {
+        // initialize the keywork to empty
+        keyword = "";
         // convert the string line to input string stream
         std::istringstream iss(line);
         iss >> keyword;

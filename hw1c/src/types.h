@@ -71,20 +71,20 @@ struct FloatVec3
     {
     }
 
-    // // normalization
-    // FloatVec3 normal() const
-    // {
-    //     float norm = sqrt(this->first * this->first + this->second * this->second + this->third * this->third);
-    //     return FloatVec3(this->first / norm, this->second / norm, this->third / norm);
-    // }
+    // normalization
+    FloatVec3 normal() const
+    {
+        float norm = sqrt(this->first * this->first + this->second * this->second + this->third * this->third);
+        return FloatVec3(this->first / norm, this->second / norm, this->third / norm);
+    }
 
-    // // cross product
-    // FloatVec3 cross(const FloatVec3 &v) const
-    // {
-    //     return FloatVec3(this->second * v.third - this->third * v.second,
-    //                      this->third * v.first - this->first * v.third,
-    //                      this->first * v.second - this->second * v.first);
-    // }
+    // cross product
+    FloatVec3 cross(const FloatVec3 &v) const
+    {
+        return FloatVec3(this->second * v.third - this->third * v.second,
+                         this->third * v.first - this->first * v.third,
+                         this->first * v.second - this->second * v.first);
+    }
 
     // dot product
     float dot(const FloatVec3 &v) const

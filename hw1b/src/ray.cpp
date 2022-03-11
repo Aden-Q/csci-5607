@@ -204,7 +204,6 @@ std::tuple<std::string, int, float> intersect_check(const Scene &scene, const Ra
     for (auto s:scene.sphere_list) 
     {
         B = 2 * (ray.dx * (ray.x - s.cx) + ray.dy * (ray.y - s.cy) + ray.dz * (ray.z - s.cz));
-        // std::cout << scene.sphere_list.size() << std::endl;
         C = pow(ray.x - s.cx, 2) + pow(ray.y - s.cy, 2) + pow(ray.z - s.cz, 2) - pow(s.radius, 2);
         determinant = pow(B, 2) - 4 * C;
         if (determinant > -1e-6)  // greater than or equal to 0

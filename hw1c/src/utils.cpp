@@ -48,25 +48,6 @@ void output_image(std::string filename, Image **checkerboard, const Scene &scene
     return;
 }
 
-float dot_product(const FloatVec3 &a, const FloatVec3 &b)
-{
-    return a.first * b.first + a.second * b.second + a.third * b.third;
-}
-
-FloatVec3 cross_product(const FloatVec3 &a, const FloatVec3 &b)
-{
-    return FloatVec3(a.second * b.third - a.third * b.second,
-                     a.third * b.first - a.first * b.third,
-                     a.first * b.second - a.second * b.first);
-}
-
-FloatVec3 vector_normalize(const FloatVec3 &v)
-{
-    float n = sqrt(pow(v.first, 2) + pow(v.second, 2) + pow(v.third, 2));
-
-    return FloatVec3(v.first / n, v.second / n, v.third / n);
-}
-
 float distance_between_2D_points(FloatVec2 point1, FloatVec2 point2)
 {
     float sum = pow(point1.first - point2.first, 2) 
@@ -104,14 +85,14 @@ void view_window_init(const Scene &scene, ViewWindow &viewwindow, float viewdist
 {
     // directional vectors
     viewwindow.viewdist = viewdist;
-    viewwindow.u = vector_normalize(cross_product(scene.viewdir, scene.updir));
-    viewwindow.v = vector_normalize(cross_product(viewwindow.u, scene.viewdir));
+    viewwindow.u = scene.viewdir.cross(scene.updir).normal();
+    viewwindow.v = viewwindow.u.cross(scene.viewdir).normal();
     // size of the view window
     viewwindow.height = 2 * viewwindow.viewdist * tan(scene.vfov / 2 * PI / 180.0);
     // use aspect ratio match to determine width
     viewwindow.width = viewwindow.height * scene.width * 1.0 / scene.height;
     // calculate four corner points
-    FloatVec3 n = vector_normalize(scene.viewdir);
+    FloatVec3 n = scene.viewdir.normal();
     viewwindow.ul = scene.eye + n * viewwindow.viewdist - viewwindow.u * (viewwindow.width / 2) + viewwindow.v * (viewwindow.height / 2);
     viewwindow.ur = scene.eye + n * viewwindow.viewdist + viewwindow.u * (viewwindow.width / 2) + viewwindow.v * (viewwindow.height / 2);
     viewwindow.ll = scene.eye + n * viewwindow.viewdist - viewwindow.u * (viewwindow.width / 2) - viewwindow.v * (viewwindow.height / 2);
