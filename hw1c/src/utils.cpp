@@ -115,16 +115,16 @@ const MaterialColor &get_material(const Scene &scene, std::string obj_type, int 
     
     if (obj_type == "Sphere")
     {
-        return scene.getMaterialList()[scene.getSphereList()[obj_idx].m_idx];
+        return scene.getMaterialList()[scene.getSphereList()[obj_idx].getMidx()];
     }
     else if (obj_type == "Triangle")
     {
-        return scene.getMaterialList()[scene.getTriangleList()[obj_idx].m_idx];
+        return scene.getMaterialList()[scene.getTriangleList()[obj_idx].getMidx()];
     }
     // placeholder for other types of objects
     else
     {
-        return scene.getMaterialList()[scene.getTriangleList()[obj_idx].m_idx];
+        return scene.getMaterialList()[scene.getTriangleList()[obj_idx].getMidx()];
     }
 }
 
@@ -136,12 +136,12 @@ FloatVec3 get_normal(const Scene &scene, std::string obj_type, int obj_idx, Floa
     }
     else if (obj_type == "Triangle")
     {
-        return scene.getTriangleList()[obj_idx].normal(scene.getVertexNormalList() ,p);
+        return scene.getTriangleList()[obj_idx].normal(scene ,p);
     }
     // placeholder for other types of objects
     else
     {
-        return scene.getTriangleList()[obj_idx].normal(scene.getVertexNormalList(), p);
+        return scene.getTriangleList()[obj_idx].normal(scene, p);
     }
 }
 
@@ -149,7 +149,7 @@ bool texture_map_enabled(const Scene &scene, std::string obj_type, int obj_idx)
 {
     if (obj_type == "Sphere")
     {
-        if (scene.getSphereList()[obj_idx].texture_idx != -1)
+        if (scene.getSphereList()[obj_idx].getTextureidx() != -1)
         {
             return true;
         }
@@ -160,7 +160,7 @@ bool texture_map_enabled(const Scene &scene, std::string obj_type, int obj_idx)
     }
     else if (obj_type == "Triangle")
     {
-        return scene.getTriangleList()[obj_idx].texture_map;
+        return scene.getTriangleList()[obj_idx].getTextureMap();
     }
     // placeholder for other types of objects
     else
@@ -177,15 +177,15 @@ Color get_color(const Scene &scene, std::string obj_type, int obj_idx, FloatVec3
     if (obj_type == "Sphere")
     {
         texture_cor = scene.getSphereList()[obj_idx].texture_coordinate(p);
-        const Texture& texture = scene.getTextureList()[scene.getSphereList()[obj_idx].texture_idx];
+        const Texture& texture = scene.getTextureList()[scene.getSphereList()[obj_idx].getTextureidx()];
         checkerboard = texture.getCheckerboard();
         width = texture.getWidth();
         height = texture.getHeight();
     }
     else if (obj_type == "Triangle")
     {
-        texture_cor = scene.getTriangleList()[obj_idx].texture_coordinate(scene.getTextureCoordinateList(), p);
-        const Texture &texture = scene.getTextureList()[scene.getTriangleList()[obj_idx].texture_idx];
+        texture_cor = scene.getTriangleList()[obj_idx].texture_coordinate(scene, p);
+        const Texture &texture = scene.getTextureList()[scene.getTriangleList()[obj_idx].getTextureidx()];
         checkerboard = texture.getCheckerboard();
         width = texture.getWidth();
         height = texture.getHeight();
@@ -193,8 +193,8 @@ Color get_color(const Scene &scene, std::string obj_type, int obj_idx, FloatVec3
     // placeholder for other types of objects
     else
     {
-        texture_cor = scene.getTriangleList()[obj_idx].texture_coordinate(scene.getTextureCoordinateList(), p);
-        const Texture &texture = scene.getTextureList()[scene.getTriangleList()[obj_idx].texture_idx];
+        texture_cor = scene.getTriangleList()[obj_idx].texture_coordinate(scene, p);
+        const Texture &texture = scene.getTextureList()[scene.getTriangleList()[obj_idx].getTextureidx()];
         checkerboard = texture.getCheckerboard();
         width = texture.getWidth();
         height = texture.getHeight();
@@ -408,37 +408,38 @@ std::tuple<std::string, int, float> intersect_check(const Scene &scene, const Ra
     float ray_t;
     float determinant;
     FloatVec3 p; // intersection point
-    FloatVec3 center;
+    FloatVec3 ray_center, obj_center;
     FloatVec3 dir;
 
     // check intersection for spheres
     for (auto s : scene.getSphereList())
     {
-        center = ray.getCenter();
+        ray_center = ray.getCenter();
+        obj_center = s.getCenter();
         dir = ray.getDir();
-        B = 2 * (dir.first * (center.first - s.center.first) +
-                 dir.second * (center.second - s.center.second) +
-                 dir.third * (center.third - s.center.third));
-        C = pow(center.first - s.center.first, 2) +
-            pow(center.second - s.center.second, 2) +
-            pow(center.third - s.center.third, 2) -
-            pow(s.radius, 2);
+        B = 2 * (dir.first * (ray_center.first - obj_center.first) +
+                 dir.second * (ray_center.second - obj_center.second) +
+                 dir.third * (ray_center.third - obj_center.third));
+        C = pow(ray_center.first - obj_center.first, 2) +
+            pow(ray_center.second - obj_center.second, 2) +
+            pow(ray_center.third - obj_center.third, 2) -
+            pow(s.getRadius(), 2);
         determinant = pow(B, 2) - 4 * C;
         if (determinant > -1e-6) // greater than or equal to 0
         {                        // need further check
             temp_t = (-B - sqrt(determinant)) / 2;
-            if (temp_t > 1e-6 && temp_t < min_t && s.obj_idx != exclude_id)
+            if (temp_t > 1e-6 && temp_t < min_t && s.getID() != exclude_id)
             {
                 min_t = temp_t;
-                obj_idx = s.obj_idx;
+                obj_idx = s.getID();
                 obj_type = "Sphere";
             }
             // check for another possible solution
             temp_t = (-B + sqrt(determinant)) / 2;
-            if (temp_t > 1e-6 && temp_t < min_t && s.obj_idx != exclude_id)
+            if (temp_t > 1e-6 && temp_t < min_t && s.getID() != exclude_id)
             {
                 min_t = temp_t;
-                obj_idx = s.obj_idx;
+                obj_idx = s.getID();
                 obj_type = "Sphere";
             }
         }
@@ -447,12 +448,12 @@ std::tuple<std::string, int, float> intersect_check(const Scene &scene, const Ra
     // check intersection for triangles
     for (auto t : scene.getTriangleList())
     {
-        center = ray.getCenter();
+        ray_center = ray.getCenter();
         dir = ray.getDir();
         // parameters for the plane equation Ax + By + Cz + D = 0
-        FloatVec3 p0 = t.v0.p;
-        FloatVec3 p1 = t.v1.p;
-        FloatVec3 p2 = t.v2.p;
+        FloatVec3 p0 = scene.getVertexList()[t.getV0idx() - 1].p;
+        FloatVec3 p1 = scene.getVertexList()[t.getV1idx() - 1].p;
+        FloatVec3 p2 = scene.getVertexList()[t.getV2idx() - 1].p;
         FloatVec3 e1 = p1 - p0;
         FloatVec3 e2 = p2 - p0;
         FloatVec3 n = e1.cross(e2).normal();
@@ -467,7 +468,7 @@ std::tuple<std::string, int, float> intersect_check(const Scene &scene, const Ra
             // in the case that the ray is parallel to the plane
             continue;
         }
-        ray_t = -(A * center.first + B * center.second + C * center.third + D) / determinant;
+        ray_t = -(A * ray_center.first + B * ray_center.second + C * ray_center.third + D) / determinant;
         if (ray_t < 0)
         {
             // no intersection
@@ -475,7 +476,7 @@ std::tuple<std::string, int, float> intersect_check(const Scene &scene, const Ra
         }
         // get the intersection point p
         p = ray.extend(ray_t);
-        FloatVec3 bayrcentric_coordinates = t.barycentric(p);
+        FloatVec3 bayrcentric_coordinates = t.barycentric(scene, p);
         float alpha = bayrcentric_coordinates.first;
         float beta = bayrcentric_coordinates.second;
         float gamma = bayrcentric_coordinates.third;
@@ -483,10 +484,10 @@ std::tuple<std::string, int, float> intersect_check(const Scene &scene, const Ra
         if (alpha > -1e-6 && alpha < 1 && beta > -1e-6 && beta < 1 && gamma > -1e-6 && gamma < 1)
         {
             // in the triangle
-            if (ray_t < min_t && t.obj_idx != exclude_id)
+            if (ray_t < min_t && t.getID() != exclude_id)
             {
                 min_t = ray_t;
-                obj_idx = t.obj_idx;
+                obj_idx = t.getID();
                 obj_type = "Triangle";
             }
         }

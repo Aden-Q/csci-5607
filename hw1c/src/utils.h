@@ -14,6 +14,9 @@
 #include "material_color.h"
 #include "texture.h"
 #include "ray.h"
+#include "sphere.h"
+#include "cylinder.h"
+#include "triangle.h"
 
 // write to the outputfile in PPM format
 void output_image(std::string filename, Color **checkerboard, int width, int height);

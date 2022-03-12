@@ -188,12 +188,9 @@ int Scene::parseScene(std::string filename)
         {
             // store parameters for the sphere
             iss >> float_var[0] >> float_var[1] >> float_var[2] >> float_var[3];
-            Sphere sphere = {
-                .obj_idx = obj_sphere_idx++,
-                .m_idx = m_idx,
-                .texture_idx = texture_idx,
-                .center = FloatVec3(float_var[0], float_var[1], float_var[2]),
-                .radius = float_var[3]};
+            Sphere sphere(obj_sphere_idx++, m_idx, texture_idx, 
+                          FloatVec3(float_var[0], float_var[1], float_var[2]),
+                          float_var[3]);
             this->sphere_list.push_back(sphere);
         }
         else if (keyword == "cylinder")
@@ -202,14 +199,13 @@ int Scene::parseScene(std::string filename)
             iss >> float_var[0] >> float_var[1] >> float_var[2] 
                         >> float_var[3] >> float_var[4] >> float_var[5]
                         >> float_var[6] >> float_var[7];
-            Cylinder cylinder = {
-                .obj_idx = obj_cylinder_idx++,
-                .m_idx = m_idx,
-                .texture_idx = texture_idx,
-                .center = FloatVec3(float_var[0], float_var[1], float_var[2]),
-                .dir = FloatVec3(float_var[3], float_var[4], float_var[5]),
-                .radius = float_var[6],
-                .length = float_var[7]};
+            Cylinder cylinder(obj_cylinder_idx++,
+                              m_idx,
+                              texture_idx,
+                              FloatVec3(float_var[0], float_var[1], float_var[2]),
+                              FloatVec3(float_var[3], float_var[4], float_var[5]),
+                              float_var[6],
+                              float_var[7]);
             this->cylinder_list.push_back(cylinder);
         }
         else if (keyword == "v")
@@ -248,15 +244,13 @@ int Scene::parseScene(std::string filename)
                 // simple flat shading, use the format v
                 // smooth shading not applied
                 // texture mappign not applied
-                Triangle triangle = {
-                    .obj_idx = obj_triangle_idx++,
-                    .m_idx = m_idx,
-                    .texture_idx = -1,
-                    .v0 = this->vertex_list[int_var[0] - 1],
-                    .v1 = this->vertex_list[int_var[1] - 1],
-                    .v2 = this->vertex_list[int_var[2] - 1],
-                    .smooth_shade = false,
-                    .texture_map = false};
+                Triangle triangle;
+                triangle.setID(obj_triangle_idx++);
+                triangle.setMidx(m_idx);
+                triangle.setTextureidx(-1);
+                triangle.setV0idx(int_var[0]);
+                triangle.setV1idx(int_var[1]);
+                triangle.setV2idx(int_var[2]);
                 this->triangle_list.push_back(triangle);
             }
             else if (sscanf(line.c_str(), "f %d//%d %d//%d %d//%d", 
@@ -266,18 +260,17 @@ int Scene::parseScene(std::string filename)
                 // only smooth shading enabled, use the format v//vn
                 // smooth shading applied
                 // texture mappign not applied
-                Triangle triangle = {
-                    .obj_idx = obj_triangle_idx++,
-                    .m_idx = m_idx,
-                    .texture_idx = -1,
-                    .v0 = this->vertex_list[int_var[0] - 1],
-                    .v1 = this->vertex_list[int_var[2] - 1],
-                    .v2 = this->vertex_list[int_var[4] - 1],
-                    .smooth_shade = true,
-                    .vn0_idx = int_var[1],
-                    .vn1_idx = int_var[3],
-                    .vn2_idx = int_var[5],
-                    .texture_map = false};
+                Triangle triangle;
+                triangle.setID(obj_triangle_idx++);
+                triangle.setMidx(m_idx);
+                triangle.setTextureidx(-1);
+                triangle.setV0idx(int_var[0]);
+                triangle.setV1idx(int_var[2]);
+                triangle.setV2idx(int_var[4]);
+                triangle.setSmoothShade(true);
+                triangle.setVn0idx(int_var[1]);
+                triangle.setVn1idx(int_var[3]);
+                triangle.setVn2idx(int_var[5]);
                 this->triangle_list.push_back(triangle);
             }
             else if (sscanf(line.c_str(), "f %d/%d %d/%d %d/%d", 
@@ -287,18 +280,17 @@ int Scene::parseScene(std::string filename)
                 // only texture mapping enabled, use the format v/vt
                 // smooth shading not applied
                 // texture mapping applied
-                Triangle triangle = {
-                    .obj_idx = obj_triangle_idx++,
-                    .m_idx = m_idx,
-                    .texture_idx = texture_idx,
-                    .v0 = this->vertex_list[int_var[0] - 1],
-                    .v1 = this->vertex_list[int_var[2] - 1],
-                    .v2 = this->vertex_list[int_var[4] - 1],
-                    .smooth_shade = false,
-                    .texture_map = true,
-                    .vt0_idx = int_var[1],
-                    .vt1_idx = int_var[3],
-                    .vt2_idx = int_var[5]};
+                Triangle triangle;
+                triangle.setID(obj_triangle_idx++);
+                triangle.setMidx(m_idx);
+                triangle.setTextureidx(texture_idx);
+                triangle.setV0idx(int_var[0]);
+                triangle.setV1idx(int_var[2]);
+                triangle.setV2idx(int_var[4]);
+                triangle.setTextureMap(true);
+                triangle.setVt0idx(int_var[1]);
+                triangle.setVt1idx(int_var[3]);
+                triangle.setVt2idx(int_var[5]);
                 this->triangle_list.push_back(triangle);
             }
             else if (sscanf(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d", 
@@ -307,21 +299,21 @@ int Scene::parseScene(std::string filename)
                             int_var + 6, int_var + 7, int_var + 8) == 9)
             {
                 // smooth shading, and texture mapping, use the format v/vt/vn
-                Triangle triangle = {
-                    .obj_idx = obj_triangle_idx++,
-                    .m_idx = m_idx,
-                    .texture_idx = texture_idx,
-                    .v0 = this->vertex_list[int_var[0] - 1],
-                    .v1 = this->vertex_list[int_var[3] - 1],
-                    .v2 = this->vertex_list[int_var[6] - 1],
-                    .smooth_shade = true,
-                    .vn0_idx = int_var[1],
-                    .vn1_idx = int_var[4],
-                    .vn2_idx = int_var[7],
-                    .texture_map = true,
-                    .vt0_idx = int_var[2],
-                    .vt1_idx = int_var[5],
-                    .vt2_idx = int_var[8]};
+                Triangle triangle;
+                triangle.setID(obj_triangle_idx++);
+                triangle.setMidx(m_idx);
+                triangle.setTextureidx(texture_idx);
+                triangle.setV0idx(int_var[0]);
+                triangle.setV1idx(int_var[3]);
+                triangle.setV2idx(int_var[6]);
+                triangle.setSmoothShade(true);
+                triangle.setVn0idx(int_var[1]);
+                triangle.setVn1idx(int_var[4]);
+                triangle.setVn2idx(int_var[7]);
+                triangle.setTextureMap(true);
+                triangle.setVt0idx(int_var[2]);
+                triangle.setVt1idx(int_var[5]);
+                triangle.setVt2idx(int_var[8]);
                 this->triangle_list.push_back(triangle);
             }
         }

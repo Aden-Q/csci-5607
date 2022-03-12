@@ -8,7 +8,7 @@ test: raytracer
 	./raytracer
 .PHONY: all clean test
 
-raytracer: raytracer.o utils.o scene.o ray.o color.o material_color.o
+raytracer: raytracer.o utils.o scene.o color.o material_color.o texture.o sphere.o cylinder.o triangle.o ray.o
 	$(CXX) $(LDFLAGS) -o $(@) $(^)
 
 %.o: %.cpp

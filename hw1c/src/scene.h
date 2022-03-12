@@ -14,6 +14,11 @@
 #include "color.h"
 #include "material_color.h"
 #include "texture.h"
+#include "sphere.h"
+#include "cylinder.h"
+#include "triangle.h"
+
+class Triangle;
 
 class Scene
 {
