@@ -58,12 +58,5 @@ int main(int argc, char **argv)
 
     // produce a final image
     output_image(filename + "_raytracer.ppm", checkerboard, scene.width, scene.height);
-
-    Triangle test_t = scene.triangle_list[0];
-    FloatVec3 test = test_t.barycentric(FloatVec3(0, 0, 5));
-    // std::cout << test.first << " " << test.second << " " << test.third << std::endl;
-    FloatVec2 test2 = test_t.texture_coordinate(scene.texture_coordinate_list, FloatVec3(0, 0, 5));
-    std::cout << test2.first << " " << test2.second << std::endl;
-
     return 0;
 }
