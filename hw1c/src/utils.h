@@ -6,14 +6,11 @@
 #ifndef SRC_UTILS_H_
 #define SRC_UTILS_H_
 
-// constant
-#define PI 3.14159265
-
 #include <string>
 #include "types.h"
 
 // write to the outputfile in PPM format
-void output_image(std::string filename, Image **checkerboard, const Scene &scene);
+void output_image(std::string filename, Color **checkerboard, int width, int height);
 
 // calculate the distance between two 2D points
 float distance_between_2D_points(FloatVec2 point1, FloatVec2 point2);
@@ -32,5 +29,11 @@ const MtlColorType &get_material(const Scene &scene, std::string obj_type, int o
 
 // get the unit normal vector at some point
 FloatVec3 get_normal(const Scene &scene, std::string obj_type, int obj_idx, FloatVec3 &p);
+
+// check whether texture map is enabled for the current object
+bool texture_map_enabled(const Scene &scene, std::string obj_type, int obj_idx);
+
+// get the intrinsic color from the texture coordinate
+Color get_color(const Scene &scene, std::string obj_type, int obj_idx, FloatVec3 &p);
 
 #endif // SRC_UTILS_H_

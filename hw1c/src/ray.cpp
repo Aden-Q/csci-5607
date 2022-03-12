@@ -21,10 +21,16 @@ Color shade_ray(const Scene &scene, std::string obj_type, int obj_idx, Ray &ray,
     // compute the intersection point
     FloatVec3 p = ray.extend(ray_t);
     const MtlColorType &cur_material = get_material(scene, obj_type, obj_idx);
+    Color Od_lambda = cur_material.Od_lambda;
+    // compute the coresponding color from the texture coordinate
+    if (texture_map_enabled(scene, obj_type, obj_idx))
+    {
+        Od_lambda = get_color(scene, obj_type, obj_idx, p);
+    }
     float Ir, Ig, Ib;
-    float sum_r = cur_material.ka * cur_material.Od_r;
-    float sum_g = cur_material.ka * cur_material.Od_g;
-    float sum_b = cur_material.ka * cur_material.Od_b;
+    float sum_r = cur_material.ka * Od_lambda.r;
+    float sum_g = cur_material.ka * Od_lambda.g;
+    float sum_b = cur_material.ka * Od_lambda.b;
     Color res_color;
     float f_att = 1;  // light source attenuation factor
     float depth_cue;  // depth cueing factor
@@ -84,6 +90,13 @@ Color light_shade(const Scene &scene, const Ray &ray, float ray_t, const Light &
     // get the intersection point
     FloatVec3 p = ray.extend(ray_t);
     const MtlColorType &cur_material = get_material(scene, obj_type, obj_idx);
+    Color Od_lambda = cur_material.Od_lambda;
+    Color Os_lambda = cur_material.Os_lambda;
+    // compute the coresponding color from the texture coordinate
+    if (texture_map_enabled(scene, obj_type, obj_idx))
+    {
+        Od_lambda = get_color(scene, obj_type, obj_idx, p);
+    }
     FloatVec3 N = get_normal(scene, obj_type, obj_idx, p);
     // calculate vector L
     FloatVec3 L;
@@ -122,9 +135,9 @@ Color light_shade(const Scene &scene, const Ray &ray, float ray_t, const Light &
 
     float term1 = std::max(float(0), N.dot(L));
     float term2 = pow(std::max(float(0), N.dot(H)), cur_material.n);
-    Ir = shadow_flag * (cur_material.kd * cur_material.Od_r * term1 + cur_material.ks * cur_material.Os_r * term2);
-    Ig = shadow_flag * (cur_material.kd * cur_material.Od_g * term1 + cur_material.ks * cur_material.Os_g * term2);
-    Ib = shadow_flag * (cur_material.kd * cur_material.Od_b * term1 + cur_material.ks * cur_material.Os_b * term2);
+    Ir = shadow_flag * (cur_material.kd * Od_lambda.r * term1 + cur_material.ks * Os_lambda.r * term2);
+    Ig = shadow_flag * (cur_material.kd * Od_lambda.g * term1 + cur_material.ks * Os_lambda.g * term2);
+    Ib = shadow_flag * (cur_material.kd * Od_lambda.b * term1 + cur_material.ks * Os_lambda.b * term2);
 
     return Color(Ir, Ig, Ib);
 }

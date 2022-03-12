@@ -10,7 +10,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/${fileBasenameNoExtension}",
-            "args": ["single_triangle_flag.txt"],
+            "args": ["single_triangle_texture.txt"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

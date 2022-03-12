@@ -39,25 +39,31 @@ int main(int argc, char **argv)
     view_window_init(scene, viewwindow, viewdist);
 
     // dynamically allocate a 2d array to store pixels in the image
-    Image **checkerboard = new Image*[scene.width];
+    Color **checkerboard = new Color *[scene.width];
     for (int i = 0; i < scene.width; i++) 
     {
-        checkerboard[i] = new Image[scene.height];
+        checkerboard[i] = new Color[scene.height];
     }
     // run ray tracing and assign a color for each pixel
-    for (int i = 0; i < scene.width; i++) 
+    for (int j = 0; j < scene.height; j++) 
     {
-        for (int j = 0; j < scene.height; j++) 
+        for (int i = 0; i < scene.width; i++) 
         {
             Color res_color = trace_ray(scene, viewwindow, i, j);
-            checkerboard[i][j].r = res_color.r * 255;
-            checkerboard[i][j].g = res_color.g * 255;
-            checkerboard[i][j].b = res_color.b * 255;
+            checkerboard[i][j].r = res_color.r;
+            checkerboard[i][j].g = res_color.g;
+            checkerboard[i][j].b = res_color.b;
         }
     }
 
     // produce a final image
-    output_image(filename + "_raytracer.ppm", checkerboard, scene);
+    output_image(filename + "_raytracer.ppm", checkerboard, scene.width, scene.height);
+
+    Triangle test_t = scene.triangle_list[0];
+    FloatVec3 test = test_t.barycentric(FloatVec3(0, 0, 5));
+    // std::cout << test.first << " " << test.second << " " << test.third << std::endl;
+    FloatVec2 test2 = test_t.texture_coordinate(scene.texture_coordinate_list, FloatVec3(0, 0, 5));
+    std::cout << test2.first << " " << test2.second << std::endl;
 
     return 0;
 }

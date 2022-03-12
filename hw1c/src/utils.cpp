@@ -10,7 +10,7 @@
 #include <algorithm>
 #include "utils.h"
 
-void output_image(std::string filename, Image **checkerboard, const Scene &scene)
+void output_image(std::string filename, Color **checkerboard, int width, int height)
 {
     std::ofstream outputstream(filename, std::ios::out);
 
@@ -23,17 +23,17 @@ void output_image(std::string filename, Image **checkerboard, const Scene &scene
     // create a ppm image in P3 format
     outputstream
         << "P3" << std::endl
-        << scene.width << " "
-        << scene.height << std::endl
-        << 255 << std::endl;
+        << width << " "
+        << height << std::endl
+        << MAX_VAL << std::endl;
     // fill in color for each pixel
-    for (uint32_t y = 0; y < scene.height; y++)
+    for (uint32_t y = 0; y < height; y++)
     {
-        for (uint32_t x = 0; x < scene.width; x++)
+        for (uint32_t x = 0; x < width; x++)
         {
-            outputstream << (int)checkerboard[x][y].r << " "
-                         << (int)checkerboard[x][y].g << " "
-                         << (int)checkerboard[x][y].b << " ";
+            outputstream << (int)(checkerboard[x][y].r * MAX_VAL) << " "
+                         << (int)(checkerboard[x][y].g * MAX_VAL) << " "
+                         << (int)(checkerboard[x][y].b * MAX_VAL) << " ";
             pixel_counter++;
             // start a new line if 4 pixels are filled
             if (pixel_counter % 4 == 0)
@@ -112,6 +112,7 @@ const MtlColorType &get_material(const Scene &scene, std::string obj_type, int o
     {
         return scene.material_list[scene.triangle_list[obj_idx].m_idx];
     }
+    // placeholder for other types of objects
     else
     {
         return scene.material_list[scene.triangle_list[obj_idx].m_idx];
@@ -128,8 +129,73 @@ FloatVec3 get_normal(const Scene &scene, std::string obj_type, int obj_idx, Floa
     {
         return scene.triangle_list[obj_idx].normal(scene.vertex_normal_list ,p);
     }
+    // placeholder for other types of objects
     else
     {
         return scene.triangle_list[obj_idx].normal(scene.vertex_normal_list, p);
     }
+}
+
+bool texture_map_enabled(const Scene &scene, std::string obj_type, int obj_idx)
+{
+    if (obj_type == "Sphere")
+    {
+        if (scene.sphere_list[obj_idx].texture_idx != -1)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    else if (obj_type == "Triangle")
+    {
+        return scene.triangle_list[obj_idx].texture_map;
+    }
+    // placeholder for other types of objects
+    else
+    {
+        return true;
+    }
+}
+
+Color get_color(const Scene &scene, std::string obj_type, int obj_idx, FloatVec3 &p)
+{
+    FloatVec2 texture_cor;
+    Texture texture;
+    if (obj_type == "Sphere")
+    {
+        texture_cor = scene.sphere_list[obj_idx].texture_coordinate(p);
+        texture = scene.texture_list[scene.sphere_list[obj_idx].texture_idx];
+    }
+    else if (obj_type == "Triangle")
+    {
+        texture_cor = scene.triangle_list[obj_idx].texture_coordinate(scene.texture_coordinate_list, p);
+        texture = scene.texture_list[scene.triangle_list[obj_idx].texture_idx];
+    }
+    // placeholder for other types of objects
+    else
+    {
+        texture_cor = scene.triangle_list[obj_idx].texture_coordinate(scene.texture_coordinate_list, p);
+        texture = scene.texture_list[scene.triangle_list[obj_idx].texture_idx];
+    }
+    float u = texture_cor.first;
+    float v = texture_cor.second;
+    // bi-linear interpolation to get the color from the texture image
+    float x = u * (texture.width - 1);
+    float y = v * (texture.height - 1);
+    int i = int(x);
+    int j = int(y);
+    float alpha = x - i;
+    float beta = y - j;
+    Color pixel0 = texture.checkerboard[i][j];
+    Color pixel1 = texture.checkerboard[i+1][j];
+    Color pixel2 = texture.checkerboard[i][j+1];
+    Color pixel3 = texture.checkerboard[i+1][j+1];
+
+    return Color(pixel0 * (1 - alpha) * (1 - beta) +
+                 pixel1 * alpha * (1 - beta) +
+                 pixel2 * (1 - alpha) * beta +
+                 pixel3 * alpha * beta);
 }

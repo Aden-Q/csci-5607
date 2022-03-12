@@ -9,6 +9,10 @@
 #include <vector>
 #include <cmath>
 
+// const
+#define MAX_VAL 255
+#define PI 3.14159265
+
 // 2d vector
 struct FloatVec2
 {
@@ -127,16 +131,39 @@ typedef struct ColorType
         : r(r_), g(g_), b(b_)
     {
     }
+
+    // overload + operator, addition
+    ColorType operator+(const ColorType &c) const
+    {
+        return ColorType(this->r + c.r, this->g + c.g, this->b + c.b);
+    }
+
+    // overload * operator, const multiple
+    ColorType operator*(float c) const
+    {
+        return ColorType(this->r * c, this->g * c, this->b * c);
+    }
 } Color;
 
 // material color type
 typedef struct MtlColorType
 {
-    float Od_r, Od_g, Od_b;
-    float Os_r, Os_g, Os_b;
+    Color Od_lambda;
+    Color Os_lambda;
     float ka, kd, ks;
     float n;
 } MtlColor;
+
+// texture image type
+typedef struct TextureType
+{
+    // size of the texture image
+    int width, height;
+    // maximum color value
+    int max_val;
+    // dynamically allocate a 2d array to store pixels in the image
+    Color **checkerboard;
+} Texture;
 
 typedef struct RayType
 {
@@ -160,6 +187,8 @@ typedef struct SphereType
     int obj_idx;
     // material color index
     int m_idx;
+    // texture index, -1 if not enable
+    int texture_idx;
     // location and radius of the sphere
     FloatVec3 center;
     float radius;
@@ -171,6 +200,19 @@ typedef struct SphereType
                           (p.second - this->center.second) / this->radius, 
                           (p.third - this->center.third) / this->radius);
     }
+
+    // compute the texture coordinate of a point on the sphere
+    FloatVec2 texture_coordinate(const FloatVec3 &p) const
+    {
+        FloatVec3 n = this->normal(p);
+        float nx = n.first;
+        float ny = n.second;
+        float nz = n.third;
+        // add 1e-6 to avoid division by 0
+        float u = 0.5 + std::atan2(ny, nx) / (2 * PI);
+        float v = std::acos(nz) / PI;
+        return FloatVec2(u, v);
+    }
 } Sphere;
 
 typedef struct CylinderType
@@ -179,6 +221,8 @@ typedef struct CylinderType
     int obj_idx;
     // material color index
     int m_idx;
+    // texture index, -1 if not enable
+    int texture_idx;
     // center location of the cylinder
     FloatVec3 center;
     // direction of the cylinder
@@ -204,29 +248,43 @@ typedef struct VertexNormalType
     FloatVec3 n;
 } VertexNormal;
 
+// for texture mapping
+typedef struct TextureCoordinateType
+{
+    // object id (index into the list)
+    int obj_idx;
+    // texture coordinate
+    FloatVec2 vt;
+} TextureCoordinate;
+
 typedef struct TriangleType
 {
     // object id (index into the list)
     int obj_idx;
     // material color index
     int m_idx;
+    // texture index, -1 if not enable
+    int texture_idx;
     // indices of three vertex defining the triangle
     const Vertex &v0, &v1, &v2;
     // smooth shading flag, not applied by default
     bool smooth_shade;
-    // are indices into the array of normal directions
+    // indices into the array of normal directions
     int vn0_idx, vn1_idx, vn2_idx;
     // texture mapping flag, not applied by default
     bool texture_map;
+    // indices into the array of texture coordinates
+    int vt0_idx, vt1_idx, vt2_idx;
 
     // get the unit length surface normal at a given point
     FloatVec3 normal(const std::vector<VertexNormal> &vertex_normal_list, const FloatVec3 &p) const
     {
-        if (!smooth_shade)
+        if (!this->smooth_shade)
         {
-            // if smooth shading not enabled, return plane normal
-            FloatVec3 e1 = v1.p - v0.p;
-            FloatVec3 e2 = v2.p - v0.p;
+            // in the case both smooth shading not enabled
+            // return plane normal
+            FloatVec3 e1 = this->v1.p - this->v0.p;
+            FloatVec3 e2 = this->v2.p - this->v0.p;
             return e1.cross(e2).normal();
         }
         else
@@ -240,7 +298,7 @@ typedef struct TriangleType
             FloatVec3 vn0 = vertex_normal_list[this->vn0_idx - 1].n;
             FloatVec3 vn1 = vertex_normal_list[this->vn1_idx - 1].n;
             FloatVec3 vn2 = vertex_normal_list[this->vn2_idx - 1].n;
-            return vn0 * alpha + vn1 * beta + vn2 * gamma;
+            return (vn0 * alpha + vn1 * beta + vn2 * gamma).normal();
         }
     }
 
@@ -266,6 +324,21 @@ typedef struct TriangleType
         float gamma = D_gamma / D;
         float alpha = 1 - beta - gamma;
         return FloatVec3(alpha, beta, gamma);
+    }
+
+    // compute the texture coordinate of a point on the triangle
+    FloatVec2 texture_coordinate(const std::vector<TextureCoordinate> &texture_coordinate_list, const FloatVec3 &p) const
+    {
+        FloatVec3 barycentric_coordinate = this->barycentric(p);
+        float alpha = barycentric_coordinate.first;
+        float beta = barycentric_coordinate.second;
+        float gamma = barycentric_coordinate.third;
+        FloatVec2 vt0 = texture_coordinate_list[this->vt0_idx - 1].vt;
+        FloatVec2 vt1 = texture_coordinate_list[this->vt1_idx - 1].vt;
+        FloatVec2 vt2 = texture_coordinate_list[this->vt2_idx - 1].vt;
+        float u = alpha * vt0.first + beta * vt1.first + gamma * vt2.first;
+        float v = alpha * vt0.second + beta * vt1.second + gamma * vt2.second;
+        return FloatVec2(u, v);
     }
 } Triangle;
 
@@ -321,6 +394,8 @@ typedef struct SceneType
     uint16_t width = 512, height = 512;
     // a list of materials
     std::vector<MtlColorType> material_list;
+    // a list of texture images
+    std::vector<Texture> texture_list;
     // a list of sphere objects
     std::vector<Sphere> sphere_list;
     // a list of cylinders
@@ -329,6 +404,8 @@ typedef struct SceneType
     std::vector<Vertex> vertex_list;
     // a list of vertex normals
     std::vector<VertexNormal> vertex_normal_list;
+    // a list of texture coordinates
+    std::vector<TextureCoordinate> texture_coordinate_list;
     // a list of triangles
     std::vector<Triangle> triangle_list;
     // a list of normal lights
@@ -339,13 +416,6 @@ typedef struct SceneType
     DepthCueing depth_cue;
     bool depth_cue_enable = false;
 } Scene;
-
-typedef struct ImageType
-{
-    unsigned char r;
-    unsigned char g;
-    unsigned char b;
-} Image;
 
 typedef struct ViewWindowType
 {
