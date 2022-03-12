@@ -42,8 +42,23 @@ FloatVec3 get_normal(const Scene &scene, std::string obj_type, int obj_idx, Floa
 // check whether texture map is enabled for the current object
 bool texture_map_enabled(const Scene &scene, std::string obj_type, int obj_idx);
 
+// check whether normal map is enabled for the current object
+bool normal_map_enabled(const Scene &scene, std::string obj_type, int obj_idx);
+
+// get the texture map for the current object
+const Texture &get_texture(const Scene &scene, std::string obj_type, int obj_idx);
+
+// get the normal map for the current object
+const Bump &get_normal_map(const Scene &scene, std::string obj_type, int obj_idx);
+
+// get the texture cooridnate of a point
+FloatVec2 get_texture_coordinate(const Scene &scene, std::string obj_type, int obj_idx, FloatVec3 &p);
+
 // get the intrinsic color from the texture coordinate
 Color get_color(const Scene &scene, std::string obj_type, int obj_idx, FloatVec3 &p);
+
+// get the modified normal from the normal map
+FloatVec3 normal_mapping(const Scene &scene, std::string obj_type, int obj_idx, FloatVec3 &p);
 
 // ray shading, obj_type is the type of the object, obj_idx is used to index a particular object list
 // ray_t is the parameter to define a ray

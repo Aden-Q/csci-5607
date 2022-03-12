@@ -149,14 +149,7 @@ bool texture_map_enabled(const Scene &scene, std::string obj_type, int obj_idx)
 {
     if (obj_type == "Sphere")
     {
-        if (scene.getSphereList()[obj_idx].getTextureidx() != -1)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return (scene.getSphereList()[obj_idx].getTextureidx() != -1);
     }
     else if (obj_type == "Triangle")
     {
@@ -169,36 +162,90 @@ bool texture_map_enabled(const Scene &scene, std::string obj_type, int obj_idx)
     }
 }
 
-Color get_color(const Scene &scene, std::string obj_type, int obj_idx, FloatVec3 &p)
+bool normal_map_enabled(const Scene &scene, std::string obj_type, int obj_idx)
+{
+    if (obj_type == "Sphere")
+    {
+        return scene.getSphereList()[obj_idx].getBumpidx() != -1;
+    }
+    else if (obj_type == "Triangle")
+    {
+        return (scene.getTriangleList()[obj_idx].getBumpidx() != -1);
+    }
+    // placeholder for other types of objects
+    else
+    {
+        return true;
+    }
+}
+
+const Texture &get_texture(const Scene &scene, std::string obj_type, int obj_idx)
+{
+    if (obj_type == "Sphere")
+    {
+        const Texture &texture = scene.getTextureList()[scene.getSphereList()[obj_idx].getTextureidx()];
+        return texture;
+    }
+    else if (obj_type == "Triangle")
+    {
+        const Texture &texture = scene.getTextureList()[scene.getTriangleList()[obj_idx].getTextureidx()];
+        return texture;
+    }
+    // placeholder for other types of objects
+    else
+    {
+        const Texture &texture = scene.getTextureList()[scene.getTriangleList()[obj_idx].getTextureidx()];
+        return texture;
+    }
+}
+
+const Bump &get_normal_map(const Scene &scene, std::string obj_type, int obj_idx)
+{
+    if (obj_type == "Sphere")
+    {
+        const Bump &bump = scene.getBumpList()[scene.getSphereList()[obj_idx].getBumpidx()];
+        return bump;
+    }
+    else if (obj_type == "Triangle")
+    {
+        const Bump &bump = scene.getBumpList()[scene.getTriangleList()[obj_idx].getBumpidx()];
+        return bump;
+    }
+    // placeholder for other types of objects
+    else
+    {
+        const Bump &bump = scene.getBumpList()[scene.getTriangleList()[obj_idx].getBumpidx()];
+        return bump;
+    }
+}
+
+FloatVec2 get_texture_coordinate(const Scene &scene, std::string obj_type, int obj_idx, FloatVec3 &p)
 {
     FloatVec2 texture_cor;
-    Color **checkerboard = NULL;
-    int width, height;
     if (obj_type == "Sphere")
     {
         texture_cor = scene.getSphereList()[obj_idx].texture_coordinate(p);
-        const Texture& texture = scene.getTextureList()[scene.getSphereList()[obj_idx].getTextureidx()];
-        checkerboard = texture.getCheckerboard();
-        width = texture.getWidth();
-        height = texture.getHeight();
     }
     else if (obj_type == "Triangle")
     {
         texture_cor = scene.getTriangleList()[obj_idx].texture_coordinate(scene, p);
-        const Texture &texture = scene.getTextureList()[scene.getTriangleList()[obj_idx].getTextureidx()];
-        checkerboard = texture.getCheckerboard();
-        width = texture.getWidth();
-        height = texture.getHeight();
     }
     // placeholder for other types of objects
     else
     {
         texture_cor = scene.getTriangleList()[obj_idx].texture_coordinate(scene, p);
-        const Texture &texture = scene.getTextureList()[scene.getTriangleList()[obj_idx].getTextureidx()];
-        checkerboard = texture.getCheckerboard();
-        width = texture.getWidth();
-        height = texture.getHeight();
     }
+
+    return texture_cor;
+}
+
+Color get_color(const Scene &scene, std::string obj_type, int obj_idx, FloatVec3 &p)
+{
+    FloatVec2 texture_cor = get_texture_coordinate(scene, obj_type, obj_idx, p);
+    const Texture &texture = get_texture(scene, obj_type, obj_idx);
+    int width = texture.getWidth();
+    int height = texture.getHeight();
+    Color **checkerboard = texture.getCheckerboard();
     float u = texture_cor.first;
     float v = texture_cor.second;
     // bi-linear interpolation to get the color from the texture image
@@ -217,6 +264,74 @@ Color get_color(const Scene &scene, std::string obj_type, int obj_idx, FloatVec3
                  pixel1 * alpha * (1 - beta) +
                  pixel2 * (1 - alpha) * beta +
                  pixel3 * alpha * beta);
+}
+
+FloatVec3 normal_mapping(const Scene &scene, std::string obj_type, int obj_idx, FloatVec3 &p)
+{
+    // first get the texture coordinate of the object
+    FloatVec2 texture_cor = get_texture_coordinate(scene, obj_type, obj_idx, p);
+    const Texture &texture = get_texture(scene, obj_type, obj_idx);
+    const Bump &bump = get_normal_map(scene, obj_type, obj_idx);
+    // get the surface normal
+    FloatVec3 N = get_normal(scene, obj_type, obj_idx, p);
+    int width = texture.getWidth();
+    int height = texture.getHeight();
+    // pixel coordinate
+    float u = texture_cor.first;
+    float v = texture_cor.second;
+    float x = u * (width - 1);
+    float y = v * (height - 1);
+    // convert to pixel coordinate in the normal map
+    // use nearest neighboor for simplicity
+    int i = std::round(x);
+    int j = std::round(y);
+    // retrieve the normal direction from the normal map
+    FloatVec3 m = bump.getNormal(i, j);
+    // calculate the modified normal
+    // consider differently for spheres and triangles
+    if (obj_type == "Sphere")
+    {
+        FloatVec3 N = get_normal(scene, obj_type, obj_idx, p);
+        FloatVec3 T(-N.second / sqrt(N.first * N.first + N.second * N.second),
+                    N.first / sqrt(N.first * N.first + N.second * N.second),
+                    0);
+        FloatVec3 B = N.cross(T);
+        // use the TBN transformation to transform m
+        float nx = T.first * m.first + B.first * m.second + N.first * m.third;
+        float ny = T.second * m.first + B.second * m.second + N.second * m.third;
+        float nz = T.third * m.first + B.third * m.second + N.third * m.third;
+        return FloatVec3(nx, ny, nz);
+    }
+    else if (obj_type == "Triangle")
+    {
+        // get three vertices of the triangle
+        const Triangle& triangle = scene.getTriangleList()[obj_idx];
+        FloatVec3 p0 = scene.getVertexList()[triangle.getV0idx()- 1].p;
+        FloatVec3 p1 = scene.getVertexList()[triangle.getV1idx() - 1].p;
+        FloatVec3 p2 = scene.getVertexList()[triangle.getV2idx() - 1].p;
+        FloatVec2 texture_cor0 = scene.getTextureCoordinateList()[triangle.getVt0idx() - 1].vt;
+        FloatVec2 texture_cor1 = scene.getTextureCoordinateList()[triangle.getVt1idx() - 1].vt;
+        FloatVec2 texture_cor2 = scene.getTextureCoordinateList()[triangle.getVt2idx() - 1].vt;
+        float delta_u1 = texture_cor1.first - texture_cor0.first;
+        float delta_v1 = texture_cor1.second - texture_cor0.second;
+        float delta_u2 = texture_cor2.first - texture_cor1.first;
+        float delta_v2 = texture_cor2.second - texture_cor1.second;
+        FloatVec3 e1 = p1 - p0;
+        FloatVec3 e2 = p2 - p1;
+        // calculate matrices T and B
+        FloatVec3 T = (e1 * delta_v2 - e2 * delta_v1) / (1 / (delta_u1 * delta_v2 - delta_v1 * delta_u2));
+        FloatVec3 B = (e1 * (-delta_u2) + e2 * delta_u1) / (1 / (delta_u1 * delta_v2 - delta_v1 * delta_u2));
+        // use the TBN transformation to transform m
+        float nx = T.first * m.first + B.first * m.second + N.first * m.third;
+        float ny = T.second * m.first + B.second * m.second + N.second * m.third;
+        float nz = T.third * m.first + B.third * m.second + N.third * m.third;
+        return FloatVec3(nx, ny, nz);
+    }
+    // placeholder for other types of objects
+    else
+    {
+        return get_normal(scene, obj_type, obj_idx, p);
+    }
 }
 
 Color shade_ray(const Scene &scene, std::string obj_type, int obj_idx, Ray &ray, float ray_t)
@@ -302,14 +417,19 @@ Color light_shade(const Scene &scene, const Ray &ray, float ray_t, const Light &
     const MaterialColor &cur_material = get_material(scene, obj_type, obj_idx);
     Color Od_lambda = cur_material.getOd();
     Color Os_lambda = cur_material.getOs();
+    FloatVec3 N = get_normal(scene, obj_type, obj_idx, p);
+    // calculate vector L
+    FloatVec3 L;
     // compute the coresponding color from the texture coordinate
     if (texture_map_enabled(scene, obj_type, obj_idx))
     {
         Od_lambda = get_color(scene, obj_type, obj_idx, p);
+        if (normal_map_enabled(scene, obj_type, obj_idx))
+        {
+            // if the normal map option is enabled, modified the current surface normal
+            N = normal_mapping(scene, obj_type, obj_idx, p);
+        }
     }
-    FloatVec3 N = get_normal(scene, obj_type, obj_idx, p);
-    // calculate vector L
-    FloatVec3 L;
     if (std::abs(light.w - 1) < 1e-6) // point light source
     {
         L = FloatVec3(light.x - p.first, light.y - p.second, light.z - p.third).normal();

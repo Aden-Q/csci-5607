@@ -34,6 +34,7 @@ int Scene::parseScene(std::string filename)
     char str_var[10][50];
     int m_idx = -1;
     int texture_idx = -1;
+    int bump_idx = -1;
     int obj_sphere_idx = 0;
     int obj_cylinder_idx = 0;
     int obj_vertex_idx = 1;  // vertex index starts from 1
@@ -176,19 +177,45 @@ int Scene::parseScene(std::string filename)
                     for (int i = 0; i < texture.getWidth(); i++)
                     {
                         texture_inputstream >> int_var[3] >> int_var[4] >> int_var[5];
-                        checkerboard[i][j].setR(int_var[3] * 1.0 / MAX_VAL);
-                        checkerboard[i][j].setG(int_var[4] * 1.0 / MAX_VAL);
-                        checkerboard[i][j].setB(int_var[5] * 1.0 / MAX_VAL);
+                        checkerboard[i][j].setR(int_var[3] * 1.0 / texture.getMaxVal());
+                        checkerboard[i][j].setG(int_var[4] * 1.0 / texture.getMaxVal());
+                        checkerboard[i][j].setB(int_var[5] * 1.0 / texture.getMaxVal());
                     }
                 }
                 this->texture_list.push_back(texture);
+            }
+        }
+        else if (keyword == "bump")
+        {
+            // read in the filename for the normal map
+            if (sscanf(line.c_str(), "bump %s", str_var[0]) == 1)
+            {
+                // update the current material color
+                bump_idx++;
+                // open the texture image and bind it to a input stream
+                std::ifstream bump_inputstream(str_var[0], std::ios::in | std::ios::binary);
+                // read the header information
+                bump_inputstream >> str_var[1] >> int_var[0] >> int_var[1] >> int_var[2];
+                Bump bump(int_var[0], int_var[1], int_var[2]);
+                FloatVec3 **checkerboard = bump.getCheckerboard();
+                for (int j = 0; j < bump.getHeight(); j++)
+                {
+                    for (int i = 0; i < bump.getWidth(); i++)
+                    {
+                        bump_inputstream >> int_var[3] >> int_var[4] >> int_var[5];
+                        checkerboard[i][j].first = (int_var[3] * 1.0 / bump.getMaxVal() * 2 - 1);
+                        checkerboard[i][j].second = (int_var[4] * 1.0 / bump.getMaxVal() * 2 - 1);
+                        checkerboard[i][j].third = (int_var[5] * 1.0 / bump.getMaxVal() * 2 - 1);
+                    }
+                }
+                this->bump_list.push_back(bump);
             }
         }
         else if (keyword == "sphere")
         {
             // store parameters for the sphere
             iss >> float_var[0] >> float_var[1] >> float_var[2] >> float_var[3];
-            Sphere sphere(obj_sphere_idx++, m_idx, texture_idx, 
+            Sphere sphere(obj_sphere_idx++, m_idx, texture_idx, bump_idx,
                           FloatVec3(float_var[0], float_var[1], float_var[2]),
                           float_var[3]);
             this->sphere_list.push_back(sphere);
@@ -202,6 +229,7 @@ int Scene::parseScene(std::string filename)
             Cylinder cylinder(obj_cylinder_idx++,
                               m_idx,
                               texture_idx,
+                              bump_idx,
                               FloatVec3(float_var[0], float_var[1], float_var[2]),
                               FloatVec3(float_var[3], float_var[4], float_var[5]),
                               float_var[6],
@@ -248,6 +276,7 @@ int Scene::parseScene(std::string filename)
                 triangle.setID(obj_triangle_idx++);
                 triangle.setMidx(m_idx);
                 triangle.setTextureidx(-1);
+                triangle.setBumpidx(bump_idx);
                 triangle.setV0idx(int_var[0]);
                 triangle.setV1idx(int_var[1]);
                 triangle.setV2idx(int_var[2]);
@@ -264,6 +293,7 @@ int Scene::parseScene(std::string filename)
                 triangle.setID(obj_triangle_idx++);
                 triangle.setMidx(m_idx);
                 triangle.setTextureidx(-1);
+                triangle.setBumpidx(bump_idx);
                 triangle.setV0idx(int_var[0]);
                 triangle.setV1idx(int_var[2]);
                 triangle.setV2idx(int_var[4]);
@@ -284,6 +314,7 @@ int Scene::parseScene(std::string filename)
                 triangle.setID(obj_triangle_idx++);
                 triangle.setMidx(m_idx);
                 triangle.setTextureidx(texture_idx);
+                triangle.setBumpidx(bump_idx);
                 triangle.setV0idx(int_var[0]);
                 triangle.setV1idx(int_var[2]);
                 triangle.setV2idx(int_var[4]);
@@ -303,17 +334,18 @@ int Scene::parseScene(std::string filename)
                 triangle.setID(obj_triangle_idx++);
                 triangle.setMidx(m_idx);
                 triangle.setTextureidx(texture_idx);
+                triangle.setBumpidx(bump_idx);
                 triangle.setV0idx(int_var[0]);
                 triangle.setV1idx(int_var[3]);
                 triangle.setV2idx(int_var[6]);
                 triangle.setSmoothShade(true);
-                triangle.setVn0idx(int_var[1]);
-                triangle.setVn1idx(int_var[4]);
-                triangle.setVn2idx(int_var[7]);
+                triangle.setVn0idx(int_var[2]);
+                triangle.setVn1idx(int_var[5]);
+                triangle.setVn2idx(int_var[8]);
                 triangle.setTextureMap(true);
-                triangle.setVt0idx(int_var[2]);
-                triangle.setVt1idx(int_var[5]);
-                triangle.setVt2idx(int_var[8]);
+                triangle.setVt0idx(int_var[1]);
+                triangle.setVt1idx(int_var[4]);
+                triangle.setVt2idx(int_var[7]);
                 this->triangle_list.push_back(triangle);
             }
         }

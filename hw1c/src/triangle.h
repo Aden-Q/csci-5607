@@ -15,7 +15,7 @@ class Triangle
 {
     public:
         // constructor
-        Triangle(int obj_idx = -1, int m_idx = -1, int texture_idx = -1,
+        Triangle(int obj_idx = -1, int m_idx = -1, int texture_idx = -1, int bump_idx = -1,
                  int v0_idx = -1, int v1_idx = -1, int v2_idx = -1,
                  bool smooth_shade = false,
                  int vn0_idx = -1, int vn1_idx = -1, int vn2_idx = -1,
@@ -25,6 +25,7 @@ class Triangle
             this->obj_idx = obj_idx;
             this->m_idx = m_idx;
             this->texture_idx = texture_idx;
+            this->bump_idx = bump_idx;
             // indices into three vertexes
             this->v0_idx = v0_idx;
             this->v1_idx = v1_idx;
@@ -43,6 +44,7 @@ class Triangle
         int getID() const { return this->obj_idx; }
         int getMidx() const { return this->m_idx; }
         int getTextureidx() const { return this->texture_idx; }
+        int getBumpidx() const { return this->bump_idx; }
         int getV0idx() const { return this->v0_idx; }
         int getV1idx() const { return this->v1_idx; }
         int getV2idx() const { return this->v2_idx; }
@@ -59,6 +61,7 @@ class Triangle
         void setID(int obj_idx) { this->obj_idx = obj_idx; }
         void setMidx(int m_idx) { this->m_idx = m_idx; }
         void setTextureidx(int texture_idx) { this->texture_idx = texture_idx; }
+        void setBumpidx(int bump_idx) { this->bump_idx = bump_idx; }
         void setV0idx(int v0_idx){ this->v0_idx = v0_idx; }
         void setV1idx(int v1_idx) { this->v1_idx = v1_idx; }
         void setV2idx(int v2_idx) { this->v2_idx = v2_idx; }
@@ -86,6 +89,8 @@ class Triangle
         int m_idx;
         // texture index, -1 if not enable
         int texture_idx;
+        // normal map index, -1 if not enable
+        int bump_idx;
         // indices of three vertex defining the triangle
         int v0_idx, v1_idx, v2_idx;
         // smooth shading flag, not applied by default

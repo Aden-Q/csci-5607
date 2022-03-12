@@ -12,12 +12,13 @@ class Cylinder
 {
     public:
         // constructor
-        Cylinder(int obj_idx, int m_idx, int texture_idx, FloatVec3 center, FloatVec3 dir,
+        Cylinder(int obj_idx, int m_idx, int texture_idx, int bump_idx, FloatVec3 center, FloatVec3 dir,
                  float radius, float length)
         {
             this->obj_idx = obj_idx;
             this->m_idx = m_idx;
             this->texture_idx = texture_idx;
+            this->bump_idx = bump_idx;
             this->center = center;
             this->dir = dir;
             this->radius = radius;
@@ -28,6 +29,7 @@ class Cylinder
         int getID() const { return this->obj_idx; }
         int getMidx() const { return this->m_idx; }
         int getTextureidx() const { return this->texture_idx; }
+        int getBumpidx() const { return this->bump_idx; }
         float getRadius() const { return this->radius; }
         float getLength() const { return this->length; }
         FloatVec3 getCenter() const { return this->center; }
@@ -37,6 +39,7 @@ class Cylinder
         void setID(int obj_idx) { this->obj_idx = obj_idx; }
         void setMidx(int m_idx) { this->m_idx = m_idx; }
         void setTextureidx(int texture_idx) { this->texture_idx = texture_idx; }
+        void setBumpidx(int bump_idx) { this->bump_idx = bump_idx; }
         void setRadius(float radius) { this->radius = radius; }
         void setLength(float length) { this->length = length; }
         void setCenter(const FloatVec3 &center) { this->center = center; }
@@ -49,6 +52,8 @@ class Cylinder
         int m_idx;
         // texture index, -1 if not enable
         int texture_idx;
+        // normal map index, -1 if not enable
+        int bump_idx;
         // center location of the cylinder
         FloatVec3 center;
         // direction of the cylinder

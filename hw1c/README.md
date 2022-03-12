@@ -2,26 +2,28 @@
 
 ## Description
 
-The program reads scene description from a file (as a command line argument). It runs a ray tracing algorithm to determine the intersection point between the ray and objects in the scene. Then it use the Blinn-Phong illumination model to define the color for that point. The program also implements shadows using backward ray tracing.
+The program reads scene description from a file (as a command line argument). It runs a ray tracing algorithm to determine the intersection point of a ray with objects in the scene. The program is capable of rendering triangles using both flat shading and smooth shading.  The program also implements texture mapping, for which is is capable of rendering texture spheres and triangles.
 
 It generates an illuminated image in `ppm` format.
 
 ## File Organization
 
 + `src`: all the source code and makefile
-+ `input`: scene description input file for testing
-+ `image`: images used in the README, comparing different parameter settings
++ `input`: scene description input files for testing
++ `output`: output files by the program
++ `image`: images used in the README
 + `test_case`: several cases to test the correctness and performance of the program, each folder contains a result image along with the corresponding input file
 + `showcase`: the folder contains a showcase image along with the corresponding scene description input file
 
 ## Implementation Details
 
-1. Construct the scene using `parse_scene`.
+1. Create a `Scene` object, read from the scene description file, and construct the scene using `parseScene`.
 2. Construct a viewing window using `view_window_init`.
 3. For each pixel in the image, run a ray tracing algorithm using `trace_ray`.
 4. For each ray, checking whether it intersects with any object in the scene, using `intersect_check`.
-5. When intersecting, use the Blinn-Phong illumination model and shadowing effects to determine the color for that point.
-6. Once all pixels in the image are rendered, generate an output image in `ppm` format.
+5. When intersecting, if texture mapping or smooth shading enabled, run them separately to determine the normal direction at each point, and the diffuse color to retrieve.
+6. Use the Blinn-Phong illumination model and shadowing effects to determine the color for that pixel.
+7. Once all pixels in the image are rendered, generate an output image in `ppm` format.
 
 ## Blinn-Phong illumination
 
@@ -52,123 +54,256 @@ Parameter specification:
 ## Usage
 
 + Enter the `src` foler.
-+ Type `clear && make clean && make && ./raytracer ../input/hw1b/ray_input1b.txt`. The last command argument is the path to the scene description file.
-+ It will generate a `ppm` file in the same folder as the input file if the input file format is correct.
++ Type `clear && make clean && make && ./raytracer ../input/hw1c/ray_input1b.txt`. The last command argument is the path to the scene description file.
++ It will generate a `ppm` file in the `output` folder as the input file if the input file format is correct.
 
 ## Showcase Image
 
-![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202202202251909.jpg)
 
-## Effects of illumination model Parameters
 
-### Effects of $O_{dl}$
 
-From left to right, use $O_{dl}=(1,0,0), (0,1,0), (0,0,1)$ (Red, Green, and Blue) separately. In all images, $O_{sl} = (1,1,1)$, $k_a = 0.1$, $k_d = 0.5$, $k_s = 0.3$, $n = 20$.
+## Ray/Triangle Intersection
 
-Because $O_{dl}$ defines the intrinsic color of the objects. The visual appearance changes when this parameter varies.
+To determine the intersection point of a ray with a triangle. We need to do two things:
 
-![img](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202202201625536.jpg)
++ Determine whether the ray intersects the plane containing the triangle.
++ If the intersection point exists, determine whether the point is inside the triangle.
 
-### Effects of $O_{sl}$
+### Ray/Plane Intersection
 
-From left to right, use $O_{sl}=(1,1,1), (1,1,0), (0,0,1)$ (White, Yellow, and Blue) separately. In all images, $O_{dl} = (1,0,0)$, $k_a = 0.1$, $k_d = 0.5$, $k_s = 0.3$, $n = 20$.
+Let's use $p_0$, $p_1$, and $p_2$ to represent three verticesof the triangle.
 
-The parameter $O_{sl}$ specifies the specular color of the material. We can see that in the central area of the ball where light reflecetion is the most intensive, its apprearance is controlled by this parameter.
+Then we can define 
 
-![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202202201637072.jpg)
+$$
+e_1 = p_1 - p_0 \\
+e_2 = p_2 - p_0 \\
+n = (n_x, n_y, n_z) = e_1 \times e_2 \\
+$$
 
-### Effects of $k_a$
+Where $n$ is the surface normal to the plane. We can write the plane equation as
+$$
+Ax + By + Cz + D = 0
+$$
+Where $(A,B,C) = (n_x,n_y,n_z)$. Substitute the value a vertex into the equation above and we can solve for the unknown $D$.
 
-From left to right, use $k_a=0.1, 0.5, 0.8$ separately. In all images, $O_{dl}=(1,0,0)$, $ O_{sl} = (1,1,1)$, $k_d = 0.5$, $k_s = 0.3$, $n = 20$.
+Let the ray equation be expressed as
+$$
+x = x_0 + t x_d \\
+y = y_0 + t y_d \\
+z = z_0 + t z_d \\
+$$
+Substitute the ray equation into the plane equation and solve for $t$
+$$
+t = -(Ax_0 + By_0 + Cz_0 + D) / (Ax_d + By_d + Cz_d)
+$$
+When the denominator is zero, the ray and the plane are parallel with each other, thus no intersection. Otherwise when $t > 0$, they are intersected.
 
-This parameter specifies to what extent the intrinsic color (in this case Red) dominates the final color of a pixel, and uniformly reflects light that arrives at it indirectly. As we increase this parameter, we can see that the object's color is more close to pure Red and more distorted.
+Let $p = (p_x, p_y, p_z)$ Represent the intersection point.
 
-![img](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202202201644663.jpg)
+### Barycentric Coordinates
 
-### Effects of $k_d$
+The tool we use to test whether a point is inside a triangle is called *barycentric coordinates*.
 
-From left to right, use $k_d=0.1, 0.5, 0.8$ separately. In all images, $O_{dl}=(1,0,0)$, $ O_{sl} = (1,1,1)$, $k_a = 0.1$, $k_s = 0.3$, $n = 20$.
+![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202203121237257.png)
 
-This parameter is the weight of the diffuse term, it specifies to what extent the object reflect directly incoming light in a diffuse manner. As we increase this parameter, we can see that the visual appearance becomes brighter and brighter.
+As the image above shows, given a triangle and a point on the same plane, the point can be written as a linear combination of three vertexes of the triangle
+$$
+p &= p_0 + \beta (p_1 - p_0) + \gamma (p_2-p_0) \\
+&= (1-\beta-\gamma)p_0 + \beta p_1 + \gamma p_2 \\
+&= \alpha p_0 + \beta p_1 + \gamma p_2 \\
+$$
+Where $(\alpha, \beta, \gamma)$ is the barycentric coordinate of point $p$. It can be obtained by solving a simple linear system  equations.
 
-![img](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202202201652701.jpg)
+We have the following rule to test whether a point is inside a triangle.
 
-### Effects of $k_s$
+>Given the barycentric coordinate of a point $p$: ($\alpha, \beta, \gamma$), the point is inside the triangle is equivalent to the following conditions:
+>
+>+   $0 < \alpha < 1$
+>+   $0 < \beta < 1$
+>+   $0 < \gamma < 1$
 
-From left to right, use $k_s=0.1, 0.3, 0.8$ separately. In all images, $O_{dl}=(1,0,0)$, $ O_{sl} = (1,1,1)$, $k_a = 0.1$, $k_d = 0.5$, $n = 20$.
+## Flat Shading
 
-This parameter is the weight of the specular term, it specifies to what extent the object reflect directly incoming light in a specular manner.
+To render triangles using flag shading, all points inside the triangle use the same surface normal which is the normal to the plane containing the triangle.
 
-![img](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202202201657232.jpg)
+Given three verticesof a triangle $(p_0, p_1, p_2)$. The surface normal can be calculated as
+$$
+e_1 = p_1 - p_0 \\
+e_2 = p_2 - p_0 \\
+n = (n_x, n_y, n_z) = \frac{e_1 \times e_2}{||e_1 \times e_2||}\\
+$$
+Next we use this unit normal vector to evaluate the Blinn-Phong illumination equation.
 
-### Effects of $n$
+The image below shows the effect of flat shading a triangle
 
-From left to right, use $n=2, 20, 50$ separately. In all images, $O_{dl}=(1,0,0)$, $ O_{sl} = (1,1,1)$, $k_a = 0.1$, $k_d = 0.5$, $k_s = 0.3$.
+![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202203121330230.jpg)
 
-This parameter also controls the specular term, it specifies to what extent the object reflect directly incoming light in a specular manner. As we can see from the image below, when $n$ is very small, the resulting image is distorted and the illumination model cannot simulate the visual appearance of objects very well.
+## Smooth Shading
 
-![img](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202202201700019.jpg)
+For smooth shading, the surface normal of a point inside the triangle is determined by interpolating from the three normal directions defined at the three triangle vertices. Using barycentric coordiantes as weights, namely
+$$
+p = \alpha p_0 + \beta p_1 + \gamma p_2 \\
+n_{p} = \alpha n_{p_1} + \beta n_{p_2} + \gamma n_{p_3}
+$$
+Then we use this interpolated surface normal to evaluate the Blinn-Phong illumination equation.
 
-### Point Light Source VS. Directional Light Source
+The image below shows the effect of flat shading a triangle
 
-We use the same settings. The only difference is that: the left image is produced by using a point light source and the right one is used by using a directional light source. We can see that reflection effects of light on the surface of the object can be better captured by using a point light source.
+![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202203121330544.jpg)
 
-![img](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202202201707023.jpg)
+## Texture Mapping
 
-### Use of Multiple Light Source
+Next we map a texture image onto a object in the scene.
 
-The image below shows the effects of using multiple light sources, including two point light sources and one directional light source. We can obviously see the effects of reflection on objects surface corresponding to different light sources.
+Texture coordiantes define the mapping between the pixels in a texture image, parametrized in a 2D space $(i,j)$, to points on a surface $(u,v)$. Namely we have the correspondence
+$$
+f: (i,j) \rightarrow (u,v)
+$$
+![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202203121333601.png)
 
-![img](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202202202256927.jpg)
+The image above is an example texture image along with the texture coordinates. The top-left point has $(u,v)=(0,0)$, top-right has $(u,v) = (1,0)$, bottom-left $(u,v)=(0,1)$, bottom right $(u,v) = (1,1)$.
 
-### Conclusion
+The program uses the texture coordinate of a point to retrieve the (diffuse) color from a texture image.
 
-In conclusion, we can see that the illumination model does not always work well. In some settings such as very small $n$, very large $k_s$, very small $k_d$, very large $k_a$, the resulting images are more likely distorted.
+### Texture Mapping on a Sphere
+
+To get the correspondence between a point on a sphere and a texture coordinate, we use the polar coordiante of a sphere
+$$
+x = x_c + r\cos \theta \sin \phi \\
+y = y_c + r\sin \theta \sin \phi \\
+z = z_c + r\cos \phi
+$$
+Where $r$ is the radius of the sphere which is a constant, $\theta \in (0,2\pi)$, $\phi \in (0,pi)$. We define a map between $(\theta, \phi)$ and $(u,v)$ as
+$$
+N = (N_x, N_y, N_z) \\
+\theta = \atan(N_y/N_x) \\
+\phi = \acos(N_z) \\
+u = (\theta + \pi) / (2\pi) \\
+v = \phi / pi
+$$
+Where $N=(N_x,N_y,N_z)$ is the unit surface normal vector at the ray/sphere intersection point.
+
+Once we get the texture coordiante $(u,v)$,  we calculate the pixel coordinate in the texture image using bi-linear interpolation
+$$
+x = u\cdot (width-1) \\
+y = v\cdot (height-1) \\
+i = int(x); \alpha = x-i; j = int(y); \beta = y-j \\
+color = (1-\alpha)(1-\beta)image(i,j) + (\alpha)(1-\beta)image(i+1,j) \\
++ (1-\alpha)(\beta)image(i,j+1) + (\alpha)(\beta)image(i+1,j+1)
+$$
+Bi-linear interpolation rather than nearest neighboor search has the advantage that it gives less blocky-looking results when the resolution of the texture is much lower than the resolution of the image being generated in the area around the point being rendered (referred as *texture maginification*). We could have use more advancede techiniques such as *MIP Mapping*.
+
+Here is an example of texture mapping on spheres
+
+![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202203121352491.jpg)
+
+### Texture Mapping on a Triangle
+
+To map a texture image onto a triangle, we use barycentric coordinates again. Suppoing that we have
+$$
+p = \alpha p_0 + \beta p_1 + \gamma p_2
+$$
+And $(u_0, v_0)$, $(u_1, v_1)$, $(u_2,v_2)$ are three texture coordinates of three vertices separately. Then we can calcualte the texture coordinate of point $p$ as
+$$
+u = \alpha u_0 + \beta u_1 + \gamma u_2 \\
+v = \alpha v_0 + \beta v_1 + \gamma v_2 \\
+$$
+Then we can do similar things to retrieve the color from the texture image as above.
+
+Here is an example of texture mapping on triangles
+
+![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202203121404135.jpg)
 
 ## Extra Credit
 
-### Soft Shadows
+### Normal Mapping
 
-### Light Source Attenuation
+**The code for implementing normal mapping can be found in file `utils.h` and `utils.cpp`, in the function `normal_mapping`.**
 
-In real cases, the energy of a light will attenuate when the light's travel distance increases. As a result of which the intensity of the illumination (from a point light source) will also fall off with distance. We use the following formula to emulate the effect of light source attenuation:
+For each object that uses texture mapping, it is also possible for the user to specify a normal map to modifies its normal direction. The normal map specifies a modification to the normal vector at a per-pixel level.
 
+A normal map modifies the $(n_x, n_y, n_z)$ components of the unit surface normal vector that is used when computing the illumination at a point on a surface. To implement normal map, we need to consider differently for different types of objects.
+
+#### Normal Mapping on Spheres
+
+First for a ray/sphere intersection point, we can calculate its texture coordinate as described above. Once we have the texture coordinate, we convert it to pixel coordinate using neareat neighboor. Then we can retrieve the corresponding value in its normal map, namely, we have
 $$
-I_\lambda = k_aO_{d\lambda} + \sum_{i}^{nlights}f_{att_i} \cdot S_i \cdot IL_{i\lambda}[k_dO_{d\lambda} (\vec{N} \cdot \vec{L}) + k_sO_{s\lambda} (\vec{N} \cdot \vec{H})^n] \\
-f_{att_i} = \frac{1}{c_1+c_2d + c_3d^2}
+m = (m_x, m_y, m_z) = normal\_map(i, j)
 $$
+Where $(i,j)$ is the pixel coordinates of the point on the sphere.
 
-The following image shows the effects of light source attenuation, as we can see, when the object gets farther and farther from the light source, it becomes darker and darker. From left to right: without attenuation, with attenuation and become more and more distant from the light source
-
-![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202202201821850.jpg)
-
-The following image shows the effects of light source attenuation for multiple objects insides a same scene:
-
-![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202202201829548.jpg)
-
-### Depth Cueing
-
-Depth cueing can be applied to a scene to simulatethe effects of atmospheric attenuation. When depth cueing is enabled, the illumination color of a surface point is blended with a user specified depth cue color. We use the following formula to apply depth cueing:
-
+Then we can use the following matrix to get the modified normal vector
 $$
-I_\lambda' = (\alpha_{dc})I_{\lambda} + (1-\alpha_{dc})I_{dc\lambda}
+\begin{bmatrix}
+n_x \\
+n_y \\
+n_z \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+T_x & B_x & N_x \\
+T_y & B_y & N_y \\
+T_z & B_z & N_z \\
+\end{bmatrix}
+\begin{bmatrix}
+m_x \\
+m_y \\
+m_z \\
+\end{bmatrix}
 $$
+In the matrix equation above, $N = (N_x, N_y, N_z)$ is our original surface normal calcualted at point $p$. Vector $T$ is defined as
+$$
+T = (-\frac{N_y}{\sqrt{N_x^2+N_y^2}}, \frac{N_x}{\sqrt{N_x^2+N_y^2}}, 0)
+$$
+And vector $B$ is defined as
+$$
+B = N \times T = (-\frac{N_xN_z}{\sqrt{N_x^2+N_y^2}}, -\frac{N_yN_z}{\sqrt{N_x^2+N_y^2}}, \sqrt{N_x^2+N_y^2})
+$$
+Once we have $T$, $B$, and $N$. We can use the matrix transformation to get the modified normal vector $(n_x,n_y,n_z)$.
 
-And we use the following formula to calculate $\alpha_{dc}$:
+#### Normal Mapping on Triangles
 
-![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202202201939519.png)
+The calculation for $T$ and $B$ are different if we want to apply normal mapping on triangles.
+$$
+\Delta u_1 = u_1 - u_0 \\
+\Delta v_1 = v_1 - v_0 \\
+e_1 = \Delta u_1 T + \Delta v_1 B = p_1 - p_0 \\
+e_2 = \Delta u_2 T + \Delta v_2 B = p_2 - p_1 \\
+\begin{bmatrix}
+T \\
+B \\
+\end{bmatrix}
 
-The following images shows the effect of depth cueing, from left to right: depth cue with differnet colors, we use the background color as the depth cue color:
+= \frac{1}{\Delta u_1 \Delta v_2 - \Delta v_1 \Delta u_2}
+\begin{bmatrix}
+\Delta v_2 & -\Delta v_1 \\
+-\Delta u_2 & \Delta u_1 \\
+\end{bmatrix}
+\begin{bmatrix}
+e_1 \\
+e_2 \\
+\end{bmatrix}
+$$
+Once we have $T$, $B$, and $N$, we can transform the normal vector.
 
-![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202202202311834.jpg)
+Here is an example applying normapping to both spheres and triangles in the scene:
 
-![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202202202313994.jpg)
+![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202203121621393.jpg)
+
+Here is the texture image
+
+![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202203121626475.jpg)
+
+Here is my normal map
+
+![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202203121625925.jpg)
+
+Because I don't really know how to generate a proper normal map for a texture image. I just create one randomly.
 
 ## Known Issues
 
-When I am implementing the program, I find that there might be some issue when there is some object in scene which is right in front of the viewer with a distance almost equal to 0. This basically means that the viewer cannot see anything in the scene because its eye is obstructed by the object in front of him/her. Although this is not realistic, it is an edge case that worth considering.
-
-Besides, I found that the generated image is not very smooth. This might be due to the resolution and size of the final image. Usually our program generates small size images. But this non-smooth effect can be optimized using some strategies.
+None
 
 ## Credits
 

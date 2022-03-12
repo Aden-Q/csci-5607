@@ -14,6 +14,7 @@
 #include "color.h"
 #include "material_color.h"
 #include "texture.h"
+#include "bump.h"
 #include "sphere.h"
 #include "cylinder.h"
 #include "triangle.h"
@@ -36,6 +37,7 @@ class Scene
         int getHeight() const { return this->height; }
         const std::vector<MaterialColor> &getMaterialList() const { return this->material_list; }
         const std::vector<Texture> &getTextureList() const { return this->texture_list; }
+        const std::vector<Bump> &getBumpList() const { return this->bump_list; }
         const std::vector<Sphere> &getSphereList() const { return this->sphere_list; }
         const std::vector<Cylinder> &getCylinderList() const { return this->cylinder_list; }
         const std::vector<Vertex> &getVertexList() const { return this->vertex_list; }
@@ -57,6 +59,7 @@ class Scene
         void setHeight(int height) { this->height = height; }
         void setMaterialList(const std::vector<MaterialColor> &material_list) { this->material_list = std::vector<MaterialColor>(material_list); }
         void setTextureList(const std::vector<Texture> &texture_list) { this->texture_list = std::vector<Texture>(texture_list); }
+        void setBumpList(const std::vector<Bump> &bump_list) { this->bump_list = std::vector<Bump>(bump_list); }
         void setSphereList(const std::vector<Sphere> &sphere_list) { this->sphere_list = std::vector<Sphere>(sphere_list); }
         void setCylinderList(const std::vector<Cylinder> &cylinder_list) { this->cylinder_list = std::vector<Cylinder>(cylinder_list); }
         void setVertexList(const std::vector<Vertex> &vertex_list) { this->vertex_list = std::vector<Vertex>(vertex_list); }
@@ -81,6 +84,8 @@ class Scene
         std::vector<MaterialColor> material_list;
         // a list of texture images
         std::vector<Texture> texture_list;
+        // a list of normal images
+        std::vector<Bump> bump_list;
         // a list of sphere objects
         std::vector<Sphere> sphere_list;
         // a list of cylinders
