@@ -6,7 +6,19 @@
 #include "scene.h"
 #include "utils.h"
 
-int parse_scene(std::string filename, Scene &scene)
+Scene::Scene()
+{
+    this->eye = FloatVec3(0, 0, 0);
+    this->viewdir = FloatVec3(0, 0, 1);
+    this->updir = FloatVec3(0, 0, 1);
+    this->bkgcolor = Color(1, 1, 1);
+    this->vfov = 90;
+    this->width = 512;
+    this->height = 512;
+    this->depth_cue_enable = false;
+}
+
+int Scene::parseScene(std::string filename)
 {
     std::ifstream inputstream(filename, std::ios::in | std::ios::binary);
 
@@ -45,7 +57,7 @@ int parse_scene(std::string filename, Scene &scene)
             // read the world coordinate of the eye
             iss >> float_var[0] >> float_var[1] >> float_var[2];
             FloatVec3 eye(float_var[0], float_var[1], float_var[2]);
-            scene.eye = eye;
+            this->eye = eye;
         }
         else if (keyword == "viewdir")
         {
@@ -53,7 +65,7 @@ int parse_scene(std::string filename, Scene &scene)
             // read the world coordinate of the view direction
             iss >> float_var[0] >> float_var[1] >> float_var[2];
             FloatVec3 viewdir(float_var[0], float_var[1], float_var[2]);
-            scene.viewdir = viewdir;
+            this->viewdir = viewdir;
         }
         else if (keyword == "updir")
         {
@@ -61,22 +73,22 @@ int parse_scene(std::string filename, Scene &scene)
             // read the world coordinate of the up direction
             iss >> float_var[0] >> float_var[1] >> float_var[2];
             FloatVec3 updir(float_var[0], float_var[1], float_var[2]);
-            scene.updir = updir;
+            this->updir = updir;
         }
         else if (keyword == "vfov")
         {
             num_keywords++;
             // read the vertical field of view (in degree)
             iss >> float_var[0];
-            scene.vfov = float_var[0];
+            this->vfov = float_var[0];
         }
         else if (keyword == "imsize")
         {
             num_keywords++;
             // read width and height of the image
             iss >> int_var[0] >> int_var[1];
-            scene.width = int_var[0];
-            scene.height = int_var[1];
+            this->width = int_var[0];
+            this->height = int_var[1];
         }
         else if (keyword == "bkgcolor")
         {
@@ -84,7 +96,7 @@ int parse_scene(std::string filename, Scene &scene)
             // read the background color
             iss >> float_var[0] >> float_var[1] >> float_var[2];
             Color bkgcolor(float_var[0], float_var[1], float_var[2]);
-            scene.bkgcolor = bkgcolor;
+            this->bkgcolor = bkgcolor;
         }
         else if (keyword == "light")
         {
@@ -96,7 +108,7 @@ int parse_scene(std::string filename, Scene &scene)
             Light light(float_var[0], float_var[1], float_var[2],
                         float_var[3], float_var[4], float_var[5],
                         float_var[6]);
-            scene.light_list.push_back(light);
+            this->light_list.push_back(light);
         }
         else if (keyword == "attlight")
         {
@@ -110,7 +122,7 @@ int parse_scene(std::string filename, Scene &scene)
                               float_var[3], float_var[4], float_var[5],
                               float_var[6], float_var[7], float_var[8],
                               float_var[9]);
-            scene.attlight_list.push_back(attlight);
+            this->attlight_list.push_back(attlight);
         }
         else if (keyword == "depthcueing")
         {
@@ -119,7 +131,7 @@ int parse_scene(std::string filename, Scene &scene)
             iss >> float_var[0] >> float_var[1] >> float_var[2] 
                 >> float_var[3] >> float_var[4] >> float_var[5] 
                 >> float_var[6];
-            DepthCueing depth_cue = {
+            DepthCue depth_cue = {
                 .dc_r = float_var[0],
                 .dc_g = float_var[1],
                 .dc_b = float_var[2],
@@ -127,8 +139,8 @@ int parse_scene(std::string filename, Scene &scene)
                 .alpha_min = float_var[4],
                 .dist_max = float_var[5],
                 .dist_min = float_var[6]};
-            scene.depth_cue = depth_cue;
-            scene.depth_cue_enable = true;
+            this->depth_cue = depth_cue;
+            this->depth_cue_enable = true;
         }
         else if (keyword == "mtlcolor")
         {
@@ -138,14 +150,13 @@ int parse_scene(std::string filename, Scene &scene)
                 >> float_var[3] >> float_var[4] >> float_var[5]
                 >> float_var[6] >> float_var[7] >> float_var[8]
                 >> float_var[9];
-            MtlColor material = {
-                .Od_lambda = Color(float_var[0], float_var[1], float_var[2]),
-                .Os_lambda = Color(float_var[3], float_var[4], float_var[5]),
-                .ka = float_var[6],
-                .kd = float_var[7],
-                .ks = float_var[8],
-                .n = float_var[9]};
-            scene.material_list.push_back(material);
+            MaterialColor material(Color(float_var[0], float_var[1], float_var[2]),
+                                   Color(float_var[3], float_var[4], float_var[5]),
+                                   float_var[6],
+                                   float_var[7],
+                                   float_var[8],
+                                   float_var[9]);
+            this->material_list.push_back(material);
         }
         else if (keyword == "texture")
         {
@@ -158,27 +169,19 @@ int parse_scene(std::string filename, Scene &scene)
                 std::ifstream texture_inputstream(str_var[0], std::ios::in | std::ios::binary);
                 // read the header information
                 texture_inputstream >> str_var[1] >> int_var[0] >> int_var[1] >> int_var[2];
-                Texture texture;
-                texture.width = int_var[0];
-                texture.height = int_var[1];
-                texture.max_val = int_var[2];
-                // initialize the checkerboard
-                texture.checkerboard = new Color *[texture.width];
-                for (int i = 0; i < texture.width; i++)
+                Texture texture(int_var[0], int_var[1], int_var[2]);
+                Color **checkerboard = texture.getCheckerboard();
+                for (int j = 0; j < texture.getHeight(); j++)
                 {
-                    texture.checkerboard[i] = new Color[texture.height];
-                }
-                for (int j = 0; j < texture.height; j++)
-                {
-                    for (int i = 0; i < texture.width; i++)
+                    for (int i = 0; i < texture.getWidth(); i++)
                     {
                         texture_inputstream >> int_var[3] >> int_var[4] >> int_var[5];
-                        texture.checkerboard[i][j].r = int_var[3] * 1.0 / MAX_VAL;
-                        texture.checkerboard[i][j].g = int_var[4] * 1.0 / MAX_VAL;
-                        texture.checkerboard[i][j].b = int_var[5] * 1.0 / MAX_VAL;
+                        checkerboard[i][j].setR(int_var[3] * 1.0 / MAX_VAL);
+                        checkerboard[i][j].setG(int_var[4] * 1.0 / MAX_VAL);
+                        checkerboard[i][j].setB(int_var[5] * 1.0 / MAX_VAL);
                     }
                 }
-                scene.texture_list.push_back(texture);
+                this->texture_list.push_back(texture);
             }
         }
         else if (keyword == "sphere")
@@ -191,7 +194,7 @@ int parse_scene(std::string filename, Scene &scene)
                 .texture_idx = texture_idx,
                 .center = FloatVec3(float_var[0], float_var[1], float_var[2]),
                 .radius = float_var[3]};
-            scene.sphere_list.push_back(sphere);
+            this->sphere_list.push_back(sphere);
         }
         else if (keyword == "cylinder")
         {
@@ -207,7 +210,7 @@ int parse_scene(std::string filename, Scene &scene)
                 .dir = FloatVec3(float_var[3], float_var[4], float_var[5]),
                 .radius = float_var[6],
                 .length = float_var[7]};
-            scene.cylinder_list.push_back(cylinder);
+            this->cylinder_list.push_back(cylinder);
         }
         else if (keyword == "v")
         {
@@ -216,7 +219,7 @@ int parse_scene(std::string filename, Scene &scene)
             Vertex vertex = {
                 .obj_idx = obj_vertex_idx++,
                 .p = FloatVec3(float_var[0], float_var[1], float_var[2])};
-            scene.vertex_list.push_back(vertex);
+            this->vertex_list.push_back(vertex);
         }
         else if (keyword == "vn")
         {
@@ -225,7 +228,7 @@ int parse_scene(std::string filename, Scene &scene)
             VertexNormal vertex_normal = {
                 .obj_idx = obj_vertex_normal_idx++,
                 .n = FloatVec3(float_var[0], float_var[1], float_var[2]).normal()};
-            scene.vertex_normal_list.push_back(vertex_normal);
+            this->vertex_normal_list.push_back(vertex_normal);
         }
         else if (keyword == "vt")
         {
@@ -234,7 +237,7 @@ int parse_scene(std::string filename, Scene &scene)
             TextureCoordinate texture_coordinate = {
                 .obj_idx = obj_texture_coordinate_idx++,
                 .vt = FloatVec2(float_var[0], float_var[1])};
-            scene.texture_coordinate_list.push_back(texture_coordinate);
+            this->texture_coordinate_list.push_back(texture_coordinate);
         }
         else if (keyword == "f")
         {
@@ -249,12 +252,12 @@ int parse_scene(std::string filename, Scene &scene)
                     .obj_idx = obj_triangle_idx++,
                     .m_idx = m_idx,
                     .texture_idx = -1,
-                    .v0 = scene.vertex_list[int_var[0] - 1],
-                    .v1 = scene.vertex_list[int_var[1] - 1],
-                    .v2 = scene.vertex_list[int_var[2] - 1],
+                    .v0 = this->vertex_list[int_var[0] - 1],
+                    .v1 = this->vertex_list[int_var[1] - 1],
+                    .v2 = this->vertex_list[int_var[2] - 1],
                     .smooth_shade = false,
                     .texture_map = false};
-                scene.triangle_list.push_back(triangle);
+                this->triangle_list.push_back(triangle);
             }
             else if (sscanf(line.c_str(), "f %d//%d %d//%d %d//%d", 
                             int_var, int_var + 1, int_var + 2,
@@ -267,15 +270,15 @@ int parse_scene(std::string filename, Scene &scene)
                     .obj_idx = obj_triangle_idx++,
                     .m_idx = m_idx,
                     .texture_idx = -1,
-                    .v0 = scene.vertex_list[int_var[0] - 1],
-                    .v1 = scene.vertex_list[int_var[2] - 1],
-                    .v2 = scene.vertex_list[int_var[4] - 1],
+                    .v0 = this->vertex_list[int_var[0] - 1],
+                    .v1 = this->vertex_list[int_var[2] - 1],
+                    .v2 = this->vertex_list[int_var[4] - 1],
                     .smooth_shade = true,
                     .vn0_idx = int_var[1],
                     .vn1_idx = int_var[3],
                     .vn2_idx = int_var[5],
                     .texture_map = false};
-                scene.triangle_list.push_back(triangle);
+                this->triangle_list.push_back(triangle);
             }
             else if (sscanf(line.c_str(), "f %d/%d %d/%d %d/%d", 
                             int_var, int_var + 1, int_var + 2,
@@ -288,15 +291,15 @@ int parse_scene(std::string filename, Scene &scene)
                     .obj_idx = obj_triangle_idx++,
                     .m_idx = m_idx,
                     .texture_idx = texture_idx,
-                    .v0 = scene.vertex_list[int_var[0] - 1],
-                    .v1 = scene.vertex_list[int_var[2] - 1],
-                    .v2 = scene.vertex_list[int_var[4] - 1],
+                    .v0 = this->vertex_list[int_var[0] - 1],
+                    .v1 = this->vertex_list[int_var[2] - 1],
+                    .v2 = this->vertex_list[int_var[4] - 1],
                     .smooth_shade = false,
                     .texture_map = true,
                     .vt0_idx = int_var[1],
                     .vt1_idx = int_var[3],
                     .vt2_idx = int_var[5]};
-                scene.triangle_list.push_back(triangle);
+                this->triangle_list.push_back(triangle);
             }
             else if (sscanf(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d", 
                             int_var, int_var + 1, int_var + 2,
@@ -308,9 +311,9 @@ int parse_scene(std::string filename, Scene &scene)
                     .obj_idx = obj_triangle_idx++,
                     .m_idx = m_idx,
                     .texture_idx = texture_idx,
-                    .v0 = scene.vertex_list[int_var[0] - 1],
-                    .v1 = scene.vertex_list[int_var[3] - 1],
-                    .v2 = scene.vertex_list[int_var[6] - 1],
+                    .v0 = this->vertex_list[int_var[0] - 1],
+                    .v1 = this->vertex_list[int_var[3] - 1],
+                    .v2 = this->vertex_list[int_var[6] - 1],
                     .smooth_shade = true,
                     .vn0_idx = int_var[1],
                     .vn1_idx = int_var[4],
@@ -319,7 +322,7 @@ int parse_scene(std::string filename, Scene &scene)
                     .vt0_idx = int_var[2],
                     .vt1_idx = int_var[5],
                     .vt2_idx = int_var[8]};
-                scene.triangle_list.push_back(triangle);
+                this->triangle_list.push_back(triangle);
             }
         }
     }

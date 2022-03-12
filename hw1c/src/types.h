@@ -8,10 +8,13 @@
 
 #include <vector>
 #include <cmath>
+#include "color.h"
 
 // const
 #define MAX_VAL 255
 #define PI 3.14159265
+
+class Color;
 
 // 2d vector
 struct FloatVec2
@@ -120,66 +123,6 @@ struct FloatVec3
         return FloatVec3(this->first / c, this->second / c, this->third / c);
     }
 };
-
-// color type
-typedef struct ColorType
-{
-    // r, g, b components of a color
-    float r, g, b;
-    // default constructor
-    ColorType(float r_ = 0, float g_ = 0, float b_ = 0)
-        : r(r_), g(g_), b(b_)
-    {
-    }
-
-    // overload + operator, addition
-    ColorType operator+(const ColorType &c) const
-    {
-        return ColorType(this->r + c.r, this->g + c.g, this->b + c.b);
-    }
-
-    // overload * operator, const multiple
-    ColorType operator*(float c) const
-    {
-        return ColorType(this->r * c, this->g * c, this->b * c);
-    }
-} Color;
-
-// material color type
-typedef struct MtlColorType
-{
-    Color Od_lambda;
-    Color Os_lambda;
-    float ka, kd, ks;
-    float n;
-} MtlColor;
-
-// texture image type
-typedef struct TextureType
-{
-    // size of the texture image
-    int width, height;
-    // maximum color value
-    int max_val;
-    // dynamically allocate a 2d array to store pixels in the image
-    Color **checkerboard;
-} Texture;
-
-typedef struct RayType
-{
-    // 3d origin of the ray
-    FloatVec3 center;
-    // direction of the ray
-    FloatVec3 dir;
-
-    // extend the ray and get a point
-    FloatVec3 extend(float t) const
-    {
-        return FloatVec3(this->center.first + t * this->dir.first, 
-                         this->center.second + t * this->dir.second, 
-                         this->center.third + t * this->dir.third);
-    }
-} Ray;
 
 typedef struct SphereType
 {
@@ -374,7 +317,7 @@ typedef struct AttLightType : Light
     }
 } AttLight;
 
-typedef struct DepthCueingType
+typedef struct DepthCueType
 {
     // depth cue color
     float dc_r, dc_g, dc_b;
@@ -382,40 +325,7 @@ typedef struct DepthCueingType
     float alpha_max, alpha_min;
     // upper and lower bound if distance
     float dist_max, dist_min;
-} DepthCueing;
-
-typedef struct SceneType
-{
-    FloatVec3 eye;
-    FloatVec3 viewdir;
-    FloatVec3 updir;
-    Color bkgcolor;
-    float vfov = 90;
-    uint16_t width = 512, height = 512;
-    // a list of materials
-    std::vector<MtlColorType> material_list;
-    // a list of texture images
-    std::vector<Texture> texture_list;
-    // a list of sphere objects
-    std::vector<Sphere> sphere_list;
-    // a list of cylinders
-    std::vector<Cylinder> cylinder_list;
-    // a list of vertexes
-    std::vector<Vertex> vertex_list;
-    // a list of vertex normals
-    std::vector<VertexNormal> vertex_normal_list;
-    // a list of texture coordinates
-    std::vector<TextureCoordinate> texture_coordinate_list;
-    // a list of triangles
-    std::vector<Triangle> triangle_list;
-    // a list of normal lights
-    std::vector<Light> light_list;
-    // a list of attenuated lights
-    std::vector<AttLight> attlight_list;
-    // depth cueing
-    DepthCueing depth_cue;
-    bool depth_cue_enable = false;
-} Scene;
+} DepthCue;
 
 typedef struct ViewWindowType
 {

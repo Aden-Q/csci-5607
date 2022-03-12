@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 
     // get the filename from command line args and parse the file
     std::string filename = argv[1];
-    num_keywords = parse_scene(filename, scene);
+    num_keywords = scene.parseScene(filename);
     if (num_keywords < 7) 
     {
         fprintf(stderr, "Missing some keywords! Pleaze recheck your input file!\n");
@@ -39,24 +39,24 @@ int main(int argc, char **argv)
     view_window_init(scene, viewwindow, viewdist);
 
     // dynamically allocate a 2d array to store pixels in the image
-    Color **checkerboard = new Color *[scene.width];
-    for (int i = 0; i < scene.width; i++) 
+    Color **checkerboard = new Color *[scene.getWidth()];
+    for (int i = 0; i < scene.getWidth(); i++) 
     {
-        checkerboard[i] = new Color[scene.height];
+        checkerboard[i] = new Color[scene.getHeight()];
     }
     // run ray tracing and assign a color for each pixel
-    for (int j = 0; j < scene.height; j++) 
+    for (int j = 0; j < scene.getHeight(); j++) 
     {
-        for (int i = 0; i < scene.width; i++) 
+        for (int i = 0; i < scene.getWidth(); i++) 
         {
             Color res_color = trace_ray(scene, viewwindow, i, j);
-            checkerboard[i][j].r = res_color.r;
-            checkerboard[i][j].g = res_color.g;
-            checkerboard[i][j].b = res_color.b;
+            checkerboard[i][j].setR(res_color.getR());
+            checkerboard[i][j].setG(res_color.getG());
+            checkerboard[i][j].setB(res_color.getB());
         }
     }
 
     // produce a final image
-    output_image(filename + "_raytracer.ppm", checkerboard, scene.width, scene.height);
+    output_image(filename + "_raytracer.ppm", checkerboard, scene.getWidth(), scene.getHeight());
     return 0;
 }
