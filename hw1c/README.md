@@ -59,7 +59,7 @@ Parameter specification:
 
 ## Showcase Image
 
-
+![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202203122113100.jpg)
 
 
 ## Ray/Triangle Intersection
