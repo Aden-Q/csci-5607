@@ -1,0 +1,57 @@
+eye  0 0 24
+viewdir  0 0 -1
+updir  0 1 0
+viewdist  12
+hfov  41.11
+vfov  28.07
+image_width  500
+
+bkgcolor 1 1 1
+
+light 3 4 0 1
+
+materialcolor  0 1 1 1 1 1 0.02 0.05 0.2 100 0.2 1.5
+sphere 0 0 10 2
+
+materialcolor  1 1 1 1 1 1 0.3 0.5 0.0 20 1.0 1.0
+v -9 -6  -10
+v  9 -6  -10
+v  9  6  -10
+v -9  6  -10
+v -9 -6  20
+v  9 -6  20
+v  9  6  20
+v -9  6  20
+vt 0 1
+vt 1 1
+vt 1 0
+vt 0 0
+
+#right side of box
+f 1/1 5/2 6/3
+f 1/1 6/3 2/0
+
+#bottom of box
+materialcolor  0 0.4 0.4 1 1 1 0.3 0.5 0.0 20 1.0 1.0
+f 4/0 5/1 1/2
+f 4/0 1/2 0/3
+
+#back, left and top sides of box
+materialcolor  1 1 1 1 1 1 0.3 0.5 0.0 20 1.0 1.0
+texture rainbow-stripes.ppm
+f 0/0 1/1 2/2
+f 0/0 2/2 3/3
+f 4/1 0/2 3/3
+f 4/1 3/3 7/0
+f 7/0 3/3 2/2
+f 7/0 2/2 6/1
+
+#front of box (behind the camera), removed
+#f 7/2 6/3 5/1
+#f 7/2 5/1 4/0
+
+
+
+
+
+
