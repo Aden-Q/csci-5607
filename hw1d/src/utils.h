@@ -68,7 +68,7 @@ FloatVec3 normal_mapping(const Scene &scene, std::string obj_type, int obj_idx, 
 Color shade_ray(const Scene &scene, std::string obj_type, int obj_idx, const Ray &ray, float ray_t);
 
 // check whether the ray intersects with any objects in the scene
-bool shadow_check(const Scene &scene, const Ray &ray, const Light &light, std::string exclude_type, int exclude_id);
+bool shadow_check(const Scene &scene, const Ray &ray, const Light &light);
 // light source attenuation
 float light_attenuation(const FloatVec3 &point, const AttLight &light);
 
@@ -86,6 +86,6 @@ Color light_shade(const Scene &scene, const Ray &ray, float ray_t, const Light &
 
 // check ray intersection with objects in the scene and return the minimal t which leads to an intersection
 // the last parameter is used to avoid self-intersection (specify a excluding object that don't need to check)
-std::tuple<std::string, int, float> intersect_check(const Scene &scene, const Ray &ray, std::string exclude_type, int exclude_id);
+std::tuple<std::string, int, float> intersect_check(const Scene &scene, const Ray &ray);
 
 #endif // SRC_UTILS_H_
