@@ -67,13 +67,16 @@ FloatVec3 normal_mapping(const Scene &scene, std::string obj_type, int obj_idx, 
 // ray_t is the parameter to define a ray
 Color shade_ray(const Scene &scene, std::string obj_type, int obj_idx, const Ray &ray, float ray_t);
 
-// check whether the ray intersects with any objects in the scene
-bool shadow_check(const Scene &scene, const Ray &ray, const Light &light);
+// check whether the ray intersects with any objects in the scene, by recursively tracing a secondary ray
+float shadow_check(const Scene &scene, const Ray &ray, const Light &light);
 // light source attenuation
 float light_attenuation(const FloatVec3 &point, const AttLight &light);
 
 // depth cueing, given the intersection point and viewer's position, return the depth cue coefficient
 float depth_cueing(const FloatVec3 &point, const FloatVec3 &viewer, const DepthCue &depth_cue);
+
+// recursive call of ray tracing
+Color trace_ray_recursive(const Scene &scene, const Ray &ray, int depth, bool flag_enter, std::string obj_type, int obj_id);
 
 // recursive call of to do reflection
 Color trace_ray_reflective(const Scene &scene, const Ray &ray, int depth, std::string exclude_type, int exclude_id);

@@ -9,7 +9,7 @@
 #include <cstdlib>
 #include "color.h"
 
-    class Texture
+class Texture
 {
     public:
         // constructor

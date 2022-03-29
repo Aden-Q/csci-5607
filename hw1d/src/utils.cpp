@@ -346,6 +346,7 @@ Color shade_ray(const Scene &scene, std::string obj_type, int obj_idx, const Ray
     // compute the coresponding color from the texture coordinate
     if (texture_map_enabled(scene, obj_type, obj_idx))
     {
+        // std::cout << "I'm here" << std::endl;
         Od_lambda = get_color(scene, obj_type, obj_idx, p);
     }
     float Ir, Ig, Ib;
@@ -446,7 +447,7 @@ Color light_shade(const Scene &scene, const Ray &ray, float ray_t, const Light &
 
     // apply the phong illumination model
     float Ir, Ig, Ib;    // illumination components for R, G and B
-    int shadow_flag = 1; // shadowing effect flag, 1 when not in shadow, 0 when in shadow
+    float shadow = 1.0; // shadowing, dropping when the ray encounters any objects in the scene
 
     // check for shadowing effect
     // cast a second ray forwarding from the intersection point
@@ -454,16 +455,13 @@ Color light_shade(const Scene &scene, const Ray &ray, float ray_t, const Light &
     // and check for intersection with objects in the scene
     Ray ray_second(p, L);
     // check intersection, if intersected, set the flag to be 0
-    if (shadow_check(scene, ray_second, light))
-    {
-        shadow_flag = 0;
-    }
+    shadow = shadow_check(scene, ray_second, light);
 
     float term1 = std::max(float(0), N.dot(L));
     float term2 = pow(std::max(float(0), N.dot(H)), cur_material.getN());
-    Ir = shadow_flag * (cur_material.getKd() * Od_lambda.getR() * term1 + cur_material.getKs() * Os_lambda.getR() * term2);
-    Ig = shadow_flag * (cur_material.getKd() * Od_lambda.getG() * term1 + cur_material.getKs() * Os_lambda.getG() * term2);
-    Ib = shadow_flag * (cur_material.getKd() * Od_lambda.getB() * term1 + cur_material.getKs() * Os_lambda.getB() * term2);
+    Ir = shadow * (cur_material.getKd() * Od_lambda.getR() * term1 + cur_material.getKs() * Os_lambda.getR() * term2);
+    Ig = shadow * (cur_material.getKd() * Od_lambda.getG() * term1 + cur_material.getKs() * Os_lambda.getG() * term2);
+    Ib = shadow * (cur_material.getKd() * Od_lambda.getB() * term1 + cur_material.getKs() * Os_lambda.getB() * term2);
 
     return Color(Ir, Ig, Ib);
 }
@@ -545,7 +543,7 @@ std::tuple<std::string, int, float> intersect_check(const Scene &scene, const Ra
             pow(ray_center.third - obj_center.third, 2) -
             pow(s.getRadius(), 2);
         determinant = pow(B, 2) - 4 * C;
-        if (determinant > -1e-6) // greater than or equal to 0
+        if (determinant > 1e-6) // greater than or equal to 0
         {                        // need further check
             temp_t = (-B - sqrt(determinant)) / 2;
             if (temp_t > 1e-3 && temp_t < min_t)
@@ -604,7 +602,7 @@ std::tuple<std::string, int, float> intersect_check(const Scene &scene, const Ra
         if (alpha > -1e-6 && alpha < 1 && beta > -1e-6 && beta < 1 && gamma > -1e-6 && gamma < 1)
         {
             // in the triangle
-            if (ray_t < min_t)
+            if (ray_t < min_t && ray_t > 1e-3)
             {
                 min_t = ray_t;
                 obj_idx = t.getID();
@@ -621,7 +619,7 @@ std::tuple<std::string, int, float> intersect_check(const Scene &scene, const Ra
     return std::make_tuple(obj_type, obj_idx, min_t);
 }
 
-bool shadow_check(const Scene &scene, const Ray &ray, const Light &light)
+float shadow_check(const Scene &scene, const Ray &ray, const Light &light)
 {
     std::string obj_type;
     int obj_idx;
@@ -640,7 +638,18 @@ bool shadow_check(const Scene &scene, const Ray &ray, const Light &light)
             float max_t = (light.x - ray.getCenter().first) / ray.getDir().first;
             if (ray_t > 1e-6 && ray_t < max_t)
             {
-                return true;
+                // intersected
+                float alpha = get_material(scene, obj_type, obj_idx).getAlpha();
+                if (std::abs(1 - alpha) < 1e-6)
+                {
+                    return 0;
+                } else
+                {   
+                    FloatVec3 p = ray.extend(ray_t);
+                    FloatVec3 ray_dir = ray.getDir();
+                    Ray new_ray(p, ray_dir);
+                    return (1 - alpha) * shadow_check(scene, new_ray, light);
+                }
             }
         }
         else
@@ -649,48 +658,52 @@ bool shadow_check(const Scene &scene, const Ray &ray, const Light &light)
             // as long as the returned t is positive, there is shadow
             if (ray_t > 1e-6)
             {
-                return true;
+                return 0;
             }
         }
     }
 
-    return false;
+    return 1;
 }
 
-Color trace_ray_reflective(const Scene &scene, const Ray &ray, int depth, std::string exclude_type, int exclude_id)
+Color trace_ray_recursive(const Scene &scene, const Ray &ray, int depth, bool flag_enter, float dist, std::string obj_type, int obj_id)
 {
     // termination condition
-    if (depth > MAX_DEPTH)
+    if (depth > MAX_DEPTH || obj_type == "None")
     {
         return Color(0, 0, 0);
     }
     // compute the reflection ray equation and the Fresnel reflectance coefficient
-    FloatVec3 p = ray.getCenter();
-    FloatVec3 N = get_normal(scene, exclude_type, exclude_id, p);
     const FloatVec3 &ray_dir = ray.getDir().normal();
-    const MaterialColor &mtl = get_material(scene, exclude_type, exclude_id);
+    const MaterialColor &mtl = get_material(scene, obj_type, obj_id);
+    FloatVec3 p = ray.getCenter();
+    FloatVec3 N = get_normal(scene, obj_type, obj_id, p);
     float eta_i = 1.0; // incident from air
     float eta_t = mtl.getEta();
+    if (!flag_enter)
+    {
+        // if exiting, revsere normal vector N
+        // and exchange eta_i and eta_t
+        N = -N;
+        eta_i = eta_t;
+        eta_t = 1.0;
+    }
     float F_0 = pow((eta_t - eta_i) / (eta_t + eta_i), 2);
-    F_0 = 0.2;
     float F_r = F_0 + (1 - F_0) * pow(1 - N.dot(ray_dir), 5);
     // compute the reflective ray
     FloatVec3 R = (N * 2 * N.dot(ray_dir) - ray_dir).normal();
-    Ray ray_reflected(p, R);
-    std::string obj_type;
-    int obj_idx;
+    std::string next_obj_type;
+    int next_obj_idx;
     float ray_t; // material index
-    // initialize the response color to be the background color
-    Color res_color(0, 0, 0);
+    Ray ray_reflected(p, R);
+    // initialize the color for the reflective ray
+    Color res_color_reflect(0, 0, 0);
     // loop for all objects
     // check whether there is an intersection
-    std::tie(obj_type, obj_idx, ray_t) = intersect_check(scene, ray_reflected);
-    if (obj_type != "None")
+    std::tie(next_obj_type, next_obj_idx, ray_t) = intersect_check(scene, ray_reflected);
+    if (next_obj_type != "None")
     {
-        res_color = shade_ray(scene, obj_type, obj_idx, ray_reflected, ray_t);
-    } else
-    {
-        return res_color;
+        res_color_reflect = shade_ray(scene, next_obj_type, next_obj_idx, ray_reflected, ray_t);
     }
     // new intersection point
     // new normal vector N, at the new intersection point
@@ -698,69 +711,37 @@ Color trace_ray_reflective(const Scene &scene, const Ray &ray, int depth, std::s
     // new incident ray
     FloatVec3 new_dir = -ray_reflected.getDir().normal();
     Ray new_ray_incident(new_p, new_dir);
-    return res_color * pow(F_r, depth) + trace_ray_reflective(scene, new_ray_incident, depth + 1, obj_type, obj_idx);
-}
+    // recursive trace the reflective ray
+    res_color_reflect = res_color_reflect * pow(F_r, depth) + trace_ray_recursive(scene, new_ray_incident, depth + 1, flag_enter, dist + ray_t, next_obj_type, next_obj_idx);
 
-Color trace_ray_transmitive(const Scene &scene, const Ray &ray, int depth, bool flag_enter, float eta_i, std::string exclude_type, int exclude_id)
-{
-    // termination condition
-    if (depth > MAX_DEPTH)
+    // initialize the response color for the transmitted ray
+    Color res_color_transmit(0, 0, 0);
+    // check the existence of the transmitted ray
+    if (std::abs(1 - mtl.getAlpha()) < 1e-6 || pow(N.dot(ray_dir), 2) < 1 - pow(eta_t / eta_i, 2))
     {
-        return Color(0, 0, 0);
+        // if opaque or total internal reflection
+        // there is no tranmitted ray
+        return res_color_reflect;
     }
-    // compute the transmitive ray
-    const MaterialColor &mtl = get_material(scene, exclude_type, exclude_id);
-    float eta_t = mtl.getEta();
-    FloatVec3 p = ray.getCenter();
-    FloatVec3 N = get_normal(scene, exclude_type, exclude_id, p);
-    const FloatVec3 &ray_dir = ray.getDir().normal();
-    if (!flag_enter)
-    {
-        eta_t = 1.0;  // air if exiting
-        N = -N;
-    }
-    // compute the Fresnel reflectance coefficient
-    float F_0 = pow((eta_t - eta_i) / (eta_t + eta_i), 2);
-    F_0 = 0.2;
-    float F_r = F_0 + (1 - F_0) * pow(1 - N.dot(ray_dir), 5);
     // compute the tranmitted ray
     FloatVec3 T = -N * sqrt(1 - pow(eta_i / eta_t, 2) * (1 - pow(N.dot(ray_dir), 2))) + (N * N.dot(ray_dir) - ray_dir) * (eta_i / eta_t);
     Ray ray_tranmitted(p, T);
-    std::string obj_type;
-    int obj_idx;
-    float ray_t; // material index
-    Color res_color(0, 0, 0);
     // loop for all objects
     // check whether there is an intersection
-    if (flag_enter)
+    std::tie(next_obj_type, next_obj_idx, ray_t) = intersect_check(scene, ray_tranmitted);
+    if (next_obj_type != "None")
     {
-        std::tie(obj_type, obj_idx, ray_t) = intersect_check(scene, ray_tranmitted);
-    } else
-    {
-        std::tie(obj_type, obj_idx, ray_t) = intersect_check(scene, ray_tranmitted);
-    }
-    if (obj_type != "None")
-    {
-        res_color = shade_ray(scene, obj_type, obj_idx, ray_tranmitted, ray_t);
-    }
-    else
-    {
-        return res_color;
+        res_color_transmit = shade_ray(scene, next_obj_type, next_obj_idx, ray_tranmitted, ray_t);
     }
     // new intersection point
     // new normal vector N, at the new intersection point
-    FloatVec3 new_p = ray_tranmitted.extend(ray_t);
+    FloatVec3 new_p_transmit = ray_tranmitted.extend(ray_t);
     // new incident ray
-    FloatVec3 new_dir = -ray_tranmitted.getDir().normal();
-    Ray new_ray_incident(new_p, new_dir);
-    // test total internal reflection
-    if (pow(N.dot(ray_dir), 2) < 1 - pow(eta_t / eta_i, 2))
-    {
-        return res_color * pow(1 - F_r, depth);
-    } else
-    {
-        return res_color * pow(1 - F_r, depth) + trace_ray_transmitive(scene, new_ray_incident, depth + 1, !flag_enter, eta_t, obj_type, obj_idx);
-    }
+    FloatVec3 new_dir_transmit = -ray_tranmitted.getDir().normal();
+    Ray new_ray_incident_transmit(new_p_transmit, new_dir_transmit);
+    // recursive trace the transmitted ray
+    res_color_transmit = res_color_transmit * pow(1 - F_r, depth) * std::exp(-mtl.getAlpha() * dist) + trace_ray_recursive(scene, new_ray_incident_transmit, depth + 1, !flag_enter, dist + ray_t, next_obj_type, next_obj_idx);
+    return res_color_reflect + res_color_transmit;
 }
 
 Color trace_ray(const Scene &scene, const ViewWindow &viewwindow, int w, int h)
@@ -784,24 +765,19 @@ Color trace_ray(const Scene &scene, const ViewWindow &viewwindow, int w, int h)
         return res_color;
     } else
     {
+        // std::cout << obj_type << " " << obj_idx << std::endl;
         res_color = shade_ray(scene, obj_type, obj_idx, ray, ray_t);
     }
-    // normal vector
-    const MaterialColor &mtl = get_material(scene, obj_type, obj_idx);
     FloatVec3 p = ray.extend(ray_t);
     const FloatVec3 &ray_dir = ray.getDir();
     // the incident ray
     FloatVec3 I = -ray_dir.normal();
     Ray ray_incidence(p, I);
-    Color final_color = res_color + trace_ray_reflective(scene, ray_incidence, 1, obj_type, obj_idx); // exclude the intersected object
-    // Color final_color = res_color + trace_ray_recursive(scene, ray_incidence, 1, true, obj_type, obj_idx); // exclude the intersected object
-
-    // if (std::abs(mtl.getAlpha() - 1.0) > 1e-6)
-    // {
-    //     // transparent surface
-    //     final_color = final_color + trace_ray_transmitive(scene, ray_incidence, 1, true, 1.0, obj_type, obj_idx);
-    // }
-
+    Color final_color = res_color;
+    if (obj_type == "Sphere")
+    {
+        final_color = final_color + trace_ray_recursive(scene, ray_incidence, 1, true, 0, obj_type, obj_idx);
+    }
     // clapping
     if (final_color.getR() > 1.0)
     {

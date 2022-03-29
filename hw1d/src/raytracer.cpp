@@ -45,7 +45,7 @@ int main(int argc, char **argv)
         checkerboard[i] = new Color[scene.getHeight()];
     }
     // run ray tracing and assign a color for each pixel
-        for (int j = 0; j < scene.getHeight(); j++)
+    for (int j = 0; j < scene.getHeight(); j++)
     {
         for (int i = 0; i < scene.getWidth(); i++) 
         {

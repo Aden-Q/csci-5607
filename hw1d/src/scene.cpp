@@ -361,7 +361,6 @@ int Scene::parseScene(std::string filename)
             }
         }
     }
-
     inputstream.close();
     return num_keywords;
 }
