@@ -1,0 +1,10 @@
+/Users/qianzecheng/Code/5607/hw2a/bin/CMakeFiles/HW2a.dir
+/Users/qianzecheng/Code/5607/hw2a/bin/CMakeFiles/install.dir
+/Users/qianzecheng/Code/5607/hw2a/bin/CMakeFiles/ALL_BUILD.dir
+/Users/qianzecheng/Code/5607/hw2a/bin/CMakeFiles/ZERO_CHECK.dir
+/Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/CMakeFiles/uninstall.dir
+/Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/CMakeFiles/install.dir
+/Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/CMakeFiles/ALL_BUILD.dir
+/Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/CMakeFiles/ZERO_CHECK.dir
+/Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/src/CMakeFiles/glfw.dir
+/Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/src/CMakeFiles/install.dir

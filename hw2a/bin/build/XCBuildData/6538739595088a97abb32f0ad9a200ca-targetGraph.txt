@@ -1,0 +1,14 @@
+Target dependency graph (6 targets)
+ZERO_CHECK in HW2a, no dependencies
+glfw in HW2a, depends on:
+ZERO_CHECK in HW2a (explicit)
+HW2a in HW2a, depends on:
+glfw in HW2a (explicit)
+ZERO_CHECK in HW2a (explicit)
+ALL_BUILD in HW2a, depends on:
+glfw in HW2a (explicit)
+ZERO_CHECK in HW2a (explicit)
+HW2a in HW2a (explicit)
+install in HW2a, depends on:
+ALL_BUILD in HW2a (explicit)
+uninstall in HW2a, no dependencies
