@@ -1,0 +1,1367 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		5A5137963AFD46BDBE3458DF /* install */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 84A2FFC2390946F2B14DE60E /* Build configuration list for PBXAggregateTarget "install" */;
+			buildPhases = (
+				93426DA6A4AC2C2AC9CE883C /* CMake PostBuild Rules */,
+			);
+			dependencies = (
+				6E27A780C3A247C39D421752 /* PBXTargetDependency */,
+			);
+			name = install;
+			productName = install;
+		};
+		67703450968F436B8E355382 /* uninstall */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 1A79C7D767BA4DF49EB1928D /* Build configuration list for PBXAggregateTarget "uninstall" */;
+			buildPhases = (
+				66C37C5EFD8C8E8698DF6980 /* Generate ext/glfw/CMakeFiles/uninstall */,
+			);
+			dependencies = (
+			);
+			name = uninstall;
+			productName = uninstall;
+		};
+		90B9C0E05E0B42D3A59F6F88 /* ALL_BUILD */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 0C0CA60472A6402A84E2B571 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */;
+			buildPhases = (
+				7A6625412051C8B67C8895A1 /* Generate CMakeFiles/ALL_BUILD */,
+			);
+			dependencies = (
+				0724F517735B46E89FFA3FD8 /* PBXTargetDependency */,
+				2852858A4EC947D1B9701C6C /* PBXTargetDependency */,
+				55A5D9ED450846438D3AB96B /* PBXTargetDependency */,
+			);
+			name = ALL_BUILD;
+			productName = ALL_BUILD;
+		};
+		F902264523C04BA48CAA8B6F /* ZERO_CHECK */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = DC2E1788ABCE48DA8F8A3ADB /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */;
+			buildPhases = (
+				D99850454368D6D56093237C /* Generate CMakeFiles/ZERO_CHECK */,
+			);
+			dependencies = (
+			);
+			name = ZERO_CHECK;
+			productName = ZERO_CHECK;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		124966CAAFFC4BBEB00F9225 /* /Users/qianzecheng/Code/5607/hw2a/src/HW2a.cpp */ = {isa = PBXBuildFile; fileRef = 71CCEA543630476995D2EFF3 /* /Users/qianzecheng/Code/5607/hw2a/src/HW2a.cpp */; };
+		13F1675774694A42A0B984A0 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/include/GLFW/glfw3.h */ = {isa = PBXBuildFile; fileRef = 568681771A3A45BD8A405ABF /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/include/GLFW/glfw3.h */; };
+		14C0B0CEBD77447FB7DEEC9F /* /Users/qianzecheng/Code/5607/hw2a/CMakeLists.txt */ = {isa = PBXBuildFile; fileRef = BCAA1051D0934BE8837BD915 /* /Users/qianzecheng/Code/5607/hw2a/CMakeLists.txt */; };
+		1AECE8B6C6B444D89A2F06E8 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/internal.h */ = {isa = PBXBuildFile; fileRef = 125EC28981F940D1A3B50344 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/internal.h */; };
+		1FD34DD7AAC843FB8CE1CB6C /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_monitor.m */ = {isa = PBXBuildFile; fileRef = 06BF52E70EAB46AC8B2D5C30 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_monitor.m */; };
+		27BDAF28DE7A4847977DBC85 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/nsgl_context.m */ = {isa = PBXBuildFile; fileRef = 8AB8D8CB9B6B4E95A25F68BF /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/nsgl_context.m */; };
+		30B8F6533B5E49138DE70FB9 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/egl_context.c */ = {isa = PBXBuildFile; fileRef = EDC7AF3B69A04F028139BC3B /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/egl_context.c */; };
+		3717BD4B3E7D4DF5B91FB3A5 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/mappings.h */ = {isa = PBXBuildFile; fileRef = 1B59FBD3EC57463D8271B886 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/mappings.h */; };
+		3A410784D9AD4D3B8C291861 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/window.c */ = {isa = PBXBuildFile; fileRef = 3C0F3A73035F42EFA4E06B06 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/window.c */; settings = {COMPILER_FLAGS = "-Wdeclaration-after-statement"; }; };
+		3E496BFE6D4246F9BB6DC45B /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/osmesa_context.h */ = {isa = PBXBuildFile; fileRef = 32F918AD88CC45CE8B629D93 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/osmesa_context.h */; };
+		5595AC909B2F4A43BF529408 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/include/GLFW/glfw3native.h */ = {isa = PBXBuildFile; fileRef = 34DF2354FFA746BBBAC8B942 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/include/GLFW/glfw3native.h */; };
+		5CB8F2AF7A134FE38EFCEEA7 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_window.m */ = {isa = PBXBuildFile; fileRef = 124B92D5289D4BBA975FDA36 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_window.m */; };
+		5CD109FCB93145C490390B1D /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_joystick.h */ = {isa = PBXBuildFile; fileRef = D14883B6C5C1468694A52000 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_joystick.h */; };
+		6CFC8E6F31C64C1EBE83CE95 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/osmesa_context.c */ = {isa = PBXBuildFile; fileRef = 871D11A04FAF414B90F89AD5 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/osmesa_context.c */; };
+		867D52A1C5AA4208B1ED3565 /* /Users/qianzecheng/Code/5607/hw2a/src/ShaderStuff.hpp */ = {isa = PBXBuildFile; fileRef = 0AA28DC08543482983BEB66E /* /Users/qianzecheng/Code/5607/hw2a/src/ShaderStuff.hpp */; };
+		880C7B8E31734B8CAD42F826 /* /Users/qianzecheng/Code/5607/hw2a/ext/glad/src/glad.c */ = {isa = PBXBuildFile; fileRef = ACD5852014A24F17ADDC07C1 /* /Users/qianzecheng/Code/5607/hw2a/ext/glad/src/glad.c */; };
+		89D9BC0D9C9A4B10896CF35F /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/egl_context.h */ = {isa = PBXBuildFile; fileRef = A3EB158EE1784E36ABCB7EBC /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/egl_context.h */; };
+		8E932328E7BB43D8818DC01D /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_platform.h */ = {isa = PBXBuildFile; fileRef = FC26009C50D64571B26BFA86 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_platform.h */; };
+		90E87D270C1049B6AF434684 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/input.c */ = {isa = PBXBuildFile; fileRef = 99304C21D7FD4A5A9651ABAD /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/input.c */; settings = {COMPILER_FLAGS = "-Wdeclaration-after-statement"; }; };
+		9119D744D94E4CCA89CC475D /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/monitor.c */ = {isa = PBXBuildFile; fileRef = 91EBB3CA6C964A28A626F92A /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/monitor.c */; settings = {COMPILER_FLAGS = "-Wdeclaration-after-statement"; }; };
+		9337694B7B5D411282594C02 /* /Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/src/glfw_config.h */ = {isa = PBXBuildFile; fileRef = F7219917A23E4E26A75903AA /* /Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/src/glfw_config.h */; };
+		9DF8B7B15274449384201FF2 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_time.c */ = {isa = PBXBuildFile; fileRef = F9C6F022DD0C49F5B92DAB69 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_time.c */; };
+		A613CB3C27B64BA9A1BF8A21 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/init.c */ = {isa = PBXBuildFile; fileRef = A5689B1DE1BD49639296C54F /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/init.c */; settings = {COMPILER_FLAGS = "-Wdeclaration-after-statement"; }; };
+		A92CF263B1AE410F9C762C7D /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/context.c */ = {isa = PBXBuildFile; fileRef = 1471949D9A9742E19259DDAD /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/context.c */; settings = {COMPILER_FLAGS = "-Wdeclaration-after-statement"; }; };
+		BA7BBD5510F84DDCB3EEC02F /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/vulkan.c */ = {isa = PBXBuildFile; fileRef = FF5977A2B6B24CC8AA7291EA /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/vulkan.c */; settings = {COMPILER_FLAGS = "-Wdeclaration-after-statement"; }; };
+		C061F53694024B42BF51A563 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/CMakeLists.txt */ = {isa = PBXBuildFile; fileRef = F61B660691AE475FA68337BB /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/CMakeLists.txt */; };
+		C2FE71D1F97541DAB5B057BB /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/posix_thread.h */ = {isa = PBXBuildFile; fileRef = 85417664C7164FD683E1A3DB /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/posix_thread.h */; };
+		CCDF21B2137E484C8FD04F43 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/nsgl_context.h */ = {isa = PBXBuildFile; fileRef = ED584B46E94844F7B4663CED /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/nsgl_context.h */; };
+		DE41C8EEF0214534A3940B0E /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/posix_thread.c */ = {isa = PBXBuildFile; fileRef = CF7E489B12FA4EB2842881DF /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/posix_thread.c */; };
+		F4E8EEF8983B475CACB224D3 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_init.m */ = {isa = PBXBuildFile; fileRef = 698C47A9481B404BA6070B42 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_init.m */; };
+		FB57B3A7949B4C0685903EFE /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_joystick.m */ = {isa = PBXBuildFile; fileRef = 319240E0046D4DDA8FE8615B /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_joystick.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXBuildStyle section */
+		00FD1C7731574931B6986F9E /* RelWithDebInfo */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = RelWithDebInfo;
+		};
+		6B8FA46B58E14BE1BF6F86A3 /* MinSizeRel */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = MinSizeRel;
+		};
+		7D7E698A2B254FD8B6596CED /* Release */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Release;
+		};
+		DF93666C746B4EDD9F61374A /* Debug */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
+/* End PBXBuildStyle section */
+
+/* Begin PBXContainerItemProxy section */
+		0258C0F2B35C459899172622 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 598B16E147214A2DAA4F3261 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A0DE342F9D954DA68BD10D9F;
+			remoteInfo = HW2a;
+		};
+		24E6D909BEC543FEBC1DBB91 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 598B16E147214A2DAA4F3261 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9E6F825E011544C4A31310BC;
+			remoteInfo = glfw;
+		};
+		3225A44204FC498A94D03C15 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 598B16E147214A2DAA4F3261 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F902264523C04BA48CAA8B6F;
+			remoteInfo = ZERO_CHECK;
+		};
+		709CF78794844F24AD3DEF98 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 598B16E147214A2DAA4F3261 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F902264523C04BA48CAA8B6F;
+			remoteInfo = ZERO_CHECK;
+		};
+		BC5FE19635744357B975A276 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 598B16E147214A2DAA4F3261 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F902264523C04BA48CAA8B6F;
+			remoteInfo = ZERO_CHECK;
+		};
+		BD861C64B4B44FC2B82588F5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 598B16E147214A2DAA4F3261 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 90B9C0E05E0B42D3A59F6F88;
+			remoteInfo = ALL_BUILD;
+		};
+		CE882D60832E4C56A04EDBB5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 598B16E147214A2DAA4F3261 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9E6F825E011544C4A31310BC;
+			remoteInfo = glfw;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		06BF52E70EAB46AC8B2D5C30 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_monitor.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; name = cocoa_monitor.m; path = ext/glfw/src/cocoa_monitor.m; sourceTree = SOURCE_ROOT; };
+		0AA28DC08543482983BEB66E /* /Users/qianzecheng/Code/5607/hw2a/src/ShaderStuff.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = ShaderStuff.hpp; path = src/ShaderStuff.hpp; sourceTree = SOURCE_ROOT; };
+		124B92D5289D4BBA975FDA36 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_window.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; name = cocoa_window.m; path = ext/glfw/src/cocoa_window.m; sourceTree = SOURCE_ROOT; };
+		125EC28981F940D1A3B50344 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/internal.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = internal.h; path = ext/glfw/src/internal.h; sourceTree = SOURCE_ROOT; };
+		1471949D9A9742E19259DDAD /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/context.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = context.c; path = ext/glfw/src/context.c; sourceTree = SOURCE_ROOT; };
+		1B59FBD3EC57463D8271B886 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/mappings.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = mappings.h; path = ext/glfw/src/mappings.h; sourceTree = SOURCE_ROOT; };
+		2BCB4CC19D7D46CAA6770921 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = ext/glfw/CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		319240E0046D4DDA8FE8615B /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_joystick.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; name = cocoa_joystick.m; path = ext/glfw/src/cocoa_joystick.m; sourceTree = SOURCE_ROOT; };
+		32F918AD88CC45CE8B629D93 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/osmesa_context.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = osmesa_context.h; path = ext/glfw/src/osmesa_context.h; sourceTree = SOURCE_ROOT; };
+		34DF2354FFA746BBBAC8B942 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/include/GLFW/glfw3native.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = glfw3native.h; path = ext/glfw/include/GLFW/glfw3native.h; sourceTree = SOURCE_ROOT; };
+		3C0F3A73035F42EFA4E06B06 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/window.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = window.c; path = ext/glfw/src/window.c; sourceTree = SOURCE_ROOT; };
+		568681771A3A45BD8A405ABF /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/include/GLFW/glfw3.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = glfw3.h; path = ext/glfw/include/GLFW/glfw3.h; sourceTree = SOURCE_ROOT; };
+		698C47A9481B404BA6070B42 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_init.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; name = cocoa_init.m; path = ext/glfw/src/cocoa_init.m; sourceTree = SOURCE_ROOT; };
+		71CCEA543630476995D2EFF3 /* /Users/qianzecheng/Code/5607/hw2a/src/HW2a.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = HW2a.cpp; path = src/HW2a.cpp; sourceTree = SOURCE_ROOT; };
+		727C275568FE4DE2BC0986B1 /* glfw */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libglfw3.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		78EB2CB526BC4481A4BF4826 /* /Users/qianzecheng/Code/5607/hw2a/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		85417664C7164FD683E1A3DB /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/posix_thread.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = posix_thread.h; path = ext/glfw/src/posix_thread.h; sourceTree = SOURCE_ROOT; };
+		871D11A04FAF414B90F89AD5 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/osmesa_context.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = osmesa_context.c; path = ext/glfw/src/osmesa_context.c; sourceTree = SOURCE_ROOT; };
+		8AB8D8CB9B6B4E95A25F68BF /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/nsgl_context.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; name = nsgl_context.m; path = ext/glfw/src/nsgl_context.m; sourceTree = SOURCE_ROOT; };
+		91EBB3CA6C964A28A626F92A /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/monitor.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = monitor.c; path = ext/glfw/src/monitor.c; sourceTree = SOURCE_ROOT; };
+		99304C21D7FD4A5A9651ABAD /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/input.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = input.c; path = ext/glfw/src/input.c; sourceTree = SOURCE_ROOT; };
+		A3EB158EE1784E36ABCB7EBC /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/egl_context.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = egl_context.h; path = ext/glfw/src/egl_context.h; sourceTree = SOURCE_ROOT; };
+		A5689B1DE1BD49639296C54F /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/init.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = init.c; path = ext/glfw/src/init.c; sourceTree = SOURCE_ROOT; };
+		ACD5852014A24F17ADDC07C1 /* /Users/qianzecheng/Code/5607/hw2a/ext/glad/src/glad.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = glad.c; path = ext/glad/src/glad.c; sourceTree = SOURCE_ROOT; };
+		BCAA1051D0934BE8837BD915 /* /Users/qianzecheng/Code/5607/hw2a/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		CF7E489B12FA4EB2842881DF /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/posix_thread.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = posix_thread.c; path = ext/glfw/src/posix_thread.c; sourceTree = SOURCE_ROOT; };
+		D14883B6C5C1468694A52000 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_joystick.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = cocoa_joystick.h; path = ext/glfw/src/cocoa_joystick.h; sourceTree = SOURCE_ROOT; };
+		E02CBE838A0B41CEB8EDC2C0 /* HW2a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = HW2a; sourceTree = BUILT_PRODUCTS_DIR; };
+		ED584B46E94844F7B4663CED /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/nsgl_context.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = nsgl_context.h; path = ext/glfw/src/nsgl_context.h; sourceTree = SOURCE_ROOT; };
+		EDC7AF3B69A04F028139BC3B /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/egl_context.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = egl_context.c; path = ext/glfw/src/egl_context.c; sourceTree = SOURCE_ROOT; };
+		F61B660691AE475FA68337BB /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = ext/glfw/src/CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		F7219917A23E4E26A75903AA /* /Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/src/glfw_config.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = glfw_config.h; path = bin/ext/glfw/src/glfw_config.h; sourceTree = SOURCE_ROOT; };
+		F9C6F022DD0C49F5B92DAB69 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_time.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = cocoa_time.c; path = ext/glfw/src/cocoa_time.c; sourceTree = SOURCE_ROOT; };
+		FC26009C50D64571B26BFA86 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_platform.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = cocoa_platform.h; path = ext/glfw/src/cocoa_platform.h; sourceTree = SOURCE_ROOT; };
+		FF5977A2B6B24CC8AA7291EA /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/vulkan.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = vulkan.c; path = ext/glfw/src/vulkan.c; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		028CF75E30324A51904D51E4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A050D6913D8D46A8BDB1426C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		13C5B86B470D4A5DA411C909 /* uninstall */ = {
+			isa = PBXGroup;
+			children = (
+				3344C0EFC2F745CEB53BD9F6 /* CMake Rules */,
+				2BCB4CC19D7D46CAA6770921 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/CMakeLists.txt */,
+			);
+			name = uninstall;
+			sourceTree = "<group>";
+		};
+		2BD57E87D25240A5957C8991 /* Header Files */ = {
+			isa = PBXGroup;
+			children = (
+				F7219917A23E4E26A75903AA /* /Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/src/glfw_config.h */,
+				568681771A3A45BD8A405ABF /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/include/GLFW/glfw3.h */,
+				34DF2354FFA746BBBAC8B942 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/include/GLFW/glfw3native.h */,
+				D14883B6C5C1468694A52000 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_joystick.h */,
+				FC26009C50D64571B26BFA86 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_platform.h */,
+				A3EB158EE1784E36ABCB7EBC /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/egl_context.h */,
+				125EC28981F940D1A3B50344 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/internal.h */,
+				1B59FBD3EC57463D8271B886 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/mappings.h */,
+				ED584B46E94844F7B4663CED /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/nsgl_context.h */,
+				32F918AD88CC45CE8B629D93 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/osmesa_context.h */,
+				85417664C7164FD683E1A3DB /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/posix_thread.h */,
+			);
+			name = "Header Files";
+			sourceTree = "<group>";
+		};
+		32D5118F437A4C389CE8B593 /* GLFW3 */ = {
+			isa = PBXGroup;
+			children = (
+				13C5B86B470D4A5DA411C909 /* uninstall */,
+				EA8FE5AB881D420B9CF1E64C /* glfw */,
+			);
+			name = GLFW3;
+			sourceTree = "<group>";
+		};
+		3344C0EFC2F745CEB53BD9F6 /* CMake Rules */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "CMake Rules";
+			sourceTree = "<group>";
+		};
+		389CBE24C04C4898BAA9247E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		4B2E33ED06D642C0870B1EFC /* Source Files */ = {
+			isa = PBXGroup;
+			children = (
+				ACD5852014A24F17ADDC07C1 /* /Users/qianzecheng/Code/5607/hw2a/ext/glad/src/glad.c */,
+				71CCEA543630476995D2EFF3 /* /Users/qianzecheng/Code/5607/hw2a/src/HW2a.cpp */,
+			);
+			name = "Source Files";
+			sourceTree = "<group>";
+		};
+		4FFCBF4C9A364497B34F88E1 /* Header Files */ = {
+			isa = PBXGroup;
+			children = (
+				0AA28DC08543482983BEB66E /* /Users/qianzecheng/Code/5607/hw2a/src/ShaderStuff.hpp */,
+			);
+			name = "Header Files";
+			sourceTree = "<group>";
+		};
+		7F7620663FF64CABAFBB9C04 /* Source Files */ = {
+			isa = PBXGroup;
+			children = (
+				698C47A9481B404BA6070B42 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_init.m */,
+				319240E0046D4DDA8FE8615B /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_joystick.m */,
+				06BF52E70EAB46AC8B2D5C30 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_monitor.m */,
+				F9C6F022DD0C49F5B92DAB69 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_time.c */,
+				124B92D5289D4BBA975FDA36 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_window.m */,
+				1471949D9A9742E19259DDAD /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/context.c */,
+				EDC7AF3B69A04F028139BC3B /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/egl_context.c */,
+				A5689B1DE1BD49639296C54F /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/init.c */,
+				99304C21D7FD4A5A9651ABAD /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/input.c */,
+				91EBB3CA6C964A28A626F92A /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/monitor.c */,
+				8AB8D8CB9B6B4E95A25F68BF /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/nsgl_context.m */,
+				871D11A04FAF414B90F89AD5 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/osmesa_context.c */,
+				CF7E489B12FA4EB2842881DF /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/posix_thread.c */,
+				FF5977A2B6B24CC8AA7291EA /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/vulkan.c */,
+				3C0F3A73035F42EFA4E06B06 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/window.c */,
+			);
+			name = "Source Files";
+			sourceTree = "<group>";
+		};
+		800750EA96464AE1852E4A8E = {
+			isa = PBXGroup;
+			children = (
+				BE838B1B6B7241A18B3CE60E /* HW2a */,
+				9186EA473EA34FDBB27A0F0F /* ALL_BUILD */,
+				32D5118F437A4C389CE8B593 /* GLFW3 */,
+				878C5E8395724615892C2AED /* Products */,
+				389CBE24C04C4898BAA9247E /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		878C5E8395724615892C2AED /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E02CBE838A0B41CEB8EDC2C0 /* HW2a */,
+				727C275568FE4DE2BC0986B1 /* glfw */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8A390B25B33247DAAE0C481A /* CMake Rules */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "CMake Rules";
+			sourceTree = "<group>";
+		};
+		9186EA473EA34FDBB27A0F0F /* ALL_BUILD */ = {
+			isa = PBXGroup;
+			children = (
+				8A390B25B33247DAAE0C481A /* CMake Rules */,
+				78EB2CB526BC4481A4BF4826 /* /Users/qianzecheng/Code/5607/hw2a/CMakeLists.txt */,
+			);
+			name = ALL_BUILD;
+			sourceTree = "<group>";
+		};
+		BE838B1B6B7241A18B3CE60E /* HW2a */ = {
+			isa = PBXGroup;
+			children = (
+				4B2E33ED06D642C0870B1EFC /* Source Files */,
+				4FFCBF4C9A364497B34F88E1 /* Header Files */,
+				BCAA1051D0934BE8837BD915 /* /Users/qianzecheng/Code/5607/hw2a/CMakeLists.txt */,
+			);
+			name = HW2a;
+			sourceTree = "<group>";
+		};
+		EA8FE5AB881D420B9CF1E64C /* glfw */ = {
+			isa = PBXGroup;
+			children = (
+				7F7620663FF64CABAFBB9C04 /* Source Files */,
+				2BD57E87D25240A5957C8991 /* Header Files */,
+				F61B660691AE475FA68337BB /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/CMakeLists.txt */,
+			);
+			name = glfw;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		9E6F825E011544C4A31310BC /* glfw */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7C2DCAEFF6F64582B76127B4 /* Build configuration list for PBXNativeTarget "glfw" */;
+			buildPhases = (
+				D5757C80B80A4F6AB597DAC6 /* Sources */,
+				A050D6913D8D46A8BDB1426C /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9049C6F272354057A35497DA /* PBXTargetDependency */,
+			);
+			name = glfw;
+			productName = glfw;
+			productReference = 727C275568FE4DE2BC0986B1 /* glfw */;
+			productType = "com.apple.product-type.library.static";
+		};
+		A0DE342F9D954DA68BD10D9F /* HW2a */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3D01BDEB66E04A1A881EE943 /* Build configuration list for PBXNativeTarget "HW2a" */;
+			buildPhases = (
+				F7AB8C32309747E2834C7FC6 /* Sources */,
+				028CF75E30324A51904D51E4 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F150D5B936A14C28B77F0A25 /* PBXTargetDependency */,
+				31EB96ABE0AC4DE4B4E7D995 /* PBXTargetDependency */,
+			);
+			name = HW2a;
+			productName = HW2a;
+			productReference = E02CBE838A0B41CEB8EDC2C0 /* HW2a */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		598B16E147214A2DAA4F3261 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1330;
+			};
+			buildConfigurationList = 5EF9C335912546B99A12F5A9 /* Build configuration list for PBXProject "HW2a" */;
+			buildSettings = {
+			};
+			buildStyles = (
+				DF93666C746B4EDD9F61374A /* Debug */,
+				7D7E698A2B254FD8B6596CED /* Release */,
+				6B8FA46B58E14BE1BF6F86A3 /* MinSizeRel */,
+				00FD1C7731574931B6986F9E /* RelWithDebInfo */,
+			);
+			compatibilityVersion = "Xcode 3.2";
+			hasScannedForEncodings = 0;
+			mainGroup = 800750EA96464AE1852E4A8E;
+			projectDirPath = ../;
+			projectRoot = "";
+			targets = (
+				90B9C0E05E0B42D3A59F6F88 /* ALL_BUILD */,
+				A0DE342F9D954DA68BD10D9F /* HW2a */,
+				F902264523C04BA48CAA8B6F /* ZERO_CHECK */,
+				9E6F825E011544C4A31310BC /* glfw */,
+				5A5137963AFD46BDBE3458DF /* install */,
+				67703450968F436B8E355382 /* uninstall */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		3C0110FC8322DE7E50886E21 = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here
+exit 0";
+			showEnvVarsInLog = 0;
+		};
+		3C8B9B9628600475EB03CBF8 = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here
+exit 0";
+			showEnvVarsInLog = 0;
+		};
+		66C37C5EFD8C8E8698DF6980 /* Generate ext/glfw/CMakeFiles/uninstall */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Generate ext/glfw/CMakeFiles/uninstall";
+			outputPaths = (
+/Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/CMakeFiles/uninstall			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e
+if test \"$CONFIGURATION\" = \"Debug\"; then :
+  cd /Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw
+  /Applications/CMake.app/Contents/bin/cmake -P /Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/cmake_uninstall.cmake
+fi
+if test \"$CONFIGURATION\" = \"Release\"; then :
+  cd /Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw
+  /Applications/CMake.app/Contents/bin/cmake -P /Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/cmake_uninstall.cmake
+fi
+if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
+  cd /Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw
+  /Applications/CMake.app/Contents/bin/cmake -P /Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/cmake_uninstall.cmake
+fi
+if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
+  cd /Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw
+  /Applications/CMake.app/Contents/bin/cmake -P /Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/cmake_uninstall.cmake
+fi
+";
+			showEnvVarsInLog = 0;
+		};
+		7A6625412051C8B67C8895A1 /* Generate CMakeFiles/ALL_BUILD */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Generate CMakeFiles/ALL_BUILD";
+			outputPaths = (
+/Users/qianzecheng/Code/5607/hw2a/bin/CMakeFiles/ALL_BUILD			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e
+if test \"$CONFIGURATION\" = \"Debug\"; then :
+  cd /Users/qianzecheng/Code/5607/hw2a/bin
+  echo Build\\ all\\ projects
+fi
+if test \"$CONFIGURATION\" = \"Release\"; then :
+  cd /Users/qianzecheng/Code/5607/hw2a/bin
+  echo Build\\ all\\ projects
+fi
+if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
+  cd /Users/qianzecheng/Code/5607/hw2a/bin
+  echo Build\\ all\\ projects
+fi
+if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
+  cd /Users/qianzecheng/Code/5607/hw2a/bin
+  echo Build\\ all\\ projects
+fi
+";
+			showEnvVarsInLog = 0;
+		};
+		87AF4882E018677E2624B544 = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here
+exit 0";
+			showEnvVarsInLog = 0;
+		};
+		93426DA6A4AC2C2AC9CE883C /* CMake PostBuild Rules */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "CMake PostBuild Rules";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e
+if test \"$CONFIGURATION\" = \"Debug\"; then :
+  cd /Users/qianzecheng/Code/5607/hw2a/bin
+  /Applications/CMake.app/Contents/bin/cmake -DBUILD_TYPE=$CONFIGURATION$EFFECTIVE_PLATFORM_NAME -P cmake_install.cmake
+fi
+if test \"$CONFIGURATION\" = \"Release\"; then :
+  cd /Users/qianzecheng/Code/5607/hw2a/bin
+  /Applications/CMake.app/Contents/bin/cmake -DBUILD_TYPE=$CONFIGURATION$EFFECTIVE_PLATFORM_NAME -P cmake_install.cmake
+fi
+if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
+  cd /Users/qianzecheng/Code/5607/hw2a/bin
+  /Applications/CMake.app/Contents/bin/cmake -DBUILD_TYPE=$CONFIGURATION$EFFECTIVE_PLATFORM_NAME -P cmake_install.cmake
+fi
+if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
+  cd /Users/qianzecheng/Code/5607/hw2a/bin
+  /Applications/CMake.app/Contents/bin/cmake -DBUILD_TYPE=$CONFIGURATION$EFFECTIVE_PLATFORM_NAME -P cmake_install.cmake
+fi
+";
+			showEnvVarsInLog = 0;
+		};
+		9B50530E35CC49C82C2FACCF = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here
+exit 0";
+			showEnvVarsInLog = 0;
+		};
+		D99850454368D6D56093237C /* Generate CMakeFiles/ZERO_CHECK */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Generate CMakeFiles/ZERO_CHECK";
+			outputPaths = (
+/Users/qianzecheng/Code/5607/hw2a/bin/CMakeFiles/ZERO_CHECK			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e
+if test \"$CONFIGURATION\" = \"Debug\"; then :
+  cd /Users/qianzecheng/Code/5607/hw2a/bin
+  make -f /Users/qianzecheng/Code/5607/hw2a/bin/CMakeScripts/ReRunCMake.make
+fi
+if test \"$CONFIGURATION\" = \"Release\"; then :
+  cd /Users/qianzecheng/Code/5607/hw2a/bin
+  make -f /Users/qianzecheng/Code/5607/hw2a/bin/CMakeScripts/ReRunCMake.make
+fi
+if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
+  cd /Users/qianzecheng/Code/5607/hw2a/bin
+  make -f /Users/qianzecheng/Code/5607/hw2a/bin/CMakeScripts/ReRunCMake.make
+fi
+if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
+  cd /Users/qianzecheng/Code/5607/hw2a/bin
+  make -f /Users/qianzecheng/Code/5607/hw2a/bin/CMakeScripts/ReRunCMake.make
+fi
+";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D5757C80B80A4F6AB597DAC6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4E8EEF8983B475CACB224D3 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_init.m */,
+				FB57B3A7949B4C0685903EFE /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_joystick.m */,
+				1FD34DD7AAC843FB8CE1CB6C /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_monitor.m */,
+				9DF8B7B15274449384201FF2 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_time.c */,
+				5CB8F2AF7A134FE38EFCEEA7 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/cocoa_window.m */,
+				A92CF263B1AE410F9C762C7D /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/context.c */,
+				30B8F6533B5E49138DE70FB9 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/egl_context.c */,
+				A613CB3C27B64BA9A1BF8A21 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/init.c */,
+				90E87D270C1049B6AF434684 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/input.c */,
+				9119D744D94E4CCA89CC475D /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/monitor.c */,
+				27BDAF28DE7A4847977DBC85 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/nsgl_context.m */,
+				6CFC8E6F31C64C1EBE83CE95 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/osmesa_context.c */,
+				DE41C8EEF0214534A3940B0E /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/posix_thread.c */,
+				BA7BBD5510F84DDCB3EEC02F /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/vulkan.c */,
+				3A410784D9AD4D3B8C291861 /* /Users/qianzecheng/Code/5607/hw2a/ext/glfw/src/window.c */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F7AB8C32309747E2834C7FC6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				880C7B8E31734B8CAD42F826 /* /Users/qianzecheng/Code/5607/hw2a/ext/glad/src/glad.c */,
+				124966CAAFFC4BBEB00F9225 /* /Users/qianzecheng/Code/5607/hw2a/src/HW2a.cpp */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0724F517735B46E89FFA3FD8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A0DE342F9D954DA68BD10D9F /* HW2a */;
+			targetProxy = 0258C0F2B35C459899172622 /* PBXContainerItemProxy */;
+		};
+		2852858A4EC947D1B9701C6C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9E6F825E011544C4A31310BC /* glfw */;
+			targetProxy = CE882D60832E4C56A04EDBB5 /* PBXContainerItemProxy */;
+		};
+		31EB96ABE0AC4DE4B4E7D995 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F902264523C04BA48CAA8B6F /* ZERO_CHECK */;
+			targetProxy = BC5FE19635744357B975A276 /* PBXContainerItemProxy */;
+		};
+		55A5D9ED450846438D3AB96B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F902264523C04BA48CAA8B6F /* ZERO_CHECK */;
+			targetProxy = 3225A44204FC498A94D03C15 /* PBXContainerItemProxy */;
+		};
+		6E27A780C3A247C39D421752 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 90B9C0E05E0B42D3A59F6F88 /* ALL_BUILD */;
+			targetProxy = BD861C64B4B44FC2B82588F5 /* PBXContainerItemProxy */;
+		};
+		9049C6F272354057A35497DA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F902264523C04BA48CAA8B6F /* ZERO_CHECK */;
+			targetProxy = 709CF78794844F24AD3DEF98 /* PBXContainerItemProxy */;
+		};
+		F150D5B936A14C28B77F0A25 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9E6F825E011544C4A31310BC /* glfw */;
+			targetProxy = 24E6D909BEC543FEBC1DBB91 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0C80978780714260B00BB21E /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		163AEEB30C834D519CF2BB91 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk;
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin/build;
+			};
+			name = RelWithDebInfo;
+		};
+		1D06FD8A923A4B23B3970986 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		27DA27F9C0094807AF298C7D /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		288427BE74874F3484FC93CC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk;
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin/build;
+			};
+			name = Release;
+		};
+		28D18F65274E4143A59E500E /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = install;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		32FDD7CEF9D5467D9E4D444D /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = "";
+				EXECUTABLE_SUFFIX = "";
+				FRAMEWORK_SEARCH_PATHS = (/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/System/Library/Frameworks,"$(inherited)");
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 2;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","'SRC_DIR=\"/Users/qianzecheng/Code/5607/hw2a/src\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Users/qianzecheng/Code/5607/hw2a/ext,/Users/qianzecheng/Code/5607/hw2a/ext/glfw/include,/Users/qianzecheng/Code/5607/hw2a/ext/glad/include,"$(inherited)");
+				INSTALL_PATH = "";
+				OTHER_CFLAGS = ("       -DNDEBUG ","$(inherited)");
+				OTHER_CPLUSPLUSFLAGS = "       -DNDEBUG ";
+				OTHER_LDFLAGS = (" -Wl,-search_paths_first -Wl,-headerpad_max_install_names",/Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/src/RelWithDebInfo/libglfw3.a,"-framework OpenGL","-framework OpenGL","-framework Cocoa","-framework IOKit","-framework CoreFoundation","-framework CoreVideo","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = HW2a;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		39DED8F6DE64477688568C2A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				FRAMEWORK_SEARCH_PATHS = (/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/System/Library/Frameworks,"$(inherited)");
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",_GLFW_USE_CONFIG_H,"'SRC_DIR=\"/Users/qianzecheng/Code/5607/hw2a/src\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Users/qianzecheng/Code/5607/hw2a/ext/glfw/include,/Users/qianzecheng/Code/5607/hw2a/ext/glfw/src,/Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/src,"$(inherited)");
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				OTHER_CFLAGS = ("    -DNDEBUG -fPIC -Wall '-std=gnu99' ","$(inherited)");
+				OTHER_LIBTOOLFLAGS = ("");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = glfw3;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/src;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Release;
+		};
+		542E40A5F1EB43A293572303 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = install;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		5843B5B2C47A40DEB4263A45 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk;
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin/build;
+			};
+			name = Debug;
+		};
+		5ECAD8EE8B0E4B0B845AE3A5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = uninstall;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Debug;
+		};
+		615D02748E3B4A34BAB23F29 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = install;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Release;
+		};
+		617933559E04411DBCA358AA /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk;
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin/build;
+			};
+			name = MinSizeRel;
+		};
+		650E55F3FF9F4E619E267C5B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Debug;
+		};
+		708EDF2682554F67B8F68E49 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				FRAMEWORK_SEARCH_PATHS = (/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/System/Library/Frameworks,"$(inherited)");
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",_GLFW_USE_CONFIG_H,"'SRC_DIR=\"/Users/qianzecheng/Code/5607/hw2a/src\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Users/qianzecheng/Code/5607/hw2a/ext/glfw/include,/Users/qianzecheng/Code/5607/hw2a/ext/glfw/src,/Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/src,"$(inherited)");
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				OTHER_CFLAGS = ("    -DNDEBUG -fPIC -Wall '-std=gnu99' ","$(inherited)");
+				OTHER_LIBTOOLFLAGS = ("");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = glfw3;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/src;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		7685010173F14B0E86566BA0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = "";
+				EXECUTABLE_SUFFIX = "";
+				FRAMEWORK_SEARCH_PATHS = (/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/System/Library/Frameworks,"$(inherited)");
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","'SRC_DIR=\"/Users/qianzecheng/Code/5607/hw2a/src\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Users/qianzecheng/Code/5607/hw2a/ext,/Users/qianzecheng/Code/5607/hw2a/ext/glfw/include,/Users/qianzecheng/Code/5607/hw2a/ext/glad/include,"$(inherited)");
+				INSTALL_PATH = "";
+				OTHER_CFLAGS = ("   ","$(inherited)");
+				OTHER_CPLUSPLUSFLAGS = "   ";
+				OTHER_LDFLAGS = (" -Wl,-search_paths_first -Wl,-headerpad_max_install_names",/Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/src/Debug/libglfw3.a,"-framework OpenGL","-framework OpenGL","-framework Cocoa","-framework IOKit","-framework CoreFoundation","-framework CoreVideo","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = HW2a;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Debug;
+		};
+		867FA50E711A41C9B3DF3786 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = install;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Debug;
+		};
+		883A9828EAF447F883EBCD6E /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = "";
+				EXECUTABLE_SUFFIX = "";
+				FRAMEWORK_SEARCH_PATHS = (/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/System/Library/Frameworks,"$(inherited)");
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","'SRC_DIR=\"/Users/qianzecheng/Code/5607/hw2a/src\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Users/qianzecheng/Code/5607/hw2a/ext,/Users/qianzecheng/Code/5607/hw2a/ext/glfw/include,/Users/qianzecheng/Code/5607/hw2a/ext/glad/include,"$(inherited)");
+				INSTALL_PATH = "";
+				OTHER_CFLAGS = ("    -DNDEBUG ","$(inherited)");
+				OTHER_CPLUSPLUSFLAGS = "    -DNDEBUG ";
+				OTHER_LDFLAGS = (" -Wl,-search_paths_first -Wl,-headerpad_max_install_names",/Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/src/MinSizeRel/libglfw3.a,"-framework OpenGL","-framework OpenGL","-framework Cocoa","-framework IOKit","-framework CoreFoundation","-framework CoreVideo","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = HW2a;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		931D2B48AB8D4131BACA3464 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = "";
+				EXECUTABLE_SUFFIX = "";
+				FRAMEWORK_SEARCH_PATHS = (/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/System/Library/Frameworks,"$(inherited)");
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","'SRC_DIR=\"/Users/qianzecheng/Code/5607/hw2a/src\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Users/qianzecheng/Code/5607/hw2a/ext,/Users/qianzecheng/Code/5607/hw2a/ext/glfw/include,/Users/qianzecheng/Code/5607/hw2a/ext/glad/include,"$(inherited)");
+				INSTALL_PATH = "";
+				OTHER_CFLAGS = ("    -DNDEBUG ","$(inherited)");
+				OTHER_CPLUSPLUSFLAGS = "    -DNDEBUG ";
+				OTHER_LDFLAGS = (" -Wl,-search_paths_first -Wl,-headerpad_max_install_names",/Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/src/Release/libglfw3.a,"-framework OpenGL","-framework OpenGL","-framework Cocoa","-framework IOKit","-framework CoreFoundation","-framework CoreVideo","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = HW2a;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Release;
+		};
+		A74F53CE6CF6497F99B41777 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = uninstall;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Release;
+		};
+		B99E1C694E8747D7BFC72D16 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				FRAMEWORK_SEARCH_PATHS = (/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/System/Library/Frameworks,"$(inherited)");
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",_GLFW_USE_CONFIG_H,"'SRC_DIR=\"/Users/qianzecheng/Code/5607/hw2a/src\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Users/qianzecheng/Code/5607/hw2a/ext/glfw/include,/Users/qianzecheng/Code/5607/hw2a/ext/glfw/src,/Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/src,"$(inherited)");
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				OTHER_CFLAGS = ("   -fPIC -Wall '-std=gnu99' ","$(inherited)");
+				OTHER_LIBTOOLFLAGS = ("");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = glfw3;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/src;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Debug;
+		};
+		C561D5BD526947D3BDD46BDA /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				FRAMEWORK_SEARCH_PATHS = (/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/System/Library/Frameworks,"$(inherited)");
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 2;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",_GLFW_USE_CONFIG_H,"'SRC_DIR=\"/Users/qianzecheng/Code/5607/hw2a/src\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Users/qianzecheng/Code/5607/hw2a/ext/glfw/include,/Users/qianzecheng/Code/5607/hw2a/ext/glfw/src,/Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/src,"$(inherited)");
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				OTHER_CFLAGS = ("       -DNDEBUG -fPIC -Wall '-std=gnu99' ","$(inherited)");
+				OTHER_LIBTOOLFLAGS = ("");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = glfw3;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw/src;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		CEDDCE83FBA64EE5811DFD93 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Debug;
+		};
+		D6C40F3F24DF4C7F826513BD /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		DC7720E47E094D8F9992BCE5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Release;
+		};
+		F3D889132B2047838E11E684 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Release;
+		};
+		F7A019E3794446CEB3FFE501 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = uninstall;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		FEE90E27ACEF406298F987DA /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = uninstall;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/qianzecheng/Code/5607/hw2a/bin/ext/glfw;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0C0CA60472A6402A84E2B571 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CEDDCE83FBA64EE5811DFD93 /* Debug */,
+				F3D889132B2047838E11E684 /* Release */,
+				27DA27F9C0094807AF298C7D /* MinSizeRel */,
+				1D06FD8A923A4B23B3970986 /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		1A79C7D767BA4DF49EB1928D /* Build configuration list for PBXAggregateTarget "uninstall" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5ECAD8EE8B0E4B0B845AE3A5 /* Debug */,
+				A74F53CE6CF6497F99B41777 /* Release */,
+				F7A019E3794446CEB3FFE501 /* MinSizeRel */,
+				FEE90E27ACEF406298F987DA /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		3D01BDEB66E04A1A881EE943 /* Build configuration list for PBXNativeTarget "HW2a" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7685010173F14B0E86566BA0 /* Debug */,
+				931D2B48AB8D4131BACA3464 /* Release */,
+				883A9828EAF447F883EBCD6E /* MinSizeRel */,
+				32FDD7CEF9D5467D9E4D444D /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		5EF9C335912546B99A12F5A9 /* Build configuration list for PBXProject "HW2a" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5843B5B2C47A40DEB4263A45 /* Debug */,
+				288427BE74874F3484FC93CC /* Release */,
+				617933559E04411DBCA358AA /* MinSizeRel */,
+				163AEEB30C834D519CF2BB91 /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		7C2DCAEFF6F64582B76127B4 /* Build configuration list for PBXNativeTarget "glfw" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B99E1C694E8747D7BFC72D16 /* Debug */,
+				39DED8F6DE64477688568C2A /* Release */,
+				708EDF2682554F67B8F68E49 /* MinSizeRel */,
+				C561D5BD526947D3BDD46BDA /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		84A2FFC2390946F2B14DE60E /* Build configuration list for PBXAggregateTarget "install" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				867FA50E711A41C9B3DF3786 /* Debug */,
+				615D02748E3B4A34BAB23F29 /* Release */,
+				28D18F65274E4143A59E500E /* MinSizeRel */,
+				542E40A5F1EB43A293572303 /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		DC2E1788ABCE48DA8F8A3ADB /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				650E55F3FF9F4E619E267C5B /* Debug */,
+				DC7720E47E094D8F9992BCE5 /* Release */,
+				D6C40F3F24DF4C7F826513BD /* MinSizeRel */,
+				0C80978780714260B00BB21E /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 598B16E147214A2DAA4F3261 /* Project object */;
+}
