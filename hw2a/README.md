@@ -54,11 +54,11 @@ Run the executable. The functionalities are listed as following (trigger by keyb
 
 An example of a pentagon:
 
-![demo](./assets/demo.gif)
+![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202204100221001.gif)
 
 An example of a square:
 
-![demo](./assets/demo2.gif)
+![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202204100222302.gif)
 
 ## Implementation Details
 
