@@ -278,8 +278,8 @@ cursor_pos_callback(GLFWwindow* window, double xpos, double ypos) {
 
 void init( void )
 {
-    ColorType3D colors[10];
-    FloatType2D vertices[10];
+    ColorType3D colors[100];
+    FloatType2D vertices[100];
     GLuint vao[1], buffer, program, location1, location2;
 
     parseScene(SRC_DIR"/scene2.txt", colors, vertices);

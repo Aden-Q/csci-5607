@@ -2,153 +2,188 @@
 
 ## Description
 
-The program reads scene description from a file (as a command line argument). It runs a recursive ray tracing algorithm to determine the illumination of any intersection point of a ray with objects in the scene. The program is capable of rendering spheres and triangles using both flat shading and smooth shading.  The program also implements texture mapping, for which is is capable of rendering texture spheres and triangles.
+This program implements simple 2D geometric transformation in a vertex shader to allow a user to interactively reposition and resize a single object in a window via the mouse and keyboard. A single window and single 2D polygon object are supported.
 
-It generates an illuminated image in `ppm` format.
+## Dependencies
+
++   `cmake`
++   `opengl >= 3.2`
++   `glfw` (provided)
 
 ## File Organization
 
-+ `src`: all the source code and makefile
-+ `input`: scene description input files for testing
-+ `output`: output files by the program
-+ `image`: images used in the README
-+ `test_case`: several cases to test the correctness and performance of the program, each folder contains a result image along with the corresponding input file
-+ `showcase`: the folder contains a showcase image along with the corresponding scene description input file
++ `src`: all the source code input files
++ `assets`: some simple demo of the the program 
++ `ext`: external library
++ `bin`: built binaries including the executable
++ `CMakeLists.txt`: CMake description file for building purpose
 
-## Implementation Details
+## Build
 
-1. Create a `Scene` object, read from the scene description file, and construct the scene using `parseScene`.
-2. Construct a viewing window using `view_window_init`.
-3. For each pixel in the image, run a ray tracing algorithm using `trace_ray`.
-3. The `trace_ray` function will recursively call `trace_ray_recursive` to emulate reflection and transmission of rays, at a maximum recursion depth 5.
-4. For each ray, checking whether it intersects with any object in the scene, using `intersect_check`.
-5. When intersecting, if texture mapping or smooth shading enabled, run them separately to determine the normal direction at each point, and the diffuse color to retrieve.
-6. Use the extended Blinn-Phong illumination model and shadowing effects to determine the color for that pixel.
-7. Once all pixels in the image are rendered, generate an output image in `ppm` format.
+### CMake-GUI
 
-## Extended Blinn-Phong illumination
++   Specify the source code directory to be the project folder
++   Specify where to build the binaries
++   Click `Configure`
++   Click `Generate`
++   Navigate to the directory where the project is built
++   Build the project
 
-The Phong illumination model is an empirical model that trys to emulate the appearance of common materials under simple lighting conditions. It does not emulate the physical effects.
+An example is showns below
 
-$$
-I_\lambda = k_aO_{d\lambda} + S \cdot IL_{\lambda}[k_dO_{d\lambda} (\vec{N} \cdot \vec{L}) + k_sO_{s\lambda} (\vec{N} \cdot \vec{H})^n] + \sum F_r^d \cdot R_\lambda + \sum (1-F_r)^d \cdot (e^{-\alpha_\lambda t}) \cdot T_\lambda
-$$
+![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202204100108892.png)
 
-Components:
+### CMake-CLI
 
-+ $k_aO_{d\lambda}$: ambient term which approximates the reflection of light that arrives indirectly
-+ $k_dO_{d\lambda}(\vec{N} \cdot \vec{L})$: diffuse term which represents the uniform reflection of light from a light source
-+ $k_sO_{s\lambda}(\vec{N} \cdot \vec{H})^n$: specular term which represents the mirror-like reflection of incoming light
-
-Parameter specification:
-
-+ $I_\lambda$ : color intensity
-+ $O_{d\lambda}$: intrinsic color of the object
-+ $O_{s\lambda}$: specular color of the object, usually the background color
-+ $k_a$, $k_d$, $k_s$: weights that control the relative effects of surface's ambient, diffuse, and specular
-+ $\vec{N}$: surface normal
-+ $\vec{L}$: vector point from the intersecting point towards the light source
-+ $\vec{H}$: a derived vector, using the formula $\vec{H} = \frac{\vec{L}+\vec{V}}{||\vec{L}+\vec{V}||}$ , in which $\vec{V}$ is the vector pointing from the intersecting point towards the eye
-+ $S$: a flag to determine the shadowing effect
-+ $IL_{\lambda}$: intensity of a light source
-+ $\sum F_r^d \cdot R_\lambda$: The accumulate contribution from the specularly reflected ray
-+ $\sum (1-F_r)^d \cdot (e^{-\alpha_\lambda t}) \cdot T_\lambda$: The accumulate contribution from the specularly transmitted ray
+TBD
 
 ## Usage
 
-+ Enter the `src` foler.
-+ Type `clear && make clean && make && ./raytracer ../input/hw1c/rainbow.txt`. The last command argument is the path to the scene description file.
-+ It will generate a `ppm` file in the `output` folder as the input file if the input file format is correct.
+Run the executable. The functionalities are listed as following (trigger by keyboard events and mouse events). Each time an event is triggered, the object will be repositioned and replotted in the display window. `Callbacks` are binded with the events that we want to capture.
 
-## Showcase Image
++   &#8592;：Make the object thinner
++   &#8593;: Make the object taller
++   &#8594;: Make the object fatter
++   &#8595;: Make the object shorter
++   `space`: Restore the object to its origital position
++   Moving the mouse from left to right while pressing the left button: Clockwise rotation
++   Moving the mouse from rightto left while pressing the left button: Counterclockwise rotation
++   Moving the mouse while the left button and the `Control` key are simultaneously pressed down: Translation along the moving direction of the mouse.
 
-![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202203282157269.jpg)
+## Demo
 
+An example of a pentagon:
 
-## Reflected Ray
+![demo](./assets/demo.gif)
 
-![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202203282020340.png)
+An example of a square:
 
-Given the (normalized) incidence ray $\vec{I}$, and the (normalized )surface normal $\vec{N}$. We can calculate the reflection ray as following:
+![demo](./assets/demo2.gif)
+
+## Implementation Details
+
+A 4x4 transformation matrix is used by the vertex shader to transform and render a single vertex.
 $$
-\vec{R} = \vec{A} + \vec{S} = (a\vec{N}) + (a\vec{N} - \vec{I}) = 2(a\vec{N}) - \vec{I} = 2 (\vec{N} \cdot \vec{I}) \vec{N} - \vec{I}
+M = 
+\begin{bmatrix}
+m_0 & m_4 & m_8 & m_{12} \\
+m_1 & m_5 & m_9 & m_{13} \\
+m_2 & m_6 & m_{10} & m_{14} \\
+m_3 & m_7 & m_{11} & m_{15} \\
+\end{bmatrix}
 $$
-And the reflected ray origins at the intersection point between the incident ray and surface. Once we have the new direction $\vec{R}$, we trace the ray along that direction again until we reach the pre-defined maximum recursion depth (5 in our case).
-
-And the effects of reflection by my program is shown below
-
-![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202203282133137.jpg)
-
-![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202203282134066.jpg)
-
-## Transmitted Ray
-
-We have a parameter $\alpha$ to specify the opacity of objects for each material. For an object that is partially or completely transparent, like a drinking glass filled with water. The incident ray can travel through the object and thus we can see the scene behind the object. We use a simple approach to rendering transparent objects by simply adding the intensity returned by the transmitted ray to the total intensity at a ray/surface intersection point.
-
-![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202203282039409.png)
-
-By Snell's Law, we have
+In the program, the transformation matrix $M$ is defiend as a one dimensional array, specified in column-major order. It is applied on a vector of 4 elements, using **homogeneous coordinates**. For a 3D point $(x,y,z)$, its homogeneous coordinates is a $(x_h,y_h,z_h, h)$ with the following constraints:
 $$
-\frac{\sin \theta_{i}}{\sin \theta_t} = \frac{\eta_t}{\eta_i}
+h>0 \\
+x = \frac{x_h}{h} \\
+y = \frac{y_h}{h} \\
+z = \frac{z_h}{h} \\
 $$
-where $\eta_i$ and $\eta_t$ are the indices of refraction of the materials that the incoming and transmitted rays pass through, respectively.
+Since homogeneous coordiantes are not uniquely defined, typically we choose $h=1$ for simplicity. In the following, if not specified otherwise, we are always using the notation of homogeneous coordinates.
 
-In the figure above, we can calculate the transmitted ray as:
+### Scaling
+
+For a 3D point $(x,y,z,1)$, the scaling transformation can be written as
 $$
-\vec{T} = \vec{A} + \vec{B} \\
-\vec{T} = \cos\theta_t(-\vec{N}) + \frac{\eta_i}{\eta_t}(\cos\theta_i \vec{N} - \vec{I}) \\
-\cos\theta_t = \sqrt{1-\sin^2\theta_t} \\
-\cos\theta_t = \sqrt{1-[(\eta_i/\eta_t)\sin\theta_i]^2} \\
-\cos\theta_t = \sqrt{1-[(\eta_i/\eta_t)^2(1-\cos^2\theta_i)]} \\
-\vec{T} = (-\vec{N}) \sqrt{1-[(\eta_i/\eta_t)^2(1-\cos^2\theta_i)]} \frac{\eta_i}{\eta_t}(\cos\theta_i \vec{N} - \vec{I})
+\begin{bmatrix}
+x' \\
+y' \\
+z' \\
+1 \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+s_x & 0 & 0 & 0 \\
+0 & s_y & 0 & 0 \\
+0 & 0 & s_z & 0 \\
+0 & 0 & 0 & 1 \\
+\end{bmatrix}
+\begin{bmatrix}
+x \\
+y \\
+z \\
+1 \\
+\end{bmatrix}
 $$
-We model the absorption of light by using Beer's Law. The intensity $T_\lambda$ returned by a transmitted ray is attenuated by the factor $e^{-\alpha_\lambda t}$, where $\alpha_{\lambda}$ is a user provided and wavelength-dependent parameters. And $t$ is the accumulated distance that the ray travels through the transparent medium. In our model, for simplicity, we assume $\alpha_{\lambda}$  to be consistent across different lights.
+Where $s_x$ is the streching factor along the $x$ axis, $s_y$ is the streching factor along the $y$ axis, and $s_z$ is the streching factor along the $z$ axis. 
 
-And the effects of refraction by my program is shown below
+For 2D scaling in the `xy` plane, we have $s_z = 0$. In this program, when there is a composite transformation, the scaling is enforced to be performed along the object's intrinct axises, making sure there is no shearing effects.
 
-![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202203282136547.jpg)
+### Rotation
 
-### Total Internal Reflection
-
-When the incidence ray is traveling through a medium that has a larger index of refraction than the medium on the other side of the intersection point. A phenomenon called "Total Internal Reflection" (TIR) can possibly happen, in which case there is no transmitted ray, illustrated as following:
-
-![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202203282048804.png)
-
-When we increase the angle of the incidence ray, the angle of the transmitted ray will also increase. In the case when the angle of the transmitted ray is larger than 90 degrees, the transmitted ray will disappear and  only reflection happens. By Snell's Law, we have
+For a 3D point $(x,y,z,1)$, a 2D rotation transformation can be written as
 $$
-\frac{\sin \theta_{i}}{\sin 90^。} = \frac{\eta_t}{\eta_i} \\
-\sin \theta_i > \frac{\eta_t}{\eta_i}
+\begin{bmatrix}
+x' \\
+y' \\
+z' \\
+1 \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+\cos(\theta) & -\sin(\theta) & 0 & 0 \\
+\sin(\theta) & \cos(\theta) & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 1 \\
+\end{bmatrix}
+\begin{bmatrix}
+x \\
+y \\
+z \\
+1 \\
+\end{bmatrix}
 $$
-If the condition above is satisfied, the angle of refraction $\theta_{t}$ is undefined. In my program, total internal reflection is handled by checking the condition above and stop tracing the transmitted ray if the condition is satisfied.
+It represents a counterclockwise rotation by an angle $\theta$ about the pivot point. The pivot point is chosen to be the centroid of the display window, which has a coordinate of $(0,0,0,1)$.
 
-## Fresnel Reflectance
+### Translation
 
-### Schlick's Approximation
-
-$F_r$ is the Fresnel reflectance coefficient, a fractional weight that depends both on the angle between the incident ray and the surface normal directions, and on the material’s index of refraction. $F_r$ Controls how reflective the surface is at a given point. In 1994, Chirstophe Schlick presented a simple method for efficiently approximating Fresnel reflectance. The equations are as following:
+For a 3D point $(x,y,z,1)$, a 2D translation transformation can be written as
 $$
-F_r = F_0 + (1-F_0)(1-\cos\theta)^5 \\
-F_0 = (\frac{\eta_t-\eta_i}{\eta_t+\eta_i})^2
+\begin{bmatrix}
+x' \\
+y' \\
+z' \\
+1 \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0 & 0 & t_x \\
+0 & 1 & 0 & t_y \\
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 1 \\
+\end{bmatrix}
+\begin{bmatrix}
+x \\
+y \\
+z \\
+1 \\
+\end{bmatrix}
 $$
-Where $\eta_i$ is the index of refraction of the material where the incidence ray is in. And $\eta_t$ is the index of refraction of the objects. I use this approximation in my program.
-
-## Shadowing by Transparent Surfaces
-
-Previously, my program only handles situations with opaque objects in the scene so we set a shadow flag to be either 0 or 1. In this assignment, we are going to deal with transparent surfaces so we extend the shadowing flag by attenuating it gradually.
-
-Each time when we need to decide shadowing effects, we cast a secondary ray towards the light and along that direction, we check intersection between the ray and any object. If there is an intersection, then we attenuate the flag $S$ by:
-$$
-S = S \cdot (1-\alpha_i)
-$$
-Where $\alpha_i$ is the opacity of each surface that is encountered along the ray.
+Where $t_x$ and $t_y$ represent the translation amount along the $x$ axis and $y$ axis, respectively.
 
 ## Extra Credit
 
-Not attempted
+The program can read an object from a `txt` file. Two examples are provided named `scene1.txt` and `scene2.txt` under the `src` folder.
+
+The program is capable of dealing with a polygon using a scene description file with up to 100 vertices.
+
+An example of a pentagon is shown above. The program support 2D transformation including scaling, rotation about the centroid and translation.
+
+The scene description file should specify each vertex on each row using the following syntax:
+
+```
+v x y z r g b
+```
+
+`(x,y,z)` specifies the 3D location of the vertex, and  `(r,g,b)` specifies the color associated with the vertex.
+
+Since the object is 2D, the `z` component is not used but required in the scene description file as a placeholder.
+
+**Note: Be sure to modify line 285 in `HW2.cpp` to try different scene description files.**
 
 ## Known Issues
 
-Not discovered yet
+Not found yet
 
 ## Credits
 
