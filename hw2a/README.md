@@ -1,4 +1,4 @@
-# CSCI 5607 Assignment 1d: Transparency and Mirror Reflections
+# CSCI 5607 Assignment 2a: Programming Interactive 2D Graphics with OpenGL
 
 ## Description
 
