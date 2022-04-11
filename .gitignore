@@ -1,4 +1,5 @@
 .DS_Store
+.vscode
 hw0/src/*.o
 hw1a/src/*.o
 hw1b/src/*.o

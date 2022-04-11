@@ -2,7 +2,7 @@
 
 ## Description
 
-Course materials including lecture slides, homeworks.
+Course materials including lecture slides and homeworks.
 
 ## Contents
 
@@ -10,6 +10,8 @@ Course materials including lecture slides, homeworks.
 + `hw1a`: Getting Started With Ray Casting
 + `hw1b`: Light and Shadow
 + `hw1c`: Triangles and Texture
++ `hw1d`: Transparency and Mirror Reflections
++ `hw2a`: Interactive 2D Graphics with `OpenGL`
 
 ## Credits
 
