@@ -12,6 +12,7 @@ Course materials including lecture slides and homeworks.
 + `hw1c`: Triangles and Texture
 + `hw1d`: Transparency and Mirror Reflections
 + `hw2a`: Interactive 2D Graphics with `OpenGL`
++ `hw2b`:
 
 ## Credits
 
