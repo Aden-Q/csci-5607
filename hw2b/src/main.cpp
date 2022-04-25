@@ -8,6 +8,7 @@
 #include "trimesh.hpp"
 #include "shader.hpp"
 #include <cstring> // memcpy
+#include <math.h>
 
 // Constants
 #define WIN_WIDTH 500
@@ -69,7 +70,11 @@ namespace Globals {
 	Vec3f eye;	// initial eye/camera position
 	Vec3f view_dir;  // initial view direction
 	Vec3f up_dir;  // up direction of eye/camera
-	Vec3f u, v, n;  // three directions in the camera coordinates   
+	Vec3f u, v, n;  // three directions in the camera coordinates
+	// parameters for the viewing volume
+	float near, far;
+	float left, right;
+	float bottom, top;
 	GLuint verts_vbo[1], colors_vbo[1], normals_vbo[1], faces_ibo[1], tris_vao;
 	TriMesh mesh;
 
@@ -88,6 +93,9 @@ static void error_callback(int error, const char* description){ fprintf(stderr, 
 // Function to move the view origin
 void moveOrigin(char key);
 
+// Function to rotate the viewing direction
+void rotateView(char key);
+
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
 	// Close on escape or Q
 	if( action == GLFW_PRESS ){
@@ -99,19 +107,42 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 			case GLFW_KEY_S: moveOrigin('S'); break;
 			case GLFW_KEY_A: moveOrigin('A'); break;
 			case GLFW_KEY_D: moveOrigin('D'); break;
+			case GLFW_KEY_LEFT_BRACKET: moveOrigin('['); break;
+			case GLFW_KEY_RIGHT_BRACKET: moveOrigin(']'); break;
+			case GLFW_KEY_LEFT: rotateView('L'); break;
+			case GLFW_KEY_RIGHT: rotateView('R'); break;
+			case GLFW_KEY_UP: rotateView('U'); break;
+			case GLFW_KEY_DOWN: rotateView('D'); break;
 		}
 	}
 }
 
 static void framebuffer_size_callback(GLFWwindow* window, int width, int height){
-	Globals::win_width = float(width);
-	Globals::win_height = float(height);
-    	Globals::aspect = Globals::win_width/Globals::win_height;
+	using namespace Globals;
+	win_width = float(width);
+	win_height = float(height);
+    aspect = win_width / win_height;
 	
-    	glViewport(0,0,width,height);
+    glViewport(0, 0, width, height);
 
 	// ToDo: update the perspective matrix as the window size changes
-
+	if (aspect > 1)
+	{
+		float new_width = aspect * (top - bottom);
+		left = -new_width / 2;
+		right = new_width / 2;
+	}
+	else
+	{
+		float new_height = (right - left) / aspect;
+		bottom = -new_height / 2;
+		top = new_height / 2;
+	}
+	// update the perspective projection matrix
+	projection.m[0] = 2 * near / (right - left);
+	projection.m[5] = 2 * near / (top - bottom);
+	projection.m[8] = (right + left) / (right - left);
+	projection.m[9] = (top + bottom) / (top - bottom);
 }
 
 
@@ -128,33 +159,6 @@ int main(int argc, char *argv[]){
 	std::stringstream obj_file; obj_file << MY_DATA_DIR << "sibenik/sibenik.obj";
 	if( !Globals::mesh.load_obj( obj_file.str() ) ){ return 0; }
 	Globals::mesh.print_details();
-
-	// Forcibly scale the mesh vertices so that the entire model fits within a (-1,1) volume: the code below is a temporary measure that is needed to enable the entire model to be visible in the template app, before the student has defined the proper viewing and projection matrices
-    	// This code should eventually be replaced by the use of an appropriate projection matrix
-    	// FYI: the model dimensions are: center = (0,0,0); height: 30.6; length: 40.3; width: 17.0
-    // find the extremum of the vertex locations (this approach works because the model is known to be centered; a more complicated method would be required in the general case)
-    // float min, max, scale;
-    // min = Globals::mesh.vertices[0][0]; max = Globals::mesh.vertices[0][0];
-	// for( int i=0; i<Globals::mesh.vertices.size(); ++i ){
-	// 		std::cout << Globals::mesh.vertices[i][0] << " " << Globals::mesh.vertices[i][1] << " " << Globals::mesh.vertices[i][2] << " " << std::endl;
-    //        if (Globals::mesh.vertices[i][0] < min) min = Globals::mesh.vertices[i][0];
-    //        else if (Globals::mesh.vertices[i][0] > max) max = Globals::mesh.vertices[i][0];
-    //        if (Globals::mesh.vertices[i][1] < min) min = Globals::mesh.vertices[i][1];
-    //        else if (Globals::mesh.vertices[i][1] > max) max = Globals::mesh.vertices[i][1];
-    //        if (Globals::mesh.vertices[i][2] < min) min = Globals::mesh.vertices[i][2];
-    //        else if (Globals::mesh.vertices[i][2] > max) max = Globals::mesh.vertices[i][2];
-    // }
-	// // work with positive numbers
-    // if (min < 0) min = -min;
-    // // scale so that the component that is most different from 0 is mapped to 1 (or -1); all other values will then by definition fall between -1 and 1
-    // if (max > min) scale = 1/max; else scale = 1/min;
-    	
-	// // scale the model vertices by brute force
-    // Mat4x4 mscale; mscale.make_scale( scale, scale, scale );
-	// for( int i=0; i<Globals::mesh.vertices.size(); ++i ){
-    //        Globals::mesh.vertices[i] = mscale*Globals::mesh.vertices[i];
-    // }
-    // The above can be removed once a proper projection matrix is defined
 
 	// Set up the window variable
 	GLFWwindow* window;
@@ -245,7 +249,7 @@ int main(int argc, char *argv[]){
 }
 
 
-void init_scene(){
+void init_scene() {
 
 	using namespace Globals;
 
@@ -281,12 +285,12 @@ void init_scene(){
 
 	// define the initial projection transformation
 	// composite of perspective warp and normalization
-	float near = 6;
-	float far = 16;
-	float left = -4;
-	float right = 4;
-	float bottom = -4;
-	float top = 4;
+	near = 6;
+	far = 16;
+	left = -4;
+	right = 4;
+	bottom = -4;
+	top = 4;
 	projection.m[0] = 2 * near / (right - left);
 	projection.m[5] = 2 * near / (top - bottom);
 	projection.m[8] = (right + left) / (right - left);
@@ -346,24 +350,79 @@ void init_scene(){
 
 }
 
-void moveOrigin(char key){
+void moveOrigin(char key) {
 	using namespace Globals;
-	float delta = 0.1
+	float delta = 0.2;
 	if (key == 'W') {
 		// move forward
-		eye += delta * view_dir;
-	} else if (key == 'S') {
+		eye += view_dir * delta;
+	}
+	else if (key == 'S') {
 		// move backwrd
-		eye -= delta * view_dir;
-	} else if (key == 'A') {
+		eye += view_dir * (-delta);
+	}
+	else if (key == 'A') {
 		// move to the left
-		eye -= delta * u;
-	} else if (key == 'D') {
+		eye += u * (-delta);
+	}
+	else if (key == 'D') {
 		// move to the right
-		eye += delta * u;
+		eye += u * delta;
+	}
+	else if (key == '[') {
+		// move down
+		eye += up_dir * delta;
+	}
+	else if (key == ']') {
+		// move up
+		eye += up_dir * (-delta);
 	}
 	// update the viewing matrix
-	view[12] = - eye.dot(u);
-	view[13] = -eye.dot(v);
-	view[14] = -eye.dot(n);
+	view.m[12] = - eye.dot(u);
+	view.m[13] = -eye.dot(v);
+	view.m[14] = -eye.dot(n);
+}
+
+void rotateView(char key) {
+	using namespace Globals;
+	float delta = 0.1;
+	if (key == 'L' || key == 'R')
+	{
+		// rotate clockwise, about the y-axis
+		if (key == 'R')
+			delta = -delta;
+		// rotate counterclockwise, about the y-axis
+		float new_x = view_dir[0] * cos(delta) + view_dir[2] * sin(delta);
+		float new_z = view_dir[2] * cos(delta) - view_dir[0] * sin(delta);
+		view_dir[0] = new_x;
+		view_dir[2] = new_z;
+	}
+	else if (key == 'U')
+	{
+		// rotate up, about the viewing direction
+		if (key == 'D')
+			delta = -delta;
+		// rotate down, about the viewing direction
+		
+	}
+
+	// update the viewing matrix
+	u = view_dir.cross(up_dir);
+	u.normalize();
+	v = u.cross(view_dir);
+	v.normalize();
+	n = view_dir * float(-1);
+	n.normalize();
+	view.m[0] = u[0];
+	view.m[4] = u[1];
+	view.m[8] = u[2];
+	view.m[1] = v[0];
+	view.m[5] = v[1];
+	view.m[9] = v[2];
+	view.m[2] = n[0];
+	view.m[6] = n[1];
+	view.m[10] = n[2];
+	view.m[12] = -eye.dot(u);
+	view.m[13] = -eye.dot(v);
+	view.m[14] = -eye.dot(n);
 }

@@ -2,7 +2,7 @@
 
 ## Description
 
-This program simulates a first person view of walking around a scene.
+This program simulates a first-person view of walking around a scene.
 
 ## Dependencies
 
@@ -39,16 +39,19 @@ TBD
 
 ## Usage
 
-Run the executable. The functionalities are listed as following (trigger by keyboard events and mouse events). Each time an event is triggered, the object will be repositioned and replotted in the display window. `Callbacks` are binded with the events that we want to capture.
+Run the executable. The functionalities are listed as following (trigger by keyboard events). `Callbacks` are binded with the events.
 
-+   &#8592;：Make the object thinner
-+   &#8593;: Make the object taller
-+   &#8594;: Make the object fatter
-+   &#8595;: Make the object shorter
-+   `space`: Restore the object to its origital position
-+   Moving the mouse from left to right while pressing the left button: Clockwise rotation
-+   Moving the mouse from rightto left while pressing the left button: Counterclockwise rotation
-+   Moving the mouse while the left button and the `Control` key are simultaneously pressed down: Translation along the moving direction of the mouse.
++   `W`: Move forward, view direction unchanged
+
++   `S`: Move backward, view direction unchanged
++   `A`: Move to the left, view direction unchanged
++   `D`: Move to the right, view direction unchanged
++   `[`: Move up, view direction unchanged
++   `]`: Move down, view direction unchanged
++   $\leftarrow$: Rotate the viewing direction to the left
++   $\rightarrow$: Rotate the viewing direction to the right
++   $\uparrow$: Rotate the viewing direction up
++   $\downarrow$: Rotate the viewing direction down
 
 ## Demo
 
@@ -67,14 +70,6 @@ Run the executable. The functionalities are listed as following (trigger by keyb
 
 
 ## Implementation Details
-
-**Global Configurations**
-
-+   view origin:
-+   view direction:
-+   up direction:
-
-
 
 ### Viewing Transformation
 
@@ -97,6 +92,16 @@ There are mainly three steps to achieve both goals:
 
 
 
+The final **viewing transformation** matrix has the following form:
+$$
+V = 
+\begin{bmatrix}
+u_x & u_y & u_z & d_x \\\\
+v_x & v_y & v_z & d_y \\\\
+n_x & n_y & n_z & d_z \\\\
+0 & 0 & 0 & 1 \\\\
+\end{bmatrix}
+$$
 
 
 
@@ -116,10 +121,10 @@ A basic orthographic parallel projection can be written as:
 $$
 M_{ortho} = 
 \begin{bmatrix}
-1 & 0 & 0 & 0 \\
-0 & 1 & 0 & 0 \\
-0 & 0 & -1 & 0 \\
-0 & 0 & 0 & 1 \\
+1 & 0 & 0 & 0 \\\\
+0 & 1 & 0 & 0 \\\\
+0 & 0 & -1 & 0 \\\\
+0 & 0 & 0 & 1 \\\\
 \end{bmatrix}
 $$
 Although parallel projections are easy to implement, they do not provide realistic views. To obtain a realistic view, we use a **perspective projection** in our implementaion.
@@ -150,21 +155,87 @@ The composite of these two steps can be written as a single transformation matri
 $$
 M_{persp} = 
 \begin{bmatrix}
-\frac{2\cdot near}{right-left} & 0 & \frac{right+left}{right-left} & 0 \\
-0 & \frac{2 \cdot near}{top-bottom} & \frac{top+bottom}{top-bottom} & 0 \\
-0 & 0 & -\frac{far + near}{far - near} & - \frac{2 \cdot far \cdot near}{far -near} \\
-0 & 0 & -1 & 0 \\
+\frac{2\cdot near}{right-left} & 0 & \frac{right+left}{right-left} & 0 \\\\
+0 & \frac{2 \cdot near}{top-bottom} & \frac{top+bottom}{top-bottom} & 0 \\\\
+0 & 0 & -\frac{far + near}{far - near} & - \frac{2 \cdot far \cdot near}{far -near} \\\\
+0 & 0 & -1 & 0 \\\\
 \end{bmatrix}
 $$
 
+## Moving Around and Adjusting View Direction
 
+**Moving Around**:
 
+The camera position can be adjusted by keys `W`, `S`, `A`, `D`, to move forward, backward, to the left, and to the right seperately. When the keyboard event is triggered, we can simply update our **viewing transformation matrix** because several entries of the matrix are affected by the eye position. Namely, we re-calculated 3 entries $(d_x, d_y, d_z)$ of the following matrix:
+$$
+V = 
+\begin{bmatrix}
+u_x & u_y & u_z & d_x \\\\
+v_x & v_y & v_z & d_y \\\\
+n_x & n_y & n_z & d_z \\\\
+0 & 0 & 0 & 1 \\\\
+\end{bmatrix}
+$$
+
+$$
+d_x = -eye \cdot u \\\\
+d_y = -eye \cdot v \\\\
+d_z = -eye \cdot n
+$$
+
+The update is efficient because we only need to deal with three entries of the 4x4 matrix.
+
+**Adjusting View Direction**
+
+The viewing direction can be adjusted by keys $\leftarrow$, $\rightarrow$, $\uparrow$, $\downarrow$, to rotate counterclockwise, clockwise, up, and down seperately. When the keyboard event is triggered, we can also update our **viewing transformation matrix** becuase several entries of the matrix are affected by the viewing direction. Namely, we re-calculated 12 entries of the following matrix:
+$$
+V = 
+\begin{bmatrix}
+u_x & u_y & u_z & d_x \\\\
+v_x & v_y & v_z & d_y \\\\
+n_x & n_y & n_z & d_z \\\\
+0 & 0 & 0 & 1 \\\\
+\end{bmatrix}
+$$
+
+$$
+n = -view\_dir \\\\
+u = up \cross n \\\\
+v = n \cross u \\\\
+d_x = -eye \cdot u \\\\
+d_y = -eye \cdot v \\\\
+d_z = -eye \cdot n
+$$
+
+## Resizing Window
+
+When we resize the window, we want the projected scene to be adjusted as well. We implement this by first resizing the viewport according to the window size, then adjust the **viewing frustum** and the **perspective projection matrix** accordingly.
+
+We use the *aspect_ratio* as a criteria to adjust everything:
+$$
+aspect\_ratio = width / height
+$$
+We make sure that the *asepect_ratio* of the window, viewing frustum, and the viewport all align. So that we will not see any distortions when we resize the window.
 
 ## Extra Credit
 
+### Rotate Up and Down
 
+This functionality allows the user to adjust the viewing direction up and down consistently even though we flip 180 degrees.
 
++   $\uparrow$: Rotate the viewing direction upward
++   $\downarrow$: Rotate the viewing direction downward
 
+After adjusting the viewing direction, we simply update the **viewing transformation matrix** and redraw the scene. To make everything consistent, we need to rotate abot the viewing direction.
+
+### Move Up and Down
+
+This functionality allows the user to adjust the camera position up and down consistently (**along the `up` direction instead of the `v` direction**)
+
++   `[`: Move up, view direction unchanged
++   `]`: Move down, view direction unchanged
+
+After adjusting the camera position, we simply update the **viewing transformation matrix** and redraw the scene.
 
 ## Known Issues
 
