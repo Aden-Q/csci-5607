@@ -43,6 +43,12 @@ public:
 		make_identity();
 		m[0] = x; m[5] = y; m[10] = z;
 	}
+
+	void translate(float dx, float dy, float dz){
+		m[12] += dx; 
+		m[13] += dy;
+		m[14] += dz;
+	}
 };
 
 static inline const Vec3f operator*(const Mat4x4 &m, const Vec3f &v){
@@ -60,6 +66,10 @@ namespace Globals {
 	double cursorX, cursorY; // cursor positions
 	float win_width, win_height; // window size
 	float aspect;
+	Vec3f eye;	// initial eye/camera position
+	Vec3f view_dir;  // initial view direction
+	Vec3f up_dir;  // up direction of eye/camera
+	Vec3f u, v, n;  // three directions in the camera coordinates   
 	GLuint verts_vbo[1], colors_vbo[1], normals_vbo[1], faces_ibo[1], tris_vao;
 	TriMesh mesh;
 
@@ -75,6 +85,9 @@ namespace Globals {
 //
 static void error_callback(int error, const char* description){ fprintf(stderr, "Error: %s\n", description); }
 
+// Function to move the view origin
+void moveOrigin(char key);
+
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
 	// Close on escape or Q
 	if( action == GLFW_PRESS ){
@@ -82,6 +95,10 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 			case GLFW_KEY_ESCAPE: glfwSetWindowShouldClose(window, GL_TRUE); break;
 			case GLFW_KEY_Q: glfwSetWindowShouldClose(window, GL_TRUE); break;
             // ToDo: update the viewing transformation matrix according to key presses
+			case GLFW_KEY_W: moveOrigin('W'); break;
+			case GLFW_KEY_S: moveOrigin('S'); break;
+			case GLFW_KEY_A: moveOrigin('A'); break;
+			case GLFW_KEY_D: moveOrigin('D'); break;
 		}
 	}
 }
@@ -116,26 +133,27 @@ int main(int argc, char *argv[]){
     	// This code should eventually be replaced by the use of an appropriate projection matrix
     	// FYI: the model dimensions are: center = (0,0,0); height: 30.6; length: 40.3; width: 17.0
     // find the extremum of the vertex locations (this approach works because the model is known to be centered; a more complicated method would be required in the general case)
-    float min, max, scale;
-    min = Globals::mesh.vertices[0][0]; max = Globals::mesh.vertices[0][0];
-	for( int i=0; i<Globals::mesh.vertices.size(); ++i ){
-           if (Globals::mesh.vertices[i][0] < min) min = Globals::mesh.vertices[i][0];
-           else if (Globals::mesh.vertices[i][0] > max) max = Globals::mesh.vertices[i][0];
-           if (Globals::mesh.vertices[i][1] < min) min = Globals::mesh.vertices[i][1];
-           else if (Globals::mesh.vertices[i][1] > max) max = Globals::mesh.vertices[i][1];
-           if (Globals::mesh.vertices[i][2] < min) min = Globals::mesh.vertices[i][2];
-           else if (Globals::mesh.vertices[i][2] > max) max = Globals::mesh.vertices[i][2];
-    }
-    // work with positive numbers
-    if (min < 0) min = -min;
-    // scale so that the component that is most different from 0 is mapped to 1 (or -1); all other values will then by definition fall between -1 and 1
-    if (max > min) scale = 1/max; else scale = 1/min;
+    // float min, max, scale;
+    // min = Globals::mesh.vertices[0][0]; max = Globals::mesh.vertices[0][0];
+	// for( int i=0; i<Globals::mesh.vertices.size(); ++i ){
+	// 		std::cout << Globals::mesh.vertices[i][0] << " " << Globals::mesh.vertices[i][1] << " " << Globals::mesh.vertices[i][2] << " " << std::endl;
+    //        if (Globals::mesh.vertices[i][0] < min) min = Globals::mesh.vertices[i][0];
+    //        else if (Globals::mesh.vertices[i][0] > max) max = Globals::mesh.vertices[i][0];
+    //        if (Globals::mesh.vertices[i][1] < min) min = Globals::mesh.vertices[i][1];
+    //        else if (Globals::mesh.vertices[i][1] > max) max = Globals::mesh.vertices[i][1];
+    //        if (Globals::mesh.vertices[i][2] < min) min = Globals::mesh.vertices[i][2];
+    //        else if (Globals::mesh.vertices[i][2] > max) max = Globals::mesh.vertices[i][2];
+    // }
+	// // work with positive numbers
+    // if (min < 0) min = -min;
+    // // scale so that the component that is most different from 0 is mapped to 1 (or -1); all other values will then by definition fall between -1 and 1
+    // if (max > min) scale = 1/max; else scale = 1/min;
     	
-	// scale the model vertices by brute force
-    Mat4x4 mscale; mscale.make_scale( scale, scale, scale );
-	for( int i=0; i<Globals::mesh.vertices.size(); ++i ){
-           Globals::mesh.vertices[i] = mscale*Globals::mesh.vertices[i];
-    }
+	// // scale the model vertices by brute force
+    // Mat4x4 mscale; mscale.make_scale( scale, scale, scale );
+	// for( int i=0; i<Globals::mesh.vertices.size(); ++i ){
+    //        Globals::mesh.vertices[i] = mscale*Globals::mesh.vertices[i];
+    // }
     // The above can be removed once a proper projection matrix is defined
 
 	// Set up the window variable
@@ -231,6 +249,53 @@ void init_scene(){
 
 	using namespace Globals;
 
+	// initialize the view origin, view direction, and up direction
+	eye[0] = -5;
+	eye[1] = -10;
+	eye[2] = 0;
+	view_dir[0] = -1;
+	view_dir[1] = 0;
+	view_dir[2] = 0;
+	up_dir[0] = 0;
+	up_dir[1] = 1;
+	up_dir[2] = 0;
+
+	// define the initial viewing transformation
+	// composite of translation and rotation
+	u = view_dir.cross(up_dir);
+	u.normalize();
+	v = u.cross(view_dir);
+	v.normalize();
+	n = view_dir * float(-1);
+	n.normalize();
+	view.m[0] = u[0];
+	view.m[4] = u[1];
+	view.m[8] = u[2];
+	view.m[1] = v[0];
+	view.m[5] = v[1];
+	view.m[9] = v[2];
+	view.m[2] = n[0];
+	view.m[6] = n[1];
+	view.m[10] = n[2];
+	view.translate(-eye.dot(u), -eye.dot(v), -eye.dot(n));
+
+	// define the initial projection transformation
+	// composite of perspective warp and normalization
+	float near = 6;
+	float far = 16;
+	float left = -4;
+	float right = 4;
+	float bottom = -4;
+	float top = 4;
+	projection.m[0] = 2 * near / (right - left);
+	projection.m[5] = 2 * near / (top - bottom);
+	projection.m[8] = (right + left) / (right - left);
+	projection.m[9] = (top + bottom) / (top - bottom);
+	projection.m[10] = -(far + near) / (far - near);
+	projection.m[11] = -1;
+	projection.m[14] = -2 * far * near / (far - near);
+	projection.m[15] = 0;
+
 	// Create the buffer for vertices
 	glGenBuffers(1, verts_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, verts_vbo[0]);
@@ -281,3 +346,24 @@ void init_scene(){
 
 }
 
+void moveOrigin(char key){
+	using namespace Globals;
+	float delta = 0.1
+	if (key == 'W') {
+		// move forward
+		eye += delta * view_dir;
+	} else if (key == 'S') {
+		// move backwrd
+		eye -= delta * view_dir;
+	} else if (key == 'A') {
+		// move to the left
+		eye -= delta * u;
+	} else if (key == 'D') {
+		// move to the right
+		eye += delta * u;
+	}
+	// update the viewing matrix
+	view[12] = - eye.dot(u);
+	view[13] = -eye.dot(v);
+	view[14] = -eye.dot(n);
+}

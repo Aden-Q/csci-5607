@@ -1,8 +1,8 @@
-# CSCI 5607 Assignment 2a: Programming Interactive 2D Graphics with OpenGL
+# CSCI 5607 Assignment 2b: Learning About Viewing, Projection and Viewport Transformations via a First-Person 3D Walkthrough
 
 ## Description
 
-This program implements simple 2D geometric transformation in a vertex shader to allow a user to interactively reposition and resize a single object in a window via the mouse and keyboard. A single window and single 2D polygon object are supported.
+This program simulates a first person view of walking around a scene.
 
 ## Dependencies
 
@@ -52,134 +52,119 @@ Run the executable. The functionalities are listed as following (trigger by keyb
 
 ## Demo
 
-An example of a pentagon:
+**Static view**:
 
-![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202204100221001.gif)
+![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202204251414275.png)
 
-An example of a square:
+**Walking through the scene interactively**:
 
-![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202204100222302.gif)
+
+
+
+
+
+
+
 
 ## Implementation Details
 
-A 4x4 transformation matrix is used by the vertex shader to transform and render a single vertex.
-$$
-M = 
-\begin{bmatrix}
-m_0 & m_4 & m_8 & m_{12} \\
-m_1 & m_5 & m_9 & m_{13} \\
-m_2 & m_6 & m_{10} & m_{14} \\
-m_3 & m_7 & m_{11} & m_{15} \\
-\end{bmatrix}
-$$
-In the program, the transformation matrix $M$ is defiend as a one dimensional array, specified in column-major order. It is applied on a vector of 4 elements, using **homogeneous coordinates**. For a 3D point $(x,y,z)$, its homogeneous coordinates is a $(x_h,y_h,z_h, h)$ with the following constraints:
-$$
-h>0 \\
-x = \frac{x_h}{h} \\
-y = \frac{y_h}{h} \\
-z = \frac{z_h}{h} \\
-$$
-Since homogeneous coordiantes are not uniquely defined, typically we choose $h=1$ for simplicity. In the following, if not specified otherwise, we are always using the notation of homogeneous coordinates.
+**Global Configurations**
 
-### Scaling
++   view origin:
++   view direction:
++   up direction:
 
-For a 3D point $(x,y,z,1)$, the scaling transformation can be written as
+
+
+### Viewing Transformation
+
+The purpose of **viewing transformation** is to change from the <u>world coordinates</u> into <u>viewing coordinates</u>.
+
+![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202204251126609.png)
+
+As the image above shows, when transforming vertices from world coordinates into viewing coordinates, we want to:
+
++   Translate so that the position of the camera aligns with the world origin
++   Rotate so that the axises in the camera's coordinate system align with the axises in the world coordinate system
+
+There are mainly three steps to achieve both goals:
+
+1.   TBD
+2.   TBD
+3.   TBD
+
+
+
+
+
+
+
+
+
+### Projection Transformation
+
+The purpose of **projection transformation** is to map all of the <u>vertices</u> in the scene from <u>camera coordinates</u> into <u>normalized clipping coordinates</u>. This is a following process after **viewing transformation**, so we have our eye origin at $(0, 0, 0)$ in the camera coordinate system.
+
+There are main categories of projection from 3D to 2D:
+
++   Parallel projection: All points in a scene are projected from 3D to 2D using the <u>same</u> projection direction.
+    +   Orthogrtaphic/Orthogonal projection: All points are projected from 3D to 2D along a constant direction that is orthogonal to the projection plane.
+    +   Oblique: All points are projected from 3D to 2D along a constant direction that is <u>not</u> orthogonal to the projection plane, but is instead oriented at an angle with respect to the projection plane.
++   Perspective projection: The direction of projection between each individual point in space and the projection plane may be different..
+
+A basic orthographic parallel projection can be written as:
 $$
+M_{ortho} = 
 \begin{bmatrix}
-x' \\
-y' \\
-z' \\
-1 \\
-\end{bmatrix}
-=
-\begin{bmatrix}
-s_x & 0 & 0 & 0 \\
-0 & s_y & 0 & 0 \\
-0 & 0 & s_z & 0 \\
+1 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 \\
+0 & 0 & -1 & 0 \\
 0 & 0 & 0 & 1 \\
 \end{bmatrix}
+$$
+Although parallel projections are easy to implement, they do not provide realistic views. To obtain a realistic view, we use a **perspective projection** in our implementaion.
+
+![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202204251228706.png)
+
+We call the volumn in grey **View Volume** or **View Frusum**, in the following when we refer to this volumn using two names, basically they refer to the same thing.
+
+A perspective projection view volume can be defined by six bounding planes **left, right, bottom, right, near, far**. It's important to enforce **near** > 0 so that everything is in front of the eye.
+
+----
+
+For simplicity, we implement a **symmetric perspective projection** in which we have
+
++   The vector between the center of projection (our eye), and the center of the viewing window is orthogonal to the viewing window.
++   The boundaries **(left, right)**, **(bottom, up)** are pairwise symmetric.
+
+The image below is a simple illustration of **symmetric perspective projection**:
+
+![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202204251242552.png)
+
+**Symmetric persepective projection** can be implemented in two steps:
+
++   A *warping* operation to transform the trapezoidal volume into a rectangular volume (for clipping purpose which will be explained later)
++   *Normalization* into a unit cube
+
+The composite of these two steps can be written as a single transformation matrix:
+$$
+M_{persp} = 
 \begin{bmatrix}
-x \\
-y \\
-z \\
-1 \\
+\frac{2\cdot near}{right-left} & 0 & \frac{right+left}{right-left} & 0 \\
+0 & \frac{2 \cdot near}{top-bottom} & \frac{top+bottom}{top-bottom} & 0 \\
+0 & 0 & -\frac{far + near}{far - near} & - \frac{2 \cdot far \cdot near}{far -near} \\
+0 & 0 & -1 & 0 \\
 \end{bmatrix}
 $$
-Where $s_x$ is the streching factor along the $x$ axis, $s_y$ is the streching factor along the $y$ axis, and $s_z$ is the streching factor along the $z$ axis. 
 
-For 2D scaling in the `xy` plane, we have $s_z = 0$. In this program, when there is a composite transformation, the scaling is enforced to be performed along the object's intrinct axises, making sure there is no shearing effects.
 
-### Rotation
 
-For a 3D point $(x,y,z,1)$, a 2D rotation transformation can be written as
-$$
-\begin{bmatrix}
-x' \\
-y' \\
-z' \\
-1 \\
-\end{bmatrix}
-=
-\begin{bmatrix}
-\cos(\theta) & -\sin(\theta) & 0 & 0 \\
-\sin(\theta) & \cos(\theta) & 0 & 0 \\
-0 & 0 & 1 & 0 \\
-0 & 0 & 0 & 1 \\
-\end{bmatrix}
-\begin{bmatrix}
-x \\
-y \\
-z \\
-1 \\
-\end{bmatrix}
-$$
-It represents a counterclockwise rotation by an angle $\theta$ about the pivot point. The pivot point is chosen to be the centroid of the display window, which has a coordinate of $(0,0,0,1)$.
-
-### Translation
-
-For a 3D point $(x,y,z,1)$, a 2D translation transformation can be written as
-$$
-\begin{bmatrix}
-x' \\
-y' \\
-z' \\
-1 \\
-\end{bmatrix}
-=
-\begin{bmatrix}
-1 & 0 & 0 & t_x \\
-0 & 1 & 0 & t_y \\
-0 & 0 & 1 & 0 \\
-0 & 0 & 0 & 1 \\
-\end{bmatrix}
-\begin{bmatrix}
-x \\
-y \\
-z \\
-1 \\
-\end{bmatrix}
-$$
-Where $t_x$ and $t_y$ represent the translation amount along the $x$ axis and $y$ axis, respectively.
 
 ## Extra Credit
 
-The program can read an object from a `txt` file. Two examples are provided named `scene1.txt` and `scene2.txt` under the `src` folder.
 
-The program is capable of dealing with a polygon using a scene description file with up to 100 vertices.
 
-An example of a pentagon is shown above. The program support 2D transformation including scaling, rotation about the centroid and translation.
 
-The scene description file should specify each vertex on each row using the following syntax:
-
-```
-v x y z r g b
-```
-
-`(x,y,z)` specifies the 3D location of the vertex, and  `(r,g,b)` specifies the color associated with the vertex.
-
-Since the object is 2D, the `z` component is not used but required in the scene description file as a placeholder.
-
-**Note: Be sure to modify line 285 in `HW2.cpp` to try different scene description files.**
 
 ## Known Issues
 
