@@ -2,7 +2,7 @@
 
 ## Description
 
-This program simulates a first-person view of walking around a scene.
+This program can interactively simulates a first-person view of walking through a 3D scene.
 
 ## Dependencies
 
@@ -31,7 +31,7 @@ This program simulates a first-person view of walking around a scene.
 
 An example is showns below
 
-![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202204100108892.png)
+![](https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202204251930914.png)
 
 ### CMake-CLI
 
@@ -61,13 +61,7 @@ Run the executable. The functionalities are listed as following (trigger by keyb
 
 **Walking through the scene interactively**:
 
-
-
-
-
-
-
-
+<img src=https://raw.githubusercontent.com/Aden-Q/blogImages/main/img/202204251934287.gif alt="drawing" width="500"/>
 
 ## Implementation Details
 
@@ -84,17 +78,34 @@ As the image above shows, when transforming vertices from world coordinates into
 
 There are mainly three steps to achieve both goals:
 
-1.   TBD
-2.   TBD
-3.   TBD
+1.   Translation such that the camera centers at the orgin
 
+2.   Do a rotation such that the $xyz$ world coordinate frame is in alignment with the $uvn$ viewing coordinate frame in the camera coordinate system
+3.   Composite the two transformations
 
-
-
-
-The final **viewing transformation** matrix has the following form:
+The **first step** can be done by a simple translation matrix:
+$$
+T = 
+\begin{bmatrix}
+1 & 0 & 0 & -e_x \\\\
+0 & 1 & 0 & -e_y \\\\
+0 & 0 & 1 & -e_z \\\\
+0 & 0 & 0 & 1 \\\\
+\end{bmatrix}
+$$
+The **second step** can be done by a simple rotation matrix:
 $$
 V = 
+\begin{bmatrix}
+u_x & u_y & u_z & 0 \\\\
+v_x & v_y & v_z & 0 \\\\
+n_x & n_y & n_z & 0 \\\\
+0 & 0 & 0 & 1 \\\\
+\end{bmatrix}
+$$
+The final composite **viewing transformation** matrix (by the third step) has the following form:
+$$
+V = R \cdot T = 
 \begin{bmatrix}
 u_x & u_y & u_z & d_x \\\\
 v_x & v_y & v_z & d_y \\\\
@@ -102,9 +113,6 @@ n_x & n_y & n_z & d_z \\\\
 0 & 0 & 0 & 1 \\\\
 \end{bmatrix}
 $$
-
-
-
 
 ### Projection Transformation
 
@@ -227,6 +235,14 @@ This functionality allows the user to adjust the viewing direction up and down c
 +   $\downarrow$: Rotate the viewing direction downward
 
 After adjusting the viewing direction, we simply update the **viewing transformation matrix** and redraw the scene. To make everything consistent, we need to rotate abot the viewing direction.
+
+The rotation along an arbitrary direction $\vec a$ is done by doing the following steps:
+
+1.   Translate by a vector $t$ such that $\vec a$ origins at the $(0, 0, 0)$ origin
+2.   Rotate by a matrix $R$ such that $\vec a$ coincide with the negative $z$ axis
+3.   Perform the rotation about the $x$ axis
+4.   Apply the inverse rotation matrix $R^T$
+5.   Apply the inverse translation matrix
 
 ### Move Up and Down
 

@@ -285,8 +285,8 @@ void init_scene() {
 
 	// define the initial projection transformation
 	// composite of perspective warp and normalization
-	near = 6;
-	far = 16;
+	near = 4;
+	far = 25;
 	left = -4;
 	right = 4;
 	bottom = -4;
@@ -397,13 +397,50 @@ void rotateView(char key) {
 		view_dir[0] = new_x;
 		view_dir[2] = new_z;
 	}
-	else if (key == 'U')
+	else if (key == 'U' || key == 'D')
 	{
 		// rotate up, about the viewing direction
 		if (key == 'D')
 			delta = -delta;
 		// rotate down, about the viewing direction
-		
+		// first translate to the origin
+		Mat4x4 translate;
+		translate.m[12] = -eye[0];
+		translate.m[13] = -eye[1];
+		translate.m[14] = -eye[2];
+		Mat4x4 untranslate;  // undo translation
+		untranslate.m[12] = eye[0];
+		untranslate.m[13] = eye[1];
+		untranslate.m[14] = eye[2];
+		// rotate such that the line aligns with one coordinates
+		Mat4x4 rotate;
+		rotate.m[0] = u[0];
+		rotate.m[4] = u[1];
+		rotate.m[8] = u[2];
+		rotate.m[1] = v[0];
+		rotate.m[5] = v[1];
+		rotate.m[9] = v[2];
+		rotate.m[2] = n[0];
+		rotate.m[6] = n[1];
+		rotate.m[10] = n[2];
+		Mat4x4 unrotate;  // inverse of the rotation matrix
+		unrotate.m[0] = u[0];
+		unrotate.m[1] = u[1];
+		unrotate.m[2] = u[2];
+		unrotate.m[4] = v[0];
+		unrotate.m[5] = v[1];
+		unrotate.m[6] = v[2];
+		unrotate.m[8] = n[0];
+		unrotate.m[9] = n[1];
+		unrotate.m[10] = n[2];
+		// do all the transformation
+		view_dir = rotate * (translate * view_dir);
+		// rotate counterclockwise, about the y-axis
+		float new_y = view_dir[1] * cos(delta) - view_dir[2] * sin(delta);
+		float new_z = view_dir[1] * sin(delta) + view_dir[2] * cos(delta);
+		view_dir[1] = new_y;
+		view_dir[2] = new_z;
+		view_dir = untranslate * (unrotate * view_dir);
 	}
 
 	// update the viewing matrix
