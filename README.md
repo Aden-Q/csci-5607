@@ -2,7 +2,7 @@
 
 ## Description
 
-Course materials including lecture slides and homeworks
+Homeworks for the course
 
 ## Contents
 
